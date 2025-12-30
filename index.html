@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zconnects | Cebu Local Services</title>
+    <style>
+        :root { --primary: #2563eb; --dark: #1e293b; --light: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; width: 95%; max-width: 400px; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
+        .logo { font-size: 2.2rem; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 0.5rem; letter-spacing: -1px; }
+        .tagline { text-align: center; font-size: 0.9rem; color: #64748b; margin-bottom: 2rem; }
+        label { font-size: 0.8rem; font-weight: 700; color: var(--dark); margin-bottom: 5px; display: block; }
+        input, select, button { width: 100%; padding: 12px; margin-bottom: 1.2rem; border-radius: 8px; border: 1.5px solid #e2e8f0; box-sizing: border-box; font-size: 1rem; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #1d4ed8; transform: translateY(-2px); }
+        #success { display:none; text-align: center; padding: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Zconnects</div>
+        <p class="tagline">Engineer-led maintenance services in Cebu.</p>
+        <form id="zForm">
+            <label>YOUR NAME</label>
+            <input type="text" id="name" placeholder="Juan Dela Cruz" required>
+            <label>MOBILE NUMBER</label>
+            <input type="tel" id="phone" placeholder="0917 123 4567" required>
+            <label>SERVICE NEEDED</label>
+            <select id="service">
+                <option value="AC Cleaning">Aircon Cleaning / Repair</option>
+                <option value="Carpentry">Carpentry & Furniture</option>
+                <option value="Electrical">Electrical Services</option>
+                <option value="Plumbing">Plumbing Works</option>
+            </select>
+            <button type="submit" id="btn">Request Connection</button>
+        </form>
+        <div id="success">
+            <div style="font-size: 50px;">✅</div>
+            <h2 style="color: var(--primary);">Request Sent!</h2>
+            <p>Thank you. A Zconnects professional will call or text you shortly.</p>
+            <button onclick="location.reload()" style="background: #64748b;">New Request</button>
+        </div>
+    </div>
+    <script>
+        const APP_URL = 'https://script.google.com/macros/s/AKfycbzzG0D63zDXFR7sA0qZ9nGRS87eJqM9tXO7Pe1viT8Ewhh4YpvpoEFoyibFWgUOkT4/exec'; 
+        document.getElementById('zForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+            const data = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                service: document.getElementById('service').value
+            };
+            fetch(APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
+            .then(() => {
+                document.getElementById('zForm').style.display = 'none';
+                document.getElementById('success').style.display = 'block';
+            }).catch(() => {
+                alert("Connection error. Please check your internet.");
+                btn.disabled = false;
+                btn.innerText = "Request Connection";
+            });
+        });
+    </script>
+</body>
+</html>
