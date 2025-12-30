@@ -2,67 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zconnects | Cebu Local Services</title>
+    <title>Zconnects | Pro Maintenance Cebu</title>
     <style>
-        :root { --primary: #2563eb; --dark: #1e293b; --light: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; width: 95%; max-width: 400px; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
-        .logo { font-size: 2.2rem; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 0.5rem; letter-spacing: -1px; }
-        .tagline { text-align: center; font-size: 0.9rem; color: #64748b; margin-bottom: 2rem; }
-        label { font-size: 0.8rem; font-weight: 700; color: var(--dark); margin-bottom: 5px; display: block; }
-        input, select, button { width: 100%; padding: 12px; margin-bottom: 1.2rem; border-radius: 8px; border: 1.5px solid #e2e8f0; box-sizing: border-box; font-size: 1rem; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { background: #1d4ed8; transform: translateY(-2px); }
-        #success { display:none; text-align: center; padding: 20px 0; }
+        :root { --primary: #2563eb; --accent: #3b82f6; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+        header { background: white; padding: 1.5rem; text-align: center; border-bottom: 2px solid #e2e8f0; }
+        .logo { font-size: 2.2rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        
+        /* Hero Section */
+        .hero { text-align: center; padding: 3rem 1rem; background: white; }
+        .hero h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .hero p { color: #64748b; font-size: 1rem; margin-bottom: 2rem; }
+
+        /* Navigation Steps */
+        .step-container { max-width: 450px; margin: -2rem auto 4rem; padding: 2rem; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.4s; }
+
+        .service-card { border: 2px solid #e2e8f0; padding: 1rem; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+        .service-card:hover { border-color: var(--primary); background: #eff6ff; }
+        .service-card.selected { border-color: var(--primary); background: #eff6ff; font-weight: bold; }
+
+        input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 8px; border: 1.5px solid #e2e8f0; box-sizing: border-box; font-size: 1rem; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        
+        .badge { display: inline-block; padding: 4px 12px; background: #dcfce7; color: #166534; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">Zconnects</div>
-        <p class="tagline">Engineer-led maintenance services in Cebu.</p>
-        <form id="zForm">
-            <label>YOUR NAME</label>
-            <input type="text" id="name" placeholder="Juan Dela Cruz" required>
-            <label>MOBILE NUMBER</label>
-            <input type="tel" id="phone" placeholder="0917 123 4567" required>
-            <label>SERVICE NEEDED</label>
-            <select id="service">
-                <option value="AC Cleaning">Aircon Cleaning / Repair</option>
-                <option value="Carpentry">Carpentry & Furniture</option>
-                <option value="Electrical">Electrical Services</option>
-                <option value="Plumbing">Plumbing Works</option>
-            </select>
-            <button type="submit" id="btn">Request Connection</button>
-        </form>
-        <div id="success">
-            <div style="font-size: 50px;">✅</div>
-            <h2 style="color: var(--primary);">Request Sent!</h2>
-            <p>Thank you. A Zconnects professional will call or text you shortly.</p>
-            <button onclick="location.reload()" style="background: #64748b;">New Request</button>
-        </div>
+
+<header><div class="logo">Zconnects</div></header>
+
+<section class="hero">
+    <span class="badge">MECH-ENGINEER MANAGED</span>
+    <h1>Professional Home Care</h1>
+    <p>Fast, reliable maintenance for your Cebu home or office.</p>
+</section>
+
+<div class="step-container">
+    <div class="step active" id="step1">
+        <h3>1. What do you need?</h3>
+        <div class="service-card" onclick="selectService('AC Cleaning', this)">❄️ Aircon Cleaning/Repair</div>
+        <div class="service-card" onclick="selectService('Carpentry', this)">🪚 Carpentry & Furniture</div>
+        <div class="service-card" onclick="selectService('Electrical', this)">⚡ Electrical Works</div>
+        <div class="service-card" onclick="selectService('Plumbing', this)">🚰 Plumbing Services</div>
     </div>
-    <script>
-        const APP_URL = 'https://script.google.com/macros/s/AKfycbzzG0D63zDXFR7sA0qZ9nGRS87eJqM9tXO7Pe1viT8Ewhh4YpvpoEFoyibFWgUOkT4/exec'; 
-        document.getElementById('zForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn');
-            btn.innerText = "Processing...";
-            btn.disabled = true;
-            const data = {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                service: document.getElementById('service').value
-            };
-            fetch(APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
-            .then(() => {
-                document.getElementById('zForm').style.display = 'none';
-                document.getElementById('success').style.display = 'block';
-            }).catch(() => {
-                alert("Connection error. Please check your internet.");
-                btn.disabled = false;
-                btn.innerText = "Request Connection";
-            });
+
+    <div class="step" id="step2">
+        <h3>2. Where should we go?</h3>
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="tel" id="phone" placeholder="Mobile Number (09XX)" required>
+        <button onclick="submitZForm()" id="submitBtn">Finish Booking</button>
+        <p style="text-align: center; font-size: 0.8rem; color: #64748b;" onclick="goBack(1)">← Change service</p>
+    </div>
+
+    <div class="step" id="step3" style="text-align: center;">
+        <div style="font-size: 60px;">✅</div>
+        <h2>Request Received!</h2>
+        <p>A Zconnects professional will call you within 15 minutes to confirm.</p>
+        <button onclick="location.reload()" style="background: #64748b;">Home</button>
+    </div>
+</div>
+
+<script>
+    const APP_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // Keep your current URL!
+    let selectedService = '';
+
+    function selectService(service, el) {
+        selectedService = service;
+        document.querySelectorAll('.service-card').forEach(card => card.classList.remove('selected'));
+        el.classList.add('selected');
+        setTimeout(() => {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+        }, 300);
+    }
+
+    function goBack(step) {
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step1').classList.add('active');
+    }
+
+    function submitZForm() {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const btn = document.getElementById('submitBtn');
+
+        if(!name || !phone) { alert("Please fill in your details."); return; }
+        
+        btn.innerText = "Connecting...";
+        btn.disabled = true;
+
+        fetch(APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({ name, phone, service: selectedService })
+        }).then(() => {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
         });
-    </script>
+    }
+</script>
 </body>
 </html>
