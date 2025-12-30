@@ -2,107 +2,134 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zconnects | Pro Maintenance Cebu</title>
+    <title>Zconnects | Engineering-Led Home Maintenance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --accent: #3b82f6; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
-        header { background: white; padding: 1.5rem; text-align: center; border-bottom: 2px solid #e2e8f0; }
-        .logo { font-size: 2.2rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        :root { --primary: #2563eb; --dark: #0f172a; --accent: #3b82f6; --glass: rgba(255, 255, 255, 0.8); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #fdfdfd; color: var(--dark); scroll-behavior: smooth; }
         
+        /* Navigation & Glassmorphism */
+        nav { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(10px); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        .nav-links a { text-decoration: none; color: var(--dark); margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
+
         /* Hero Section */
-        .hero { text-align: center; padding: 3rem 1rem; background: white; }
-        .hero h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .hero p { color: #64748b; font-size: 1rem; margin-bottom: 2rem; }
+        .hero { padding: 100px 5%; text-align: center; background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); }
+        .hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 1.5rem; font-weight: 800; }
+        .hero span { color: var(--primary); }
+        .hero p { font-size: 1.2rem; color: #64748b; max-width: 700px; margin: 0 auto 2.5rem; }
+        .cta-main { background: var(--primary); color: white; padding: 18px 40px; border-radius: 50px; font-weight: 700; border: none; cursor: pointer; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); transition: 0.3s; }
+        .cta-main:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3); }
 
-        /* Navigation Steps */
-        .step-container { max-width: 450px; margin: -2rem auto 4rem; padding: 2rem; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .step { display: none; }
-        .step.active { display: block; animation: fadeIn 0.4s; }
+        /* About Section */
+        .about { padding: 80px 5%; background: white; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 50px; }
+        .about-card { padding: 30px; border-radius: 20px; background: #f8fafc; border: 1px solid #f1f5f9; }
+        .about-card h3 { color: var(--primary); margin-top: 0; }
 
-        .service-card { border: 2px solid #e2e8f0; padding: 1rem; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
-        .service-card:hover { border-color: var(--primary); background: #eff6ff; }
-        .service-card.selected { border-color: var(--primary); background: #eff6ff; font-weight: bold; }
+        /* The Modal (Booking Form) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 2000; backdrop-filter: blur(5px); }
+        .modal-content { background: white; width: 90%; max-width: 450px; margin: 50px auto; padding: 40px; border-radius: 24px; position: relative; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-btn { position: absolute; right: 20px; top: 20px; font-size: 24px; cursor: pointer; }
 
-        input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 8px; border: 1.5px solid #e2e8f0; box-sizing: border-box; font-size: 1rem; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
-        
-        .badge { display: inline-block; padding: 4px 12px; background: #dcfce7; color: #166534; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input, select, .modal-btn { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-size: 1rem; }
+        .modal-btn { background: var(--primary); color: white; border: none; font-weight: 700; cursor: pointer; }
+
+        footer { padding: 50px 5%; text-align: center; background: var(--dark); color: white; }
     </style>
 </head>
 <body>
 
-<header><div class="logo">Zconnects</div></header>
+<nav>
+    <div class="logo">Zconnects.</div>
+    <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#mission">Mission</a>
+        <button onclick="openModal()" style="background:none; border: 1px solid var(--primary); color: var(--primary); padding: 8px 20px; border-radius: 50px; font-weight:600; cursor:pointer; margin-left:15px;">Book Now</button>
+    </div>
+</nav>
 
 <section class="hero">
-    <span class="badge">MECH-ENGINEER MANAGED</span>
-    <h1>Professional Home Care</h1>
-    <p>Fast, reliable maintenance for your Cebu home or office.</p>
+    <p style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: var(--primary); margin-bottom: 10px;">Engineering Excellence</p>
+    <h1>Cebu’s Most <span>Reliable</span><br>Technical Partners.</h1>
+    <p>We bridge the gap between skilled technicians and homeowners with the precision of licensed mechanical engineering.</p>
+    <button class="cta-main" onclick="openModal()">Start Your Booking</button>
 </section>
 
-<div class="step-container">
-    <div class="step active" id="step1">
-        <h3>1. What do you need?</h3>
-        <div class="service-card" onclick="selectService('AC Cleaning', this)">❄️ Aircon Cleaning/Repair</div>
-        <div class="service-card" onclick="selectService('Carpentry', this)">🪚 Carpentry & Furniture</div>
-        <div class="service-card" onclick="selectService('Electrical', this)">⚡ Electrical Works</div>
-        <div class="service-card" onclick="selectService('Plumbing', this)">🚰 Plumbing Services</div>
+<section id="about" class="about">
+    <h2 style="text-align: center; font-size: 2.5rem;">The Zconnects Standard</h2>
+    <div class="grid">
+        <div class="about-card">
+            <h3>Who We Are</h3>
+            <p>Founded by a Licensed Mechanical Engineer, Zconnects was born from a need for professional, honest, and high-quality home maintenance in Cebu. We don't just "fix"—we engineer solutions.</p>
+        </div>
+        <div class="about-card" id="mission">
+            <h3>Our Mission</h3>
+            <p>To provide every Cebuano household with access to verified, professional, and engineer-vetted maintenance services that prioritize safety and long-term reliability.</p>
+        </div>
+        <div class="about-card">
+            <h3>Our Vision</h3>
+            <p>To be the gold standard of technical services in the Philippines, fostering a community of world-class technicians empowered by modern technology.</p>
+        </div>
     </div>
+</section>
 
-    <div class="step" id="step2">
-        <h3>2. Where should we go?</h3>
-        <input type="text" id="name" placeholder="Your Name" required>
-        <input type="tel" id="phone" placeholder="Mobile Number (09XX)" required>
-        <button onclick="submitZForm()" id="submitBtn">Finish Booking</button>
-        <p style="text-align: center; font-size: 0.8rem; color: #64748b;" onclick="goBack(1)">← Change service</p>
-    </div>
-
-    <div class="step" id="step3" style="text-align: center;">
-        <div style="font-size: 60px;">✅</div>
-        <h2>Request Received!</h2>
-        <p>A Zconnects professional will call you within 15 minutes to confirm.</p>
-        <button onclick="location.reload()" style="background: #64748b;">Home</button>
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 style="margin-top: 0;">Request a Pro</h2>
+        <p style="color: #64748b; margin-bottom: 25px;">Fill in your details and we'll handle the rest.</p>
+        
+        <form id="zForm">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="tel" id="phone" placeholder="Mobile Number (e.g. 0917...)" required>
+            <select id="service">
+                <option value="AC Cleaning">Aircon Cleaning / Repair</option>
+                <option value="Carpentry">Carpentry & Furniture</option>
+                <option value="Electrical">Electrical Services</option>
+                <option value="Plumbing">Plumbing Works</option>
+            </select>
+            <button type="submit" class="modal-btn" id="submitBtn">Connect to a Pro</button>
+        </form>
+        <div id="success" style="display:none; text-align: center;">
+            <div style="font-size: 50px;">✅</div>
+            <h3>Request Sent!</h3>
+            <p>Check your phone. A Zconnects pro will contact you in 15 minutes.</p>
+            <button onclick="closeModal()" class="modal-btn" style="background:#64748b;">Close</button>
+        </div>
     </div>
 </div>
 
+<footer>
+    <div class="logo" style="color: white; margin-bottom: 20px;">Zconnects.</div>
+    <p>© 2026 Zconnects Cebu. Engineer-Managed Maintenance.</p>
+</footer>
+
 <script>
-    const APP_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // Keep your current URL!
-    let selectedService = '';
+    const APP_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // Keep your working URL
 
-    function selectService(service, el) {
-        selectedService = service;
-        document.querySelectorAll('.service-card').forEach(card => card.classList.remove('selected'));
-        el.classList.add('selected');
-        setTimeout(() => {
-            document.getElementById('step1').classList.remove('active');
-            document.getElementById('step2').classList.add('active');
-        }, 300);
-    }
+    function openModal() { document.getElementById('bookingModal').style.display = 'block'; }
+    function closeModal() { document.getElementById('bookingModal').style.display = 'none'; location.reload(); }
 
-    function goBack(step) {
-        document.getElementById('step2').classList.remove('active');
-        document.getElementById('step1').classList.add('active');
-    }
-
-    function submitZForm() {
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
+    document.getElementById('zForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         const btn = document.getElementById('submitBtn');
-
-        if(!name || !phone) { alert("Please fill in your details."); return; }
-        
-        btn.innerText = "Connecting...";
+        btn.innerText = "Processing...";
         btn.disabled = true;
 
-        fetch(APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({ name, phone, service: selectedService })
-        }).then(() => {
-            document.getElementById('step2').classList.remove('active');
-            document.getElementById('step3').classList.add('active');
+        const data = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            service: document.getElementById('service').value
+        };
+
+        fetch(APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
+        .then(() => {
+            document.getElementById('zForm').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
         });
-    }
+    });
 </script>
 </body>
 </html>
