@@ -3,177 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zconnects | Cebu's Engineer-Led Marketplace</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Zconnects | Engineering-Led Service Directory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --shopee-orange: #ee4d2d; --primary: #2563eb; --dark: #0f172a; --bg: #f5f5f5; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--dark); scroll-behavior: smooth; }
+        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; }
         
-        /* Shopee-Style Header */
-        header { background: linear-gradient(-180deg,#f53d2d,#ff6633); padding: 15px 5%; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -1px; cursor: pointer; }
-        .search-bar { background: white; border-radius: 4px; padding: 10px; display: flex; align-items: center; margin-top: 12px; }
-        .search-bar input { border: none; width: 100%; outline: none; font-size: 0.9rem; font-family: inherit; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); scroll-behavior: smooth; }
 
-        /* Premium Hero Section */
-        .hero { background: white; padding: 40px 5%; text-align: center; border-bottom: 4px solid var(--shopee-orange); }
-        .hero h1 { font-size: 2rem; margin: 0; font-weight: 800; line-height: 1.2; }
-        .hero h1 span { color: var(--shopee-orange); }
-        .hero p { color: #64748b; font-size: 0.95rem; margin-top: 10px; }
+        /* Premium Header */
+        header { background: var(--white); padding: 15px 6%; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
+        .header-container { display: flex; flex-direction: column; gap: 15px; }
+        .logo-row { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: var(--navy); }
+        .logo span { color: var(--primary); }
 
-        /* Shopee Category Slider */
-        .section-title { padding: 20px 5% 10px; font-weight: 800; color: #444; text-transform: uppercase; font-size: 0.75rem; display: flex; justify-content: space-between; }
-        .categories { display: flex; overflow-x: auto; padding: 15px 5%; gap: 20px; background: white; scrollbar-width: none; }
-        .cat-item { text-align: center; min-width: 75px; cursor: pointer; transition: 0.2s; }
-        .cat-item:hover { transform: translateY(-3px); }
-        .cat-icon { width: 50px; height: 50px; background: #fff1ee; border-radius: 16px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
-        .cat-label { font-size: 0.75rem; font-weight: 600; color: #333; }
+        /* Functional Search Bar */
+        .search-container { position: relative; background: #f1f5f9; border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; border: 1px solid transparent; transition: 0.3s; }
+        .search-container:focus-within { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .search-container input { border: none; background: transparent; width: 100%; outline: none; font-size: 0.95rem; font-family: inherit; color: var(--navy); }
 
-        /* Marketplace Service Grid */
-        .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 5%; }
-        .service-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 12px rgba(0,0,0,0.05); transition: 0.2s; position: relative; cursor: pointer; }
-        .service-card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .service-img { width: 100%; height: 140px; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
-        .service-info { padding: 12px; }
-        .service-name { font-size: 0.85rem; height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-weight: 600; line-height: 1.4; }
-        .service-price { color: var(--shopee-orange); font-weight: 800; font-size: 1.1rem; margin: 8px 0; }
-        .service-stats { font-size: 0.7rem; color: #888; display: flex; justify-content: space-between; }
-        .eng-tag { position: absolute; top: 8px; left: 8px; background: var(--primary); color: white; font-size: 0.6rem; padding: 3px 8px; border-radius: 4px; font-weight: 800; }
+        /* Hero / About Segment */
+        .hero { padding: 40px 6%; background: var(--white); text-align: left; }
+        .hero h1 { font-size: 2.2rem; margin: 0; font-weight: 800; color: var(--navy); line-height: 1.1; }
+        .hero p { color: var(--slate); font-size: 1rem; margin-top: 12px; max-width: 500px; line-height: 1.6; }
 
-        /* Holistic About Us Section */
-        .about-section { background: white; padding: 50px 5%; margin-top: 20px; border-top: 1px solid #eee; }
-        .about-grid { display: grid; gap: 25px; }
-        .about-card { padding: 25px; border-radius: 16px; background: #f8fafc; border: 1px solid #f1f5f9; }
-        .about-card h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; }
-        .about-card p { font-size: 0.9rem; color: #475569; line-height: 1.6; }
-
-        /* World-Class Booking Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: flex-end; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 30px 5% 50px; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        /* Categories */
+        .section-header { padding: 30px 6% 15px; font-weight: 700; color: var(--navy); font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .section-header::after { content: ""; height: 1px; background: #e2e8f0; flex-grow: 1; }
         
-        .modal h2 { font-size: 1.4rem; color: var(--shopee-orange); margin-bottom: 5px; }
-        .modal p { color: #64748b; font-size: 0.9rem; margin-bottom: 25px; }
-        input, .buy-btn { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 8px; border: 1.5px solid #e2e8f0; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
-        .buy-btn { background: var(--shopee-orange); color: white; border: none; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 #c43b22; }
-        .buy-btn:active { transform: translateY(2px); box-shadow: none; }
+        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 6%; }
+        .cat-box { background: var(--white); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid #f1f5f9; transition: 0.3s; cursor: pointer; }
+        .cat-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .cat-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
+        .cat-label { font-size: 0.75rem; font-weight: 600; color: var(--slate); }
 
-        footer { background: var(--dark); color: white; padding: 40px 5%; text-align: center; font-size: 0.8rem; }
-        .floating-cta { position: fixed; bottom: 20px; right: 20px; background: var(--shopee-orange); color: white; padding: 15px 25px; border-radius: 50px; font-weight: 800; box-shadow: 0 10px 20px rgba(238, 77, 45, 0.3); border: none; cursor: pointer; z-index: 900; }
+        /* Professional Service Cards */
+        .service-container { padding: 20px 6%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .service-card { background: var(--white); border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; gap: 12px; position: relative; }
+        .service-card:hover { border-color: var(--primary); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05); }
+        .badge { position: absolute; top: 20px; right: 20px; background: #dcfce7; color: #166534; font-size: 0.65rem; padding: 4px 10px; border-radius: 50px; font-weight: 700; text-transform: uppercase; }
+        
+        .service-icon-large { font-size: 2.5rem; margin-bottom: 5px; }
+        .service-name { font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--navy); line-height: 1.3; }
+        .service-desc { font-size: 0.85rem; color: var(--slate); line-height: 1.5; margin: 0; }
+        .service-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 15px; border-top: 1px solid #f1f5f9; }
+        .price { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+        .book-btn-mini { background: var(--navy); color: var(--white); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+
+        /* Modal Overlay */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal-content { background: var(--white); width: 90%; max-width: 400px; padding: 35px; border-radius: 24px; animation: pop 0.3s ease; }
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        input, .submit-btn { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
+        input:focus { border-color: var(--primary); outline: none; }
+        .submit-btn { background: var(--primary); color: var(--white); border: none; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .submit-btn:hover { background: var(--navy); }
+
+        footer { background: var(--navy); color: #94a3b8; padding: 60px 6%; text-align: center; font-size: 0.85rem; line-height: 1.6; }
+        .engineer-sig { color: var(--white); font-weight: 700; display: block; margin-top: 10px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="header-top">
-        <div class="logo" onclick="window.scrollTo(0,0)">Zconnects</div>
-        <div style="font-size: 1.2rem;">🛒</div>
-    </div>
-    <div class="search-bar">
-        <input type="text" placeholder="Search for Engineer-Vetted Pros...">
+    <div class="header-container">
+        <div class="logo-row">
+            <div class="logo">Z<span>connects</span></div>
+            <div style="font-weight: 600; font-size: 0.8rem; color: var(--slate);">CEBU CITY</div>
+        </div>
+        <div class="search-container">
+            <input type="text" id="serviceSearch" onkeyup="filterServices()" placeholder="Search services (e.g. Aircon, Electrical)...">
+        </div>
     </div>
 </header>
 
 <section class="hero">
-    <div style="font-size: 0.7rem; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase;">Verified in Cebu</div>
-    <h1>Expert Care. <span>Shopee Ease.</span></h1>
-    <p>Premium maintenance by Licensed Mechanical Engineers.</p>
+    <h1>Engineering Standard<br>Maintenance.</h1>
+    <p>Professional technical solutions managed by a Licensed Mechanical Engineer. Quality service without the clutter.</p>
 </section>
 
-<div class="section-title">Shop by Category <span style="color: var(--shopee-orange)">See All ></span></div>
-<div class="categories">
-    <div class="cat-item" onclick="openModal('AC Cleaning')"><div class="cat-icon">❄️</div><div class="cat-label">Aircon</div></div>
-    <div class="cat-item" onclick="openModal('Carpentry')"><div class="cat-icon">🪚</div><div class="cat-label">Furniture</div></div>
-    <div class="cat-item" onclick="openModal('Electrical')"><div class="cat-icon">⚡</div><div class="cat-label">Electric</div></div>
-    <div class="cat-item" onclick="openModal('Plumbing')"><div class="cat-icon">🚰</div><div class="cat-label">Plumbing</div></div>
-    <div class="cat-item" onclick="openModal('General Repair')"><div class="cat-icon">🛠️</div><div class="cat-label">Handyman</div></div>
+<div class="section-header">Service Categories</div>
+<div class="category-grid">
+    <div class="cat-box" onclick="setSearch('Aircon')">
+        <span class="cat-icon">❄️</span><span class="cat-label">Aircon</span>
+    </div>
+    <div class="cat-box" onclick="setSearch('Electrical')">
+        <span class="cat-icon">⚡</span><span class="cat-label">Electric</span>
+    </div>
+    <div class="cat-box" onclick="setSearch('Plumbing')">
+        <span class="cat-icon">🚰</span><span class="cat-label">Plumb</span>
+    </div>
+    <div class="cat-box" onclick="setSearch('')">
+        <span class="cat-icon">🛠️</span><span class="cat-label">All</span>
+    </div>
 </div>
 
-<div class="section-title">Hot Deals for You</div>
-<div class="service-grid">
+<div class="section-header">Available Services</div>
+<div class="service-container" id="serviceList">
     <div class="service-card" onclick="openModal('AC Cleaning')">
-        <div class="eng-tag">ENGINEER-VETTED</div>
-        <div class="service-img">❄️</div>
-        <div class="service-info">
-            <div class="service-name">Professional Split-Type AC Cleaning + Checklist</div>
-            <div class="service-price">₱1,200</div>
-            <div class="service-stats"><span>4.9 ★</span><span>1.2k+ Sold</span></div>
+        <span class="badge">Verified</span>
+        <div class="service-icon-large">❄️</div>
+        <p class="service-name">Professional Split-Type AC Cleaning</p>
+        <p class="service-desc">Complete chemical cleaning including drain flushing and engineer health check.</p>
+        <div class="service-footer">
+            <span class="price">₱1,200</span>
+            <button class="book-btn-mini">Book Now</button>
         </div>
     </div>
-    <div class="service-card" onclick="openModal('Electrical')">
-        <div class="service-img">⚡</div>
-        <div class="service-info">
-            <div class="service-name">Complete Home Electrical Safety Inspection</div>
-            <div class="service-price">₱850</div>
-            <div class="service-stats"><span>5.0 ★</span><span>842 Sold</span></div>
+
+    <div class="service-card" onclick="openModal('Electrical Safety')">
+        <div class="service-icon-large">⚡</div>
+        <p class="service-name">Home Electrical Safety Audit</p>
+        <p class="service-desc">Full circuit testing, grounding check, and load analysis for your peace of mind.</p>
+        <div class="service-footer">
+            <span class="price">₱850</span>
+            <button class="book-btn-mini">Book Now</button>
+        </div>
+    </div>
+
+    <div class="service-card" onclick="openModal('Plumbing Repair')">
+        <div class="service-icon-large">🚰</div>
+        <p class="service-name">Emergency Plumbing & Leak Fix</p>
+        <p class="service-desc">Rapid response for clogged drains, pipe leaks, and fixture installations.</p>
+        <div class="service-footer">
+            <span class="price">₱500+</span>
+            <button class="book-btn-mini">Book Now</button>
         </div>
     </div>
 </div>
-
-<section class="about-section" id="about">
-    <h2 style="text-align: center; margin-bottom: 30px;">The Zconnects Standard</h2>
-    <div class="about-grid">
-        <div class="about-card">
-            <h3>Who We Are</h3>
-            <p>Founded by a Licensed Mechanical Engineer, Zconnects bridges the gap between expert technicians and Cebuano homeowners.</p>
-        </div>
-        <div class="about-card">
-            <h3>Our Mission</h3>
-            <p>To provide high-quality, engineer-vetted home services with transparent pricing and hotel-grade reliability.</p>
-        </div>
-    </div>
-</section>
-
-<button class="floating-cta" onclick="openModal('General Help')">Book a Pro Now</button>
 
 <div id="bookingModal" class="modal">
     <div class="modal-content">
-        <div style="width: 40px; height: 5px; background: #ddd; border-radius: 10px; margin: 0 auto 20px;"></div>
-        <h2 id="modalTitle">Check Out Service</h2>
-        <p>A verified technician will call you within 15 minutes.</p>
+        <h2 id="modalTitle" style="margin-top: 0;">Request Service</h2>
+        <p style="color: var(--slate); margin-bottom: 25px;">Provide your contact details. Our engineer will call you in 15 minutes.</p>
         
         <form id="zForm">
-            <input type="text" id="name" placeholder="Enter Full Name" required>
+            <input type="text" id="name" placeholder="Your Full Name" required>
             <input type="tel" id="phone" placeholder="Mobile Number (09XXXXXXXXX)" required>
-            <button type="submit" class="buy-btn" id="submitBtn">Place Booking</button>
+            <button type="submit" class="submit-btn" id="submitBtn">Confirm Request</button>
         </form>
 
-        <div id="success" style="display:none; text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
-            <h3 style="color: var(--primary);">Order Placed!</h3>
-            <p>Check your phone. Our engineer is matching you with a pro now.</p>
-            <button onclick="closeModal()" class="buy-btn" style="background: #64748b; box-shadow: 0 4px 0 #475569;">Back to Home</button>
+        <div id="success" style="display:none; text-align: center; padding: 10px 0;">
+            <div style="font-size: 50px; margin-bottom: 15px;">✅</div>
+            <h3 style="color: var(--navy);">Request Sent</h3>
+            <p>Our team has been notified. We will contact you shortly.</p>
+            <button onclick="closeModal()" class="submit-btn" style="background: var(--navy);">Close</button>
         </div>
     </div>
 </div>
 
 <footer>
-    <div class="logo" style="margin-bottom: 15px;">Zconnects.</div>
-    <p>© 2026 Zconnects Cebu. All Rights Reserved.<br>Licensed Mechanical Engineer Managed.</p>
+    <div class="logo" style="color: var(--white); margin-bottom: 20px;">Zconnects.</div>
+    <p>Bridging the gap between expert technicians and Cebuano homeowners with technical precision.</p>
+    <span class="engineer-sig">Jasper Jubay, Licensed Mechanical Engineer</span>
+    <p style="margin-top: 30px; font-size: 0.75rem; opacity: 0.5;">© 2026 Zconnects Cebu. All Rights Reserved.</p>
 </footer>
 
 <script>
-    // THE ULTIMATE SECRET: Update the link below with your Apps Script URL
     const APP_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; 
     let selectedService = '';
 
+    // Search/Filter Functionality
+    function filterServices() {
+        let input = document.getElementById('serviceSearch').value.toLowerCase();
+        let cards = document.getElementsByClassName('service-card');
+        
+        for (let i = 0; i < cards.length; i++) {
+            let name = cards[i].querySelector('.service-name').innerText.toLowerCase();
+            let desc = cards[i].querySelector('.service-desc').innerText.toLowerCase();
+            if (name.includes(input) || desc.includes(input)) {
+                cards[i].style.display = "flex";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+
+    // Helper for category buttons
+    function setSearch(term) {
+        document.getElementById('serviceSearch').value = term;
+        filterServices();
+    }
+
     function openModal(service) {
         selectedService = service;
-        document.getElementById('modalTitle').innerText = "Check Out: " + service;
+        document.getElementById('modalTitle').innerText = service;
         document.getElementById('bookingModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         document.getElementById('bookingModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
         if(document.getElementById('zForm').style.display === 'none') {
             location.reload();
         }
     }
 
-    // Close modal if user clicks outside content
     window.onclick = function(event) {
         if (event.target == document.getElementById('bookingModal')) { closeModal(); }
     }
@@ -181,7 +206,7 @@
     document.getElementById('zForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.innerText = "Processing Order...";
+        btn.innerText = "Dispatching...";
         btn.disabled = true;
 
         fetch(APP_URL, {
@@ -195,10 +220,6 @@
         }).then(() => {
             document.getElementById('zForm').style.display = 'none';
             document.getElementById('success').style.display = 'block';
-        }).catch(() => {
-            alert("Error connecting to server. Please check your data.");
-            btn.innerText = "Place Booking";
-            btn.disabled = false;
         });
     });
 </script>
