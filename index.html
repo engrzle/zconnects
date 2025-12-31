@@ -371,31 +371,45 @@
         element.querySelector('input').checked = true;
     }
 
-    document.getElementById('quoteForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "Dispatching Technical Request...";
-        btn.disabled = true;
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const photoFile = document.getElementById('projPhotos').files[0];
+    
+    btn.innerText = "Dispatching Technical Request...";
+    btn.disabled = true;
 
-        const data = {
-            name: document.getElementById('custName').value,
-            phone: document.getElementById('custPhone').value,
-            email: document.getElementById('custEmail').value,
-            location: document.getElementById('custLocation').value,
-            category: document.getElementById('serviceCat').value,
-            urgency: document.querySelector('input[name="urgency"]:checked').value,
-            description: document.getElementById('projDesc').value
-        };
-
-        fetch(APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(data)
-        }).then(() => {
-            document.getElementById('quoteForm').style.display = 'none';
-            document.getElementById('formSuccess').style.display = 'block';
-        });
+    // Helper to convert image to Base64
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
     });
+
+    const data = {
+        name: document.getElementById('custName').value,
+        phone: document.getElementById('custPhone').value,
+        email: document.getElementById('custEmail').value,
+        location: document.getElementById('custLocation').value,
+        category: document.getElementById('serviceCat').value,
+        urgency: document.querySelector('input[name="urgency"]:checked').value,
+        description: document.getElementById('projDesc').value,
+        image: photoFile ? await toBase64(photoFile) : null
+    };
+
+    fetch(APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }).then(() => {
+        document.getElementById('quoteForm').style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+    }).catch(err => {
+        alert("Error sending request. Please check your connection.");
+        btn.disabled = false;
+        btn.innerText = "Submit Secure Request";
+    });
+});
 </script>
 </body>
 </html>
