@@ -283,7 +283,7 @@
 </footer>
 
 <script>
-    const APP_URL = 'https://script.google.com/macros/s/AKfycby3SgWL8KhEbMyTcQoskDKc7H_ygVoWIsxjHqoCtdKlbZI-Z2JDwH2VUQqRbpq4FndP1Q/exec'; 
+    const APP_URL = 'https://script.google.com/macros/s/AKfycbwfZc1tg2dO82JC41jv6I-Tg-bVbQx571ZOH8oVPC0cGWnUhCbUFhDTZydK6lhrOLZfWA/exec'; 
 
     function filterServices() {
         let input = document.getElementById('serviceSearch').value.toLowerCase();
@@ -352,28 +352,27 @@
                 image: photoFile ? await toBase64(photoFile) : null
             };
 
-            await fetch(APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(data)
-            });
-
-            // Success UI
-            document.getElementById('quoteForm').style.display = 'none';
-            document.getElementById('form-title').style.display = 'none';
-            document.getElementById('formSuccess').style.display = 'block';
-            window.scrollTo({ top: document.getElementById('quote-form').offsetTop - 100, behavior: 'smooth' });
-
-        } catch (err) {
-            console.error(err);
-            alert("Connection error. Please try again.");
-            btn.disabled = false;
-            btnSpinner.style.display = 'none';
-            btnText.innerText = "Submit Secure Request";
-        }
-    });
+      // Ensure data is sent as a clean JSON string
+fetch(APP_URL, {
+    method: 'POST',
+    mode: 'no-cors', 
+    headers: {
+        'Content-Type': 'text/plain' // Must use text/plain to avoid CORS preflight issues with GAS
+    },
+    body: JSON.stringify(data)
+}).then(() => {
+    // Success UI
+    document.getElementById('quoteForm').style.display = 'none';
+    document.getElementById('form-title').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+    window.scrollTo({ top: document.getElementById('quote-form').offsetTop - 100, behavior: 'smooth' });
+}).catch(err => {
+    console.error("Fetch Error:", err);
+    alert("Connection error. Please try again.");
+    btn.disabled = false;
+    btnSpinner.style.display = 'none';
+    btnText.innerText = "Submit Secure Request";
+});
 </script>
 
 </body>
