@@ -3,223 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zconnects | Engineering-Led Service Directory</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Zconnects | Engineering-Led Service Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; }
+        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; }
         
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); scroll-behavior: smooth; }
 
         /* Premium Header */
-        header { background: var(--white); padding: 15px 6%; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
-        .header-container { display: flex; flex-direction: column; gap: 15px; }
-        .logo-row { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: var(--navy); }
+        header { background: var(--white); padding: 20px 6%; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
+        .header-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .logo { font-size: 2.2rem; font-weight: 900; letter-spacing: -1.5px; color: var(--navy); margin-bottom: 5px; }
         .logo span { color: var(--primary); }
 
-        /* Functional Search Bar */
-        .search-container { position: relative; background: #f1f5f9; border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; border: 1px solid transparent; transition: 0.3s; }
-        .search-container:focus-within { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .search-container input { border: none; background: transparent; width: 100%; outline: none; font-size: 0.95rem; font-family: inherit; color: var(--navy); }
+        /* Professional Search Bar (Sized Correct) */
+        .search-container { position: relative; background: #f1f5f9; border-radius: 50px; padding: 10px 20px; display: flex; align-items: center; border: 1.5px solid transparent; transition: 0.3s; width: 100%; max-width: 500px; }
+        .search-container:focus-within { border-color: var(--primary); background: var(--white); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1); }
+        .search-container input { border: none; background: transparent; width: 100%; outline: none; font-size: 1rem; font-family: inherit; color: var(--navy); }
 
         /* Hero / About Segment */
-        .hero { padding: 40px 6%; background: var(--white); text-align: left; }
-        .hero h1 { font-size: 2.2rem; margin: 0; font-weight: 800; color: var(--navy); line-height: 1.1; }
-        .hero p { color: var(--slate); font-size: 1rem; margin-top: 12px; max-width: 500px; line-height: 1.6; }
+        .hero { padding: 80px 6% 60px; background: var(--white); text-align: center; border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 3rem; margin: 0; font-weight: 900; color: var(--navy); line-height: 1.1; letter-spacing: -1px; }
+        .hero h1 span { color: var(--primary); }
+        .hero p { color: var(--slate); font-size: 1.2rem; margin: 20px auto 0; max-width: 700px; line-height: 1.6; font-weight: 500; }
 
-        /* Categories */
-        .section-header { padding: 30px 6% 15px; font-weight: 700; color: var(--navy); font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
-        .section-header::after { content: ""; height: 1px; background: #e2e8f0; flex-grow: 1; }
+        /* Category Grid Organization */
+        .section-header { padding: 50px 6% 20px; font-weight: 800; color: var(--navy); font-size: 1.5rem; text-align: center; }
         
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 6%; }
-        .cat-box { background: var(--white); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid #f1f5f9; transition: 0.3s; cursor: pointer; }
-        .cat-box:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .cat-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
-        .cat-label { font-size: 0.75rem; font-weight: 600; color: var(--slate); }
-
-        /* Professional Service Cards */
-        .service-container { padding: 20px 6%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .service-card { background: var(--white); border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; gap: 12px; position: relative; }
-        .service-card:hover { border-color: var(--primary); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05); }
-        .badge { position: absolute; top: 20px; right: 20px; background: #dcfce7; color: #166534; font-size: 0.65rem; padding: 4px 10px; border-radius: 50px; font-weight: 700; text-transform: uppercase; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; padding: 20px 6% 60px; }
+        .category-card { background: var(--white); border-radius: 24px; padding: 30px; border: 1px solid var(--border); transition: 0.3s; position: relative; overflow: hidden; }
+        .category-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05); }
         
-        .service-icon-large { font-size: 2.5rem; margin-bottom: 5px; }
-        .service-name { font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--navy); line-height: 1.3; }
-        .service-desc { font-size: 0.85rem; color: var(--slate); line-height: 1.5; margin: 0; }
-        .service-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 15px; border-top: 1px solid #f1f5f9; }
-        .price { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
-        .book-btn-mini { background: var(--navy); color: var(--white); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+        .cat-icon-top { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+        .cat-title { font-size: 1.3rem; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+        .cat-intro { font-size: 0.9rem; color: var(--primary); font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .sub-service-list { list-style: none; padding: 0; margin: 0; }
+        .sub-service-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
+        .sub-service-item:last-child { border: none; }
+        .sub-service-item strong { font-size: 1rem; color: var(--navy); display: block; }
+        .sub-service-item p { font-size: 0.85rem; color: var(--slate); margin: 4px 0 0; line-height: 1.4; }
 
-        /* Modal Overlay */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-content { background: var(--white); width: 90%; max-width: 400px; padding: 35px; border-radius: 24px; animation: pop 0.3s ease; }
-        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        input, .submit-btn { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
+        /* World-Class Quote Form */
+        .quote-section { background: var(--navy); color: var(--white); padding: 80px 6%; }
+        .form-container { background: var(--white); color: var(--navy); max-width: 800px; margin: 0 auto; padding: 50px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); }
+        .form-container h2 { font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 40px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full { grid-column: span 2; }
+        label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; color: var(--slate); text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 14px 18px; border-radius: 12px; border: 1.5px solid var(--border); font-family: inherit; font-size: 1rem; box-sizing: border-box; }
         input:focus { border-color: var(--primary); outline: none; }
-        .submit-btn { background: var(--primary); color: var(--white); border: none; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .submit-btn:hover { background: var(--navy); }
+        
+        .radio-group { display: flex; gap: 15px; margin-top: 10px; }
+        .radio-option { flex: 1; text-align: center; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .radio-option input { display: none; }
+        
+        .submit-btn-large { width: 100%; background: var(--primary); color: white; padding: 20px; border-radius: 15px; border: none; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        .submit-btn-large:hover { background: #1d4ed8; transform: translateY(-2px); }
 
-        footer { background: var(--navy); color: #94a3b8; padding: 60px 6%; text-align: center; font-size: 0.85rem; line-height: 1.6; }
-        .engineer-sig { color: var(--white); font-weight: 700; display: block; margin-top: 10px; font-size: 0.9rem; }
+        /* Professional Contact Us Section */
+        .contact-info-footer { padding: 60px 6%; background: #f1f5f9; text-align: center; }
+        .contact-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin-top: 30px; }
+        .contact-item { max-width: 250px; }
+        .contact-item h4 { margin: 10px 0 5px; color: var(--navy); }
+        .contact-item p { color: var(--slate); font-size: 0.9rem; margin: 0; }
+
+        footer { background: var(--navy); color: #94a3b8; padding: 40px 6%; text-align: center; font-size: 0.85rem; }
+
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
 <header>
     <div class="header-container">
-        <div class="logo-row">
-            <div class="logo">Z<span>connects</span></div>
-            <div style="font-weight: 600; font-size: 0.8rem; color: var(--slate);">CEBU CITY</div>
-        </div>
+        <div class="logo">Z<span>connects</span></div>
         <div class="search-container">
-            <input type="text" id="serviceSearch" onkeyup="filterServices()" placeholder="Search services (e.g. Aircon, Electrical)...">
+            <input type="text" id="serviceSearch" onkeyup="filterServices()" placeholder="Search services (e.g. AC Cleaning, Leak Detection)...">
         </div>
     </div>
 </header>
 
 <section class="hero">
-    <h1>Engineering Standard<br>Maintenance.</h1>
-    <p>Professional technical solutions managed by a Licensed Mechanical Engineer. Quality service without the clutter.</p>
+    <h1>Engineering Standard<br><span>Maintenance.</span></h1>
+    <p>We provide high-load technical solutions for modern Cebuano properties. Expert technical oversight and hotel-grade precision—re-engineered for your peace of mind.</p>
 </section>
 
-<div class="section-header">Service Categories</div>
-<div class="category-grid">
-    <div class="cat-box" onclick="setSearch('Aircon')">
-        <span class="cat-icon">❄️</span><span class="cat-label">Aircon</span>
+<div class="section-header">Expert Service Catalog</div>
+
+<div class="services-grid" id="serviceList">
+    <div class="category-card" data-cat="HVAC">
+        <span class="cat-icon-top">❄️</span>
+        <div class="cat-intro">Comfort Engineering</div>
+        <div class="cat-title">HVAC & Cooling</div>
+        <div class="sub-service-list">
+            <div class="sub-service-item" onclick="openForm('AC Cleaning')">
+                <div><strong>AC Cleaning & Steam Wash</strong><p>Deep cleaning for window and split-types. Improves air quality and efficiency.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Freon Refill')">
+                <div><strong>Refrigerant & Freon Refilling</strong><p>Professional leak detection and recharging to restore cooling power.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Installation')">
+                <div><strong>System Installation & Relocation</strong><p>Expert setup for new units and professional transfer services.</p></div>
+            </div>
+        </div>
     </div>
-    <div class="cat-box" onclick="setSearch('Electrical')">
-        <span class="cat-icon">⚡</span><span class="cat-label">Electric</span>
+
+    <div class="category-card" data-cat="Plumbing">
+        <span class="cat-icon-top">🚰</span>
+        <div class="cat-intro">Flow Management</div>
+        <div class="cat-title">Plumbing & Sanitary</div>
+        <div class="sub-service-list">
+            <div class="sub-service-item" onclick="openForm('De-clogging')">
+                <div><strong>Emergency De-clogging</strong><p>Fast clearing of blocked sinks, toilets, and floor drains.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Leak Detection')">
+                <div><strong>Leak Detection & Pipe Repair</strong><p>Locating hidden leaks to prevent water waste and high bills.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Septic Service')">
+                <div><strong>Septic Tank (Pozo Negro)</strong><p>Professional siphoning and overflow maintenance.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Water Pump')">
+                <div><strong>Water Pump & Tank Maintenance</strong><p>Repair and calibration of overhead tanks and pump systems.</p></div>
+            </div>
+        </div>
     </div>
-    <div class="cat-box" onclick="setSearch('Plumbing')">
-        <span class="cat-icon">🚰</span><span class="cat-label">Plumb</span>
+
+    <div class="category-card" data-cat="Electrical">
+        <span class="cat-icon-top">⚡</span>
+        <div class="cat-intro">Power Safety</div>
+        <div class="cat-title">Electrical Services</div>
+        <div class="sub-service-list">
+            <div class="sub-service-item" onclick="openForm('Troubleshooting')">
+                <div><strong>Electrical Troubleshooting</strong><p>Identifying causes of power tripping and circuit overloads.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Lighting')">
+                <div><strong>Lighting & Fixture Installation</strong><p>LED upgrades and functional security lighting setup.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Wiring')">
+                <div><strong>Wiring & Outlet Upgrades</strong><p>Full rewiring services to meet modern safety standards.</p></div>
+            </div>
+        </div>
     </div>
-    <div class="cat-box" onclick="setSearch('')">
-        <span class="cat-icon">🛠️</span><span class="cat-label">All</span>
+
+    <div class="category-card" data-cat="Structural">
+        <span class="cat-icon-top">🏗️</span>
+        <div class="cat-intro">Property Protection</div>
+        <div class="cat-title">Structural & Finishing</div>
+        <div class="sub-service-list">
+            <div class="sub-service-item" onclick="openForm('Roofing')">
+                <div><strong>Roofing & Waterproofing</strong><p>Gutter maintenance and sealing to prepare for typhoon season.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Painting')">
+                <div><strong>Premium Painting Services</strong><p>Interior/exterior repainting using moisture-resistant finishes.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Tiling')">
+                <div><strong>Tiling & Masonry Works</strong><p>Repair of cracked tiles and bathroom flooring installations.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-card" data-cat="Tropical">
+        <span class="cat-icon-top">🌴</span>
+        <div class="cat-intro">Tropical Solutions</div>
+        <div class="cat-title">Specialized Services</div>
+        <div class="sub-service-list">
+            <div class="sub-service-item" onclick="openForm('Pest Control')">
+                <div><strong>Termite & Pest Control</strong><p>Targeted "Anay" treatments and preventive barriers.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Screens')">
+                <div><strong>Window Screen Repair</strong><p>Mesh screen installation to keep mosquitoes out.</p></div>
+            </div>
+            <div class="sub-service-item" onclick="openForm('Carpentry')">
+                <div><strong>Custom Carpentry</strong><p>Fixing warped door frames and moisture-damaged cabinets.</p></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="section-header">Available Services</div>
-<div class="service-container" id="serviceList">
-    <div class="service-card" onclick="openModal('AC Cleaning')">
-        <span class="badge">Verified</span>
-        <div class="service-icon-large">❄️</div>
-        <p class="service-name">Professional Split-Type AC Cleaning</p>
-        <p class="service-desc">Complete chemical cleaning including drain flushing and engineer health check.</p>
-        <div class="service-footer">
-            <span class="price">₱1,200</span>
-            <button class="book-btn-mini">Book Now</button>
-        </div>
-    </div>
-
-    <div class="service-card" onclick="openModal('Electrical Safety')">
-        <div class="service-icon-large">⚡</div>
-        <p class="service-name">Home Electrical Safety Audit</p>
-        <p class="service-desc">Full circuit testing, grounding check, and load analysis for your peace of mind.</p>
-        <div class="service-footer">
-            <span class="price">₱850</span>
-            <button class="book-btn-mini">Book Now</button>
-        </div>
-    </div>
-
-    <div class="service-card" onclick="openModal('Plumbing Repair')">
-        <div class="service-icon-large">🚰</div>
-        <p class="service-name">Emergency Plumbing & Leak Fix</p>
-        <p class="service-desc">Rapid response for clogged drains, pipe leaks, and fixture installations.</p>
-        <div class="service-footer">
-            <span class="price">₱500+</span>
-            <button class="book-btn-mini">Book Now</button>
-        </div>
-    </div>
-</div>
-
-<div id="bookingModal" class="modal">
-    <div class="modal-content">
-        <h2 id="modalTitle" style="margin-top: 0;">Request Service</h2>
-        <p style="color: var(--slate); margin-bottom: 25px;">Provide your contact details. Our engineer will call you in 15 minutes.</p>
-        
-        <form id="zForm">
-            <input type="text" id="name" placeholder="Your Full Name" required>
-            <input type="tel" id="phone" placeholder="Mobile Number (09XXXXXXXXX)" required>
-            <button type="submit" class="submit-btn" id="submitBtn">Confirm Request</button>
+<section id="quote-form" class="quote-section">
+    <div class="form-container">
+        <h2>Start Your Free Quote</h2>
+        <form id="quoteForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="custName" placeholder="Juan Dela Cruz" required>
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number (Viber Ready)</label>
+                    <input type="tel" id="custPhone" placeholder="09XXXXXXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="custEmail" placeholder="juan@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <select id="custLocation" required>
+                        <option value="">Select City/Town</option>
+                        <option value="Cebu City">Cebu City</option>
+                        <option value="Mandaue">Mandaue</option>
+                        <option value="Lapu-Lapu">Lapu-Lapu</option>
+                        <option value="Talisay">Talisay</option>
+                        <option value="Liloan">Liloan</option>
+                        <option value="Consolacion">Consolacion</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Service Category</label>
+                    <select id="serviceCat" required>
+                        <option value="">Choose Category</option>
+                        <option value="HVAC">HVAC & Cooling</option>
+                        <option value="Plumbing">Plumbing & Sanitary</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Structural">Structural & Finishing</option>
+                        <option value="Specialized">Specialized Tropical Services</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Urgency</label>
+                    <div class="radio-group">
+                        <label class="radio-option"><input type="radio" name="urgency" value="Standard" checked> Standard</label>
+                        <label class="radio-option"><input type="radio" name="urgency" value="Urgent"> Urgent</label>
+                        <label class="radio-option"><input type="radio" name="urgency" value="Emergency"> Emergency</label>
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <label>Project Description</label>
+                    <textarea id="projDesc" rows="4" placeholder="Please describe the problem or service you need..."></textarea>
+                </div>
+                <div class="form-group full">
+                    <label>Upload Photos (Help us quote faster)</label>
+                    <input type="file" id="projPhotos" accept="image/*">
+                </div>
+            </div>
+            <button type="submit" class="submit-btn-large" id="submitBtn">Get My Connection & Quote</button>
         </form>
-
-        <div id="success" style="display:none; text-align: center; padding: 10px 0;">
-            <div style="font-size: 50px; margin-bottom: 15px;">✅</div>
-            <h3 style="color: var(--navy);">Request Sent</h3>
-            <p>Our team has been notified. We will contact you shortly.</p>
-            <button onclick="closeModal()" class="submit-btn" style="background: var(--navy);">Close</button>
+        <div id="formSuccess" style="display:none; text-align: center; padding: 40px 0;">
+            <div style="font-size: 60px;">✅</div>
+            <h2>Request Dispatched!</h2>
+            <p>Our lead engineer has received your request. We will contact you via mobile or Viber within 15-30 minutes.</p>
+            <button onclick="location.reload()" class="submit-btn-large">New Request</button>
         </div>
     </div>
-</div>
+</section>
+
+<section class="contact-info-footer">
+    <h2 style="font-weight: 800;">Get in Touch with Our Experts</h2>
+    <p style="color: var(--slate);">Need a hand right away? Our team is ready to assist across Metro Cebu.</p>
+    
+    <div class="contact-grid">
+        <div class="contact-item">
+            <h4>📍 Service Area</h4>
+            <p>Metro Cebu (Cebu City, Mandaue, Lapu-Lapu, Talisay, and neighboring towns).</p>
+        </div>
+        <div class="contact-item">
+            <h4>⏰ Operating Hours</h4>
+            <p>Mon – Sat | 8:00 AM – 6:00 PM<br>(Emergency 24/7)</p>
+        </div>
+        <div class="contact-item">
+            <h4>📱 Mobile/Viber</h4>
+            <p>0917 XXX XXXX</p>
+        </div>
+        <div class="contact-item">
+            <h4>📧 Email</h4>
+            <p>support@zconnectscebu.com</p>
+        </div>
+    </div>
+</section>
 
 <footer>
-    <div class="logo" style="color: var(--white); margin-bottom: 20px;">Zconnects.</div>
+    <div class="logo" style="color: var(--white); font-size: 1.5rem;">Zconnects.</div>
     <p>Bridging the gap between expert technicians and Cebuano homeowners with technical precision.</p>
-    <span class="engineer-sig">Jasper Jubay, Licensed Mechanical Engineer</span>
-    <p style="margin-top: 30px; font-size: 0.75rem; opacity: 0.5;">© 2026 Zconnects Cebu. All Rights Reserved.</p>
+    <p style="margin-top: 20px; font-size: 0.75rem; opacity: 0.5;">© 2026 Zconnects Cebu. All Rights Reserved.</p>
 </footer>
 
 <script>
     const APP_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; 
-    let selectedService = '';
 
-    // Search/Filter Functionality
     function filterServices() {
         let input = document.getElementById('serviceSearch').value.toLowerCase();
-        let cards = document.getElementsByClassName('service-card');
-        
+        let cards = document.getElementsByClassName('category-card');
         for (let i = 0; i < cards.length; i++) {
-            let name = cards[i].querySelector('.service-name').innerText.toLowerCase();
-            let desc = cards[i].querySelector('.service-desc').innerText.toLowerCase();
-            if (name.includes(input) || desc.includes(input)) {
-                cards[i].style.display = "flex";
-            } else {
-                cards[i].style.display = "none";
-            }
+            let txt = cards[i].innerText.toLowerCase();
+            cards[i].style.display = txt.includes(input) ? "block" : "none";
         }
     }
 
-    // Helper for category buttons
-    function setSearch(term) {
-        document.getElementById('serviceSearch').value = term;
-        filterServices();
+    function openForm(serviceName) {
+        document.getElementById('quote-form').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('projDesc').value = "Inquiry regarding: " + serviceName + "\n";
     }
 
-    function openModal(service) {
-        selectedService = service;
-        document.getElementById('modalTitle').innerText = service;
-        document.getElementById('bookingModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('bookingModal').style.display = 'none';
-        if(document.getElementById('zForm').style.display === 'none') {
-            location.reload();
-        }
-    }
-
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('bookingModal')) { closeModal(); }
-    }
-
-    document.getElementById('zForm').addEventListener('submit', function(e) {
+    document.getElementById('quoteForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.innerText = "Dispatching...";
+        btn.innerText = "Processing Quote...";
         btn.disabled = true;
+
+        const data = {
+            name: document.getElementById('custName').value,
+            phone: document.getElementById('custPhone').value,
+            email: document.getElementById('custEmail').value,
+            location: document.getElementById('custLocation').value,
+            category: document.getElementById('serviceCat').value,
+            urgency: document.querySelector('input[name="urgency"]:checked').value,
+            description: document.getElementById('projDesc').value
+        };
 
         fetch(APP_URL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify({
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                service: selectedService
-            })
+            body: JSON.stringify(data)
         }).then(() => {
-            document.getElementById('zForm').style.display = 'none';
-            document.getElementById('success').style.display = 'block';
+            document.getElementById('quoteForm').style.display = 'none';
+            document.getElementById('formSuccess').style.display = 'block';
         });
     });
 </script>
