@@ -6,53 +6,40 @@
     <title>Zconnects | Engineering-Led Service Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --primary: #2563eb; 
-            --navy: #0f172a; 
-            --slate: #64748b; 
-            --light: #f8fafc; 
-            --white: #ffffff; 
-            --border: #e2e8f0; 
-            --success: #16a34a; 
-        }
+        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; }
         
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); scroll-behavior: smooth; }
 
-        /* Premium Header */
         header { background: var(--white); padding: 25px 6%; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03); }
         .header-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .logo { font-size: 2.8rem; font-weight: 900; letter-spacing: -2px; color: var(--navy); margin: 0; cursor: pointer; }
         .logo span { color: var(--primary); }
 
-        /* Search Bar */
         .search-container { position: relative; background: #f1f5f9; border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; border: 1.5px solid transparent; transition: 0.3s; width: 100%; max-width: 450px; }
         .search-container:focus-within { border-color: var(--primary); background: var(--white); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1); }
         .search-container input { border: none; background: transparent; width: 100%; outline: none; font-size: 1rem; font-family: inherit; color: var(--navy); }
 
-        /* Hero Section */
         .hero { padding: 100px 6% 80px; background: var(--white); text-align: center; border-bottom: 1px solid var(--border); }
         .hero .badge { display: inline-block; padding: 6px 16px; background: #eff6ff; color: var(--primary); border-radius: 50px; font-weight: 800; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
         .hero h1 { font-size: 3.5rem; margin: 0; font-weight: 900; color: var(--navy); line-height: 1.05; letter-spacing: -2px; }
         .hero h1 span { color: var(--primary); }
         .hero p { color: var(--slate); font-size: 1.25rem; margin: 25px auto 0; max-width: 650px; line-height: 1.6; font-weight: 500; }
 
-        /* Grid & Cards */
         .section-header { padding: 60px 6% 20px; font-weight: 800; color: var(--navy); font-size: 1.8rem; text-align: center; }
         .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; padding: 20px 6% 80px; }
         .category-card { background: var(--white); border-radius: 24px; padding: 35px; border: 1px solid var(--border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
         .category-card:hover { border-color: var(--primary); transform: translateY(-8px); box-shadow: 0 25px 50px rgba(15, 23, 42, 0.08); }
-        
+
         .cat-icon-top { font-size: 3rem; margin-bottom: 20px; display: block; }
         .cat-title { font-size: 1.4rem; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
         .cat-intro { font-size: 0.85rem; color: var(--primary); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1.5px; }
-        
+
         .sub-service-list { list-style: none; padding: 0; margin: 0; }
         .sub-service-item { padding: 18px; border-radius: 16px; border: 1.5px solid transparent; transition: 0.3s; cursor: pointer; margin-bottom: 8px; }
         .sub-service-item:hover { background: var(--light); border-color: var(--border); transform: scale(1.02); }
         .sub-service-item strong { font-size: 1.05rem; color: var(--navy); display: block; }
         .sub-service-item p { font-size: 0.88rem; color: var(--slate); margin: 6px 0 0; line-height: 1.5; }
 
-        /* Modal styling */
         .confirm-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; }
         .confirm-box { background: white; width: 90%; max-width: 400px; padding: 40px; border-radius: 30px; text-align: center; animation: popIn 0.3s ease; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -60,7 +47,6 @@
         .btn-yes { flex: 2; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; }
         .btn-no { flex: 1; background: #f1f5f9; color: var(--slate); border: none; padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
-        /* Form styling */
         .urgency-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .urgency-option { border: 2px solid var(--border); padding: 15px; border-radius: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .urgency-option input { display: none; }
@@ -75,7 +61,6 @@
         label { display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 10px; color: var(--slate); text-transform: uppercase; letter-spacing: 1px; }
         input, select, textarea { width: 100%; padding: 16px 20px; border-radius: 14px; border: 2px solid var(--border); font-family: inherit; font-size: 1rem; box-sizing: border-box; }
 
-        /* Submit Button & Spinner */
         .submit-btn-large { 
             width: 100%; background: var(--primary); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 30px; 
             display: flex; align-items: center; justify-content: center; gap: 12px;
@@ -104,7 +89,7 @@
     <div class="header-container">
         <h1 class="logo" onclick="location.reload()">Z<span>connects</span></h1>
         <div class="search-container">
-            <input type="text" id="serviceSearch" onkeyup="filterServices()" placeholder="Technical Search (e.g. AC, Leak)...">
+            <input type="text" id="serviceSearch" onkeyup="filterServices()" placeholder="Search (e.g. AC, Leak, Wiring)...">
         </div>
     </div>
 </header>
@@ -131,6 +116,7 @@
             </div>
         </div>
     </div>
+
     <div class="category-card">
         <span class="cat-icon-top">🚰</span>
         <div class="cat-intro">Flow Management</div>
@@ -144,19 +130,21 @@
             </div>
         </div>
     </div>
+
     <div class="category-card">
         <span class="cat-icon-top">⚡</span>
         <div class="cat-intro">Power Safety</div>
         <div class="cat-title">Electrical Services</div>
         <div class="sub-service-list">
             <div class="sub-service-item" onclick="promptBooking('Troubleshooting', 'Electrical')">
-                <strong>Electrical Troubleshooting</strong><p>Identifying root causes of failure.</p>
+                <strong>Electrical Troubleshooting</strong><p>Identifying root causes of power failure.</p>
             </div>
             <div class="sub-service-item" onclick="promptBooking('Lighting', 'Electrical')">
                 <strong>Lighting Installation</strong><p>Upgrading to energy-efficient LED.</p>
             </div>
         </div>
     </div>
+    
     <div class="category-card">
         <span class="cat-icon-top">🏗️</span>
         <div class="cat-intro">Property Protection</div>
@@ -164,6 +152,17 @@
         <div class="sub-service-list">
             <div class="sub-service-item" onclick="promptBooking('Waterproofing', 'Structural')">
                 <strong>Roofing & Waterproofing</strong><p>Sealing leaks for typhoon season.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-card">
+        <span class="cat-icon-top">🤝</span>
+        <div class="cat-intro">Custom Requests</div>
+        <div class="cat-title">Other Services</div>
+        <div class="sub-service-list">
+            <div class="sub-service-item" onclick="promptBooking('Custom Work', 'Specialized')">
+                <strong>Request Custom Work</strong><p>If your need isn't listed, our engineers can assist.</p>
             </div>
         </div>
     </div>
@@ -189,7 +188,8 @@
                     <div class="form-group"><label>Full Name</label><input type="text" id="custName" placeholder="Juan Dela Cruz" required></div>
                     <div class="form-group"><label>Mobile Number</label><input type="tel" id="custPhone" placeholder="09XXXXXXXXX" required></div>
                     <div class="form-group"><label>Email Address</label><input type="email" id="custEmail" placeholder="juan@email.com" required></div>
-                    <div class="form-group"><label>Location</label>
+                    <div class="form-group">
+                        <label>Location</label>
                         <select id="custLocation" required>
                             <option value="">Select City</option>
                             <option value="Cebu City">Cebu City</option>
@@ -199,16 +199,19 @@
                             <option value="Other">Other</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Service Category</label>
+                    <div class="form-group">
+                        <label>Service Category</label>
                         <select id="serviceCat" required>
                             <option value="">Choose Category</option>
                             <option value="HVAC">HVAC & Cooling</option>
                             <option value="Plumbing">Plumbing & Sanitary</option>
                             <option value="Electrical">Electrical</option>
                             <option value="Structural">Structural & Finishing</option>
+                            <option value="Specialized">Other / Specialized</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Urgency Level</label>
+                    <div class="form-group">
+                        <label>Urgency Level</label>
                         <div class="urgency-container">
                             <label class="urgency-option active" onclick="updateUrgency(this)">
                                 <input type="radio" name="urgency" value="Standard" checked><span class="label-title">Standard</span><span class="days-info">Within 2-3 Days</span>
@@ -222,7 +225,7 @@
                     <div class="form-group full"><label>Upload Photo (Optional)</label><input type="file" id="projPhotos" accept="image/*"></div>
                 </div>
                 <button type="submit" class="submit-btn-large" id="submitBtn">
-                    <div class="spinner" id="btnSpinner"></div><span id="btnText">Submit Technical Request</span>
+                    <div class="spinner" id="btnSpinner"></div><span id="btnText">Submit Secure Request</span>
                 </button>
             </form>
         </div>
@@ -238,7 +241,7 @@
                     <div class="step-item"><div class="step-number">2</div><p><strong>Verification Call:</strong> We will call you at your provided mobile number.</p></div>
                     <div class="step-item"><div class="step-number">3</div><p><strong>On-Site Dispatch:</strong> Certified technician deployed with full toolset.</p></div>
                 </div>
-                <button onclick="location.reload()" class="btn-no" style="width: 100%; border: 1px solid var(--border);">Create Another Request</button>
+                <button onclick="location.reload()" class="btn-no" style="width: 100%; border: 1px solid var(--border); cursor:pointer;">Create New Request</button>
             </div>
         </div>
     </div>
@@ -246,11 +249,11 @@
 
 <footer>
     <div class="logo" style="color: var(--white); font-size: 1.8rem; margin-bottom: 15px;">Zconnects</div>
-    <p>© 2026 Zconnects Cebu. Professional Engineering Standard.</p>
+    <p>© 2026 Zconnects Cebu. Professional Engineering Excellence.</p>
 </footer>
 
 <script>
-    const APP_URL = 'https://script.google.com/macros/s/AKfycbwfZc1tg2dO82JC41jv6I-Tg-bVbQx571ZOH8oVPC0cGWnUhCbUFhDTZydK6lhrOLZfWA/exec'; 
+    const APP_URL = 'https://script.google.com/macros/s/AKfycby3SgWL8KhEbMyTcQoskDKc7H_ygVoWIsxjHqoCtdKlbZI-Z2JDwH2VUQqRbpq4FndP1Q/exec'; 
 
     function filterServices() {
         let input = document.getElementById('serviceSearch').value.toLowerCase();
@@ -283,7 +286,6 @@
         element.querySelector('input').checked = true;
     }
 
-    // FORM SUBMISSION LOGIC
     document.getElementById('quoteForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -321,7 +323,6 @@
                 body: JSON.stringify(data)
             });
 
-            // Transition to Success UI
             document.getElementById('formContent').style.display = 'none';
             document.getElementById('formSuccess').style.display = 'block';
             window.scrollTo({ top: document.getElementById('quote-form').offsetTop - 100, behavior: 'smooth' });
@@ -331,7 +332,7 @@
             alert("Technical error. Please check your connection and try again.");
             btn.disabled = false;
             btnSpinner.style.display = 'none';
-            btnText.innerText = "Submit Technical Request";
+            btnText.innerText = "Submit Secure Request";
         }
     });
 </script>
