@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | ZConnects Cebu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; margin: 0; color: #0f172a; }
+        
+        /* Header */
+        .admin-header { background: #0f172a; color: white; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index: 100; }
+        .logo { font-weight: 900; font-size: 1.5rem; }
+        .refresh-btn { background: #2563eb; border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .refresh-btn:hover { background: #1d4ed8; }
+
+        /* Container */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .page-title { margin-bottom: 30px; font-weight: 800; font-size: 2rem; }
+
+        /* Card Grid */
+        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+        
+        /* Job Card */
+        .job-card { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: 0.3s; border: 1px solid #e2e8f0; }
+        .job-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; }
+        .job-id { font-size: 0.85rem; font-weight: 700; color: #64748b; background: #f8fafc; padding: 4px 8px; border-radius: 4px; }
+        .job-date { font-size: 0.85rem; color: #94a3b8; }
+        
+        .client-name { font-size: 1.25rem; font-weight: 800; margin: 0 0 5px 0; }
+        .job-category { font-weight: 600; color: #2563eb; margin-bottom: 15px; display: block; }
+        
+        .job-desc { background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 0.9rem; color: #475569; margin-bottom: 20px; max-height: 80px; overflow-y: auto; }
+        
+        .badges { display: flex; gap: 8px; margin-bottom: 20px; }
+        .urgency-badge { padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .urgency-Standard { background: #dbeafe; color: #1e40af; }
+        .urgency-Urgent { background: #fef3c7; color: #92400e; }
+        .urgency-Emergency { background: #fee2e2; color: #991b1b; }
+
+        .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border: 1px solid #cbd5e1; }
+
+        /* Actions */
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; }
+        
+        .btn-approve { background: #16a34a; color: white; }
+        .btn-approve:hover { background: #15803d; }
+        
+        .btn-assign { background: #f59e0b; color: white; }
+        .btn-assign:hover { background: #d97706; }
+        
+        .btn-complete { background: #0f172a; color: white; grid-column: span 2; }
+        .btn-complete:hover { background: #334155; }
+
+        .photo-link { display: block; text-align: center; margin-top: 15px; color: #2563eb; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        
+        /* Loading */
+        #loader { text-align: center; padding: 50px; font-size: 1.2rem; color: #64748b; }
+    </style>
+</head>
+<body>
+
+<header class="admin-header">
+    <div class="logo">ZConnects <span style="color:#2563eb">Admin</span></div>
+    <button class="refresh-btn" onclick="loadJobs()">Refresh Data</button>
+</header>
+
+<div class="container">
+    <div class="page-title">Active Job Overview</div>
+    <div id="loader">Loading Dashboard...</div>
+    <div id="jobsGrid" class="jobs-grid"></div>
+</div>
+
+<script>
+    // REPLACE WITH YOUR NEW DEPLOYED URL
+    const APP_URL = 'https://script.google.com/macros/s/AKfycby8khOW1JktMBAhWFBuGceGpLoW6-zoMWLX1dLyVhfwJhMqr-gBJDQ1zJ3bob2lFgDT2g/exec';
+
+    // 1. Load Jobs on Page Load
+    window.onload = loadJobs;
+
+    async function loadJobs() {
+        const grid = document.getElementById('jobsGrid');
+        const loader = document.getElementById('loader');
+        
+        grid.innerHTML = '';
+        loader.style.display = 'block';
+
+        try {
+            const response = await fetch(`${APP_URL}?action=get_admin_data`);
+            const jobs = await response.json();
+            
+            loader.style.display = 'none';
+
+            if (jobs.length === 0) {
+                grid.innerHTML = '<p style="text-align:center">No active jobs found.</p>';
+                return;
+            }
+
+            jobs.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                
+                // Determine colors based on data
+                const statusColor = job.status.includes('Completed') ? '#dcfce7' : 
+                                    job.status.includes('Assigned') ? '#dbeafe' : '#f1f5f9';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="job-id">${job.id}</span>
+                        <span class="job-date">${job.date}</span>
+                    </div>
+                    <h3 class="client-name">${job.name}</h3>
+                    <span class="job-category">${job.category}</span>
+                    
+                    <div class="badges">
+                        <span class="urgency-badge urgency-${job.urgency}">${job.urgency}</span>
+                        <span class="status-pill" style="background:${statusColor}">${job.status}</span>
+                    </div>
+
+                    <div class="job-desc">${job.desc}</div>
+
+                    <div class="actions">
+                        <button class="btn btn-approve" onclick="updateStatus('${job.id}', 'Approved - Pending Quote')">Approve</button>
+                        <button class="btn btn-assign" onclick="updateStatus('${job.id}', 'Technician Assigned')">Assign Tech</button>
+                        <button class="btn btn-complete" onclick="updateStatus('${job.id}', 'Job Completed')">Mark Complete</button>
+                    </div>
+
+                    ${job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" class="photo-link">View Site Photo</a>` : ''}
+                `;
+                grid.appendChild(card);
+            });
+
+        } catch (err) {
+            loader.innerText = "Error loading data. Check connection.";
+            console.error(err);
+        }
+    }
+
+    // 2. Update Status Function
+    async function updateStatus(bookingId, newStatus) {
+        if(!confirm(`Update Job ${bookingId} to "${newStatus}"?`)) return;
+
+        // Visual feedback
+        document.body.style.cursor = 'wait';
+
+        try {
+            const payload = {
+                action: 'update_status',
+                bookingId: bookingId,
+                newStatus: newStatus
+            };
+
+            await fetch(APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(payload)
+            });
+
+            alert(`Success! Job updated to: ${newStatus}`);
+            loadJobs(); // Reload to show changes
+
+        } catch (err) {
+            alert("Error updating status.");
+        } finally {
+            document.body.style.cursor = 'default';
+        }
+    }
+</script>
+
+</body>
+</html>
