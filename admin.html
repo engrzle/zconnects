@@ -112,15 +112,9 @@
                 method: 'POST',
                 mode: 'no-cors', // Apps Script specific
                 body: JSON.stringify({ action: 'get_admin_data', password: password })
-            }).then(resp => resp.json().catch(() => null)); // Handle JSON errors
+            }).then(resp => resp.json().catch(() => null)); 
 
-            // Note: Since 'no-cors' limits reading response in standard fetch, 
-            // we use a slight workaround or rely on the previous GET method 
-            // but for HIGHEST security with Apps Script Web Apps, keeping logic simple:
-            // We revert to POST but must handle the response specifically for Apps Script.
-            // *Correction for this specific environment:* // Apps Script simple triggers (doPost) return redirects. 
-            // To reliably read data, we MUST use this specific fetch pattern:
-            
+            // Robust fetch workaround for Apps Script
             const realResponse = await fetch(`${APP_URL}?action=get_admin_data`, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'get_admin_data', password: password }) 
@@ -135,7 +129,6 @@
             renderJobs(jobs);
 
         } catch (err) { 
-            // Fallback for visual stability if network blips
             console.log(err);
         }
     }
@@ -145,7 +138,7 @@
         grid.innerHTML = '';
 
         if (!jobs || jobs.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; grid-column:span 3;">No jobs found.</p>';
+            grid.innerHTML = '<p style="text-align:center; grid-column:span 3; color:#64748b;">No jobs found matching filters.</p>';
             return;
         }
 
@@ -183,23 +176,54 @@
         });
     }
 
+    // --- FIX: ROBUST FILTERING FUNCTION ---
     function filterJobs() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const activeFilter = document.querySelector('.filter-btn.active').innerText;
+        // 1. Get Search Term (Lowercase, Trimmed)
+        const term = document.getElementById('searchInput').value.toLowerCase().trim();
+        
+        // 2. Get Active Filter Button Text
+        const activeBtn = document.querySelector('.filter-btn.active');
+        const filterType = activeBtn ? activeBtn.innerText.trim() : 'All Jobs';
+        
         const filtered = allJobsData.filter(job => {
-            const matchesSearch = job.name.toLowerCase().includes(term) || job.id.toLowerCase().includes(term);
-            const matchesStatus = activeFilter === 'All Jobs' || job.status.includes(activeFilter);
-            return matchesSearch && matchesStatus;
+            // A. Search Logic (Checks Name OR ID)
+            const idMatch = (job.id || "").toLowerCase().includes(term);
+            const nameMatch = (job.name || "").toLowerCase().includes(term);
+            const searchMatch = term === "" || idMatch || nameMatch;
+
+            // B. Status Logic (Smart Matching)
+            const statusData = (job.status || "").toLowerCase();
+            let statusMatch = false;
+
+            if (filterType === 'All Jobs') {
+                statusMatch = true;
+            } else if (filterType === 'Pending') {
+                // Matches "Pending Review", "Pending", "Pending Payment"
+                statusMatch = statusData.includes('pending'); 
+            } else if (filterType === 'Assigned') {
+                // Matches "Technician Assigned", "Assigned"
+                statusMatch = statusData.includes('assigned');
+            } else if (filterType === 'Completed') {
+                // Matches "Job Completed", "Completed", "Done"
+                statusMatch = statusData.includes('complete'); 
+            } else {
+                // Catch-all
+                statusMatch = statusData.includes(filterType.toLowerCase());
+            }
+
+            return searchMatch && statusMatch;
         });
+        
         renderJobs(filtered);
     }
 
-    function setFilter(status, btn) {
+    function setFilter(filterName, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         filterJobs();
     }
 
+    // --- ACTIONS ---
     async function deleteJob(id) {
         if(!confirm(`⚠️ DELETE BOOKING ${id}?\n\nThis cannot be undone.`)) return;
         await sendAction({ action: 'delete_booking', bookingId: id });
@@ -234,10 +258,8 @@
         loadJobs(currentPass);
     }
 
-async function sendAction(payload) {
-        // We add the password to the payload automatically
+    async function sendAction(payload) {
         payload.password = currentPass; 
-        
         await fetch(APP_URL, {
             method: 'POST', mode: 'no-cors',
             body: JSON.stringify(payload)
