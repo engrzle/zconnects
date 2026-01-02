@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZConnects Manager | V10 Robust</title>
+    <title>ZConnects Manager | V11 Integrated</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         /* CORE STYLES */
@@ -39,6 +39,7 @@
         .job-id { background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; color: #64748b; margin-right: 10px; }
         .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: #e2e8f0; }
         
+        /* CONTROLS */
         .admin-controls { margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
         .control-label { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase; }
         .admin-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
@@ -51,6 +52,16 @@
         .btn-small { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
         .btn-assign { background: #fef3c7; color: #92400e; }
         .btn-complete { background: #dcfce7; color: #166534; }
+
+        /* REVIEW MODERATION STYLES (NEW) */
+        .review-box { background: #fffbeb; border: 1px solid #fcd34d; padding: 15px; margin-top: 15px; border-radius: 8px; font-size: 0.85rem; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-weight: 700; color: #92400e; }
+        .review-comment { font-style: italic; color: #4b5563; margin-bottom: 10px; display: block; }
+        .mod-btn-row { display: flex; gap: 8px; }
+        .btn-approve { background: #16a34a; color: white; padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
+        .btn-reject { background: #ef4444; color: white; padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
+        .status-approved { color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; }
+        .status-hidden { color: #9ca3af; background: #f3f4f6; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -72,7 +83,6 @@
         </div>
         <div class="filter-bar">
             <input type="text" id="searchInput" class="search-input" placeholder="Search name or ID..." onkeyup="applyFilter()">
-            
             <button class="filter-btn active" onclick="setFilter('all', this)">All Jobs</button>
             <button class="filter-btn" onclick="setFilter('pending', this)">Pending</button>
             <button class="filter-btn" onclick="setFilter('assigned', this)">Assigned</button>
@@ -88,13 +98,12 @@
 </div>
 
 <script>
-    // === CONFIGURATION ===
+    // REPLACE WITH YOUR DEPLOYMENT URL
     const APP_URL = 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec';
     
     let currentPass = '';
-    let activeCategory = 'all'; // Current selected button
+    let activeCategory = 'all'; 
 
-    // === LOGIN LOGIC ===
     function verifyLogin() {
         const pass = document.getElementById('adminPass').value;
         if(pass === "ZConnects2026") {
@@ -106,7 +115,6 @@
         }
     }
 
-    // === DATA FETCHING ===
     async function loadJobs(password) {
         document.getElementById('loader').style.display = 'block';
         document.getElementById('jobsGrid').innerHTML = '';
@@ -131,22 +139,13 @@
         }
     }
 
-    // === HELPER: CATEGORIZE STATUS ===
-    // This function decides which filter category a job belongs to based on its status text
     function getCategory(status) {
         status = (status || "").toLowerCase();
-        
-        if (status.includes('completed') || status.includes('done') || status.includes('paid')) {
-            return 'completed';
-        }
-        if (status.includes('assigned') || status.includes('dispatch')) {
-            return 'assigned';
-        }
-        // Default to pending for everything else (Quote Sent, Pending Review, etc)
+        if (status.includes('completed') || status.includes('done') || status.includes('paid')) return 'completed';
+        if (status.includes('assigned') || status.includes('dispatch')) return 'assigned';
         return 'pending'; 
     }
 
-    // === RENDER CARDS (WITH TAGS) ===
     function renderJobs(jobs) {
         const grid = document.getElementById('jobsGrid');
         grid.innerHTML = '';
@@ -160,10 +159,28 @@
             const categoryTag = getCategory(job.status);
             const searchText = `${job.id} ${job.name} ${job.status}`.toLowerCase();
 
+            // --- REVIEW SECTION ---
+            let reviewHtml = '';
+            if (job.rating > 0) {
+                const stars = '★'.repeat(job.rating);
+                const isLive = job.reviewStatus === 'APPROVED';
+                reviewHtml = `
+                    <div class="review-box">
+                        <div class="review-header">
+                            <span>Client Rating: ${stars}</span>
+                            ${isLive ? '<span class="status-approved">LIVE ON SITE</span>' : '<span class="status-hidden">HIDDEN</span>'}
+                        </div>
+                        <span class="review-comment">"${escapeHTML(job.comment)}"</span>
+                        <div class="mod-btn-row">
+                            ${!isLive ? `<button class="btn-approve" onclick="moderateReview('${job.id}', 'APPROVED')">✅ Publish</button>` : ''}
+                            ${isLive ? `<button class="btn-reject" onclick="moderateReview('${job.id}', 'REJECT')">❌ Hide</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
             const card = document.createElement('div');
             card.className = 'job-card';
-            
-            // WE ADD INVISIBLE DATA ATTRIBUTES HERE FOR FILTERING
             card.dataset.category = categoryTag;
             card.dataset.search = searchText;
 
@@ -177,6 +194,8 @@
                 <div style="color:#2563eb; font-weight:600; font-size:0.9rem; margin-bottom:10px;">${escapeHTML(job.category)} | ${escapeHTML(job.urgency)}</div>
                 <div style="background:#f8fafc; padding:10px; border-radius:6px; font-size:0.85rem; color:#475569; margin-bottom:15px;">${escapeHTML(job.desc)}</div>
                 ${job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:block; text-align:center; font-size:0.8rem; margin-bottom:15px;">View Photo</a>` : ''}
+
+                ${reviewHtml}
 
                 <div class="admin-controls">
                     <label class="control-label">Quote Price (PHP)</label>
@@ -196,16 +215,12 @@
             grid.appendChild(card);
         });
         
-        applyFilter(); // Run filter immediately after load
+        applyFilter(); 
     }
 
-    // === THE "FOOLPROOF" FILTER FUNCTION ===
     function setFilter(category, btn) {
-        // Update UI
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        // Set active category
         activeCategory = category;
         applyFilter();
     }
@@ -218,14 +233,9 @@
         cards.forEach(card => {
             const cardCategory = card.dataset.category;
             const cardSearchText = card.dataset.search;
-
-            // 1. Check Category Match
             const categoryMatch = (activeCategory === 'all') || (activeCategory === cardCategory);
-
-            // 2. Check Search Match
             const searchMatch = cardSearchText.includes(searchTerm);
 
-            // 3. Show or Hide
             if (categoryMatch && searchMatch) {
                 card.style.display = "block";
                 visibleCount++;
@@ -234,18 +244,22 @@
             }
         });
 
-        // Toggle "No Results" message
         const msg = document.getElementById('noResultsMsg');
         msg.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
     }
 
-    // === UTILS ===
     function escapeHTML(str) {
         if (!str) return "";
         return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // === ACTIONS (UNCHANGED) ===
+    async function moderateReview(id, status) {
+        if(!confirm(status === 'APPROVED' ? "Publish this review to the website?" : "Hide this review?")) return;
+        await sendAction({ action: 'moderate_review', bookingId: id, status: status });
+        alert(status === 'APPROVED' ? "Review is Live!" : "Review Hidden.");
+        loadJobs(currentPass);
+    }
+
     async function deleteJob(id) {
         if(!confirm(`⚠️ DELETE BOOKING ${id}?\n\nThis cannot be undone.`)) return;
         await sendAction({ action: 'delete_booking', bookingId: id });
