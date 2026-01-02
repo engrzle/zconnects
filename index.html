@@ -84,6 +84,21 @@
         .contact-item p { color: var(--slate); font-size: 0.95rem; margin: 0; font-weight: 500; }
         footer { background: var(--navy); color: #94a3b8; padding: 60px 6%; text-align: center; }
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } .hero h1 { font-size: 2.5rem; } .form-container { padding: 30px; } }
+
+        /* --- NEW: T&C MODAL STYLES --- */
+        .tc-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px); z-index: 3000; align-items: center; justify-content: center; }
+        .tc-content { background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 20px; padding: 30px; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); position: relative; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .tc-header { font-size: 1.5rem; font-weight: 800; color: var(--navy); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .tc-body { font-size: 0.9rem; color: var(--slate); line-height: 1.6; }
+        .tc-body h4 { color: var(--navy); margin-top: 15px; margin-bottom: 5px; }
+        .tc-close { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; color: var(--slate); }
+        .tc-close:hover { background: #e2e8f0; color: var(--navy); }
+
+        /* --- NEW: CHECKBOX STYLE --- */
+        .checkbox-container { display: flex; align-items: flex-start; gap: 10px; margin: 20px 0; font-size: 0.9rem; color: var(--slate); }
+        .checkbox-container input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; accent-color: var(--primary); }
+        .link-text { color: var(--primary); font-weight: 700; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -165,6 +180,15 @@
                     <div class="form-group full"><label>Project Description</label><textarea id="projDesc" rows="4" placeholder="Describe the problem..."></textarea></div>
                     <div class="form-group full"><label>Upload Photo (Optional)</label><input type="file" id="projPhotos" accept="image/*"></div>
                 </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="agreeTC" required>
+                    <label for="agreeTC">
+                        I verify that the details above are accurate and I agree to the ZConnects 
+                        <span class="link-text" onclick="openTC()">Terms & Service Warranty Conditions</span>.
+                    </label>
+                </div>
+
                 <button type="submit" class="submit-btn-large" id="submitBtn"><div class="spinner" id="btnSpinner"></div><span id="btnText">Submit Secure Request</span></button>
             </form>
         </div>
@@ -183,6 +207,32 @@
 </section>
 
 <footer><div class="logo" style="color: var(--white); font-size: 1.8rem; margin-bottom: 15px;">Zconnects</div><p>© 2026 Zconnects Cebu. Professional Engineering Standard.</p></footer>
+
+<div id="tcModal" class="tc-modal">
+    <div class="tc-content">
+        <button class="tc-close" onclick="closeTC()">✕</button>
+        <div class="tc-header">Terms & Service Warranty</div>
+        <div class="tc-body">
+            <p><strong>Effective Date:</strong> January 2026</p>
+            <p>By proceeding with a booking, you agree to the following engineering protocols:</p>
+            
+            <h4>1. Payment & Dispatch</h4>
+            <p>A non-refundable Down Payment of ₱500.00 is required to confirm a schedule. The remaining balance is payable to ZConnects Cebu upon completion. Payments made directly to technicians are unauthorized and void the warranty.</p>
+
+            <h4>2. 7-Day Service Warranty</h4>
+            <p>We provide a 7-day workmanship warranty. If the issue reoccurs due to our error, we repair it for FREE. This warranty is VOID if the client hires the technician directly (bypassing ZConnects) or if a third party attempts repairs.</p>
+
+            <h4>3. Liability Limitations</h4>
+            <p>ZConnects is liable only for damages directly caused by proven negligence of our personnel. We are not liable for pre-existing defects, brittle materials, or "wear and tear" discovered during the repair.</p>
+
+            <h4>4. Materials Policy</h4>
+            <p>ZConnects supplies engineering-standard parts. We do not warranty parts supplied by the client.</p>
+
+            <br>
+            <button class="submit-btn-large" onclick="closeTC()" style="margin-top:0; padding: 15px;">I Understand & Agree</button>
+        </div>
+    </div>
+</div>
 
 <script>
     // REPLACE WITH NEW DEPLOYMENT URL
@@ -227,6 +277,14 @@
             if(data.status === 'success') { statusVal.innerText = data.jobStatus; statusVal.style.color = '#16a34a'; clientVal.innerText = data.clientName; } 
             else { statusVal.innerText = "Booking Not Found"; statusVal.style.color = '#ef4444'; clientVal.innerText = "-"; }
         }).catch(err => { statusVal.innerText = "Error checking status"; });
+    }
+
+    // --- NEW FUNCTIONS FOR T&C MODAL ---
+    function openTC() { document.getElementById('tcModal').style.display = 'flex'; }
+    function closeTC() { document.getElementById('tcModal').style.display = 'none'; }
+    // Close modal when clicking outside box
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('tcModal')) { closeTC(); }
     }
 
     document.getElementById('quoteForm').addEventListener('submit', async function(e) {
