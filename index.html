@@ -143,6 +143,48 @@
     <div class="category-card"><span class="cat-icon-top">🏗️</span><div class="cat-intro">Property Protection</div><div class="cat-title">Structural & Finishing</div><div class="sub-service-list"><div class="sub-service-item" onclick="promptBooking('Roofing & Waterproofing', 'Structural')"><strong>Roofing & Waterproofing</strong><p>Sealing leaks for typhoon season.</p></div><div class="sub-service-item" onclick="promptBooking('Premium Painting', 'Structural')"><strong>Premium Painting</strong><p>Interior/Exterior quality finish.</p></div><div class="sub-service-item" onclick="promptBooking('Tiling & Masonry', 'Structural')"><strong>Tiling & Masonry</strong><p>Repair and installation.</p></div></div></div>
     <div class="category-card"><span class="cat-icon-top">🌴</span><div class="cat-intro">Tropical Solutions</div><div class="cat-title">Specialized Services</div><div class="sub-service-list"><div class="sub-service-item" onclick="promptBooking('Termite Control', 'Specialized')"><strong>Termite Control</strong><p>Targeted Anay treatments.</p></div><div class="sub-service-item" onclick="promptBooking('Window Screen Repair', 'Specialized')"><strong>Window Screen Repair</strong><p>Mesh installation.</p></div><div class="sub-service-item" onclick="promptBooking('Custom Carpentry', 'Specialized')"><strong>Custom Carpentry</strong><p>Woodwork repair.</p></div></div></div>
     <div class="category-card"><span class="cat-icon-top">🤝</span><div class="cat-intro">Custom Requests</div><div class="cat-title">Other Services</div><div class="sub-service-list"><div class="sub-service-item" onclick="promptBooking('Other Technical Service', 'Other')"><strong>Request Custom Work</strong><p>If your specific need isn't listed, our engineers can assist.</p></div></div></div>
+    /* REVIEWS SECTION */
+.reviews-section { padding: 80px 6%; background: white; border-top: 1px solid var(--border); }
+.reviews-header { text-align: center; margin-bottom: 50px; }
+.reviews-header h2 { font-size: 2.5rem; color: var(--navy); margin: 0; font-weight: 800; letter-spacing: -1px; }
+.reviews-header p { color: var(--slate); margin-top: 10px; }
+
+/* HORIZONTAL SCROLL CONTAINER */
+.reviews-container { 
+    display: flex; 
+    gap: 25px; 
+    overflow-x: auto; 
+    padding-bottom: 40px; 
+    scroll-behavior: smooth; 
+    -ms-overflow-style: none;  /* Hide scrollbar IE/Edge */
+    scrollbar-width: none;  /* Hide scrollbar Firefox */
+}
+.reviews-container::-webkit-scrollbar { display: none; /* Hide scrollbar Chrome */ }
+
+/* REVIEW CARD */
+.review-card { 
+    min-width: 300px; 
+    max-width: 300px;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 20px; 
+    padding: 30px; 
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.08); 
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.review-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+
+.r-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.r-avatar { width: 45px; height: 45px; background: #eff6ff; color: var(--primary); font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.r-info h4 { margin: 0; color: var(--navy); font-size: 1rem; font-weight: 700; }
+.r-info span { font-size: 0.8rem; color: var(--slate); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.r-stars { color: #fbbf24; margin-bottom: 15px; font-size: 1.1rem; letter-spacing: 2px; }
+.r-body { font-size: 0.95rem; color: #475569; line-height: 1.6; font-style: italic; flex-grow: 1; }
+.r-footer { margin-top: 20px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+.verified-badge { color: #16a34a; display: flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.75rem; }
 </div>
 
 <div id="confirmModal" class="confirm-modal">
@@ -207,7 +249,64 @@
 </section>
 
 <footer><div class="logo" style="color: var(--white); font-size: 1.8rem; margin-bottom: 15px;">Zconnects</div><p>© 2026 Zconnects Cebu. Professional Engineering Standard.</p></footer>
+<section class="reviews-section">
+    <div class="reviews-header">
+        <h2>Engineering Excellence</h2>
+        <p>Trusted by homeowners and businesses across Metro Cebu.</p>
+    </div>
+    
+    <div id="reviewsLoader" style="text-align:center; color:#64748b;">Loading verified reviews...</div>
+    
+    <div class="reviews-container" id="reviewsTrack">
+        </div>
+</section>
+    // CALL THIS FUNCTION WHEN PAGE LOADS
+    document.addEventListener("DOMContentLoaded", loadPublicReviews);
 
+    async function loadPublicReviews() {
+        try {
+            // Fetch from backend
+            const response = await fetch(`${APP_URL}?action=get_public_reviews`);
+            const reviews = await response.json();
+            
+            const track = document.getElementById('reviewsTrack');
+            document.getElementById('reviewsLoader').style.display = 'none';
+
+            if (reviews.length === 0) {
+                track.innerHTML = '<p style="text-align:center; width:100%; color:#94a3b8;">No public reviews yet.</p>';
+                return;
+            }
+
+            reviews.forEach(r => {
+                // Generate Star String (e.g., "★★★★★")
+                const stars = '★'.repeat(Math.floor(r.rating)) + (r.rating % 1 ? '½' : '');
+                
+                // Create Card HTML
+                const card = document.createElement('div');
+                card.className = 'review-card';
+                card.innerHTML = `
+                    <div class="r-header">
+                        <div class="r-avatar">${r.name.charAt(0)}</div>
+                        <div class="r-info">
+                            <h4>${r.name}</h4>
+                            <span>${r.service}</span>
+                        </div>
+                    </div>
+                    <div class="r-stars">${stars}</div>
+                    <div class="r-body">"${r.comment}"</div>
+                    <div class="r-footer">
+                        <span>${r.date}</span>
+                        <div class="verified-badge">✓ Verified Client</div>
+                    </div>
+                `;
+                track.appendChild(card);
+            });
+
+        } catch (err) {
+            console.error("Review Load Error:", err);
+            document.getElementById('reviewsLoader').innerText = "Unable to load reviews.";
+        }
+    }
 <div id="tcModal" class="tc-modal">
     <div class="tc-content">
         <button class="tc-close" onclick="closeTC()">✕</button>
