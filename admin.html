@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZConnects Manager | V9 Smart Filter</title>
+    <title>ZConnects Manager | V9.1 Smart Filter</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         /* CORE STYLES */
@@ -93,7 +93,7 @@
     
     let currentPass = '';
     let allJobsData = []; 
-    let currentFilter = 'all'; // Store the active filter in a variable
+    let currentFilter = 'all'; // GLOBAL VARIABLE TO TRACK ACTIVE FILTER
 
     function verifyLogin() {
         const pass = document.getElementById('adminPass').value;
@@ -121,7 +121,7 @@
         document.getElementById('jobsGrid').innerHTML = '';
 
         try {
-            // Fetch wrapper to handle Apps Script redirects
+            // Apps Script robust fetch pattern
             const response = await fetch(`${APP_URL}?action=get_admin_data`, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'get_admin_data', password: password }) 
@@ -133,7 +133,7 @@
             if(jobs.error) { alert("Access Denied"); location.reload(); return; }
             
             allJobsData = jobs; 
-            renderJobs(jobs);
+            renderJobs(jobs); // Initial Render
 
         } catch (err) { 
             console.log(err);
@@ -141,7 +141,7 @@
         }
     }
 
-    // --- SMART RENDER FUNCTION ---
+    // --- RENDER FUNCTION ---
     function renderJobs(jobs) {
         const grid = document.getElementById('jobsGrid');
         grid.innerHTML = '';
@@ -184,16 +184,16 @@
         });
     }
 
-    // --- FIX: SMART FILTERING LOGIC ---
+    // --- SMART FILTERING LOGIC (THE FIX) ---
     function setFilter(filterType, btn) {
-        // 1. Update Buttons
+        // 1. Update UI Buttons
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         
-        // 2. Set Global Filter Variable
+        // 2. Set Global Variable
         currentFilter = filterType;
         
-        // 3. Run Filter
+        // 3. Trigger Filter
         filterJobs();
     }
 
@@ -201,12 +201,12 @@
         const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
         
         const filtered = allJobsData.filter(job => {
-            // 1. SEARCH LOGIC (Checks Name or ID)
+            // 1. SEARCH MATCH (Name OR ID)
             const idMatch = (job.id || "").toLowerCase().includes(searchTerm);
             const nameMatch = (job.name || "").toLowerCase().includes(searchTerm);
             const isSearchMatch = (searchTerm === "") || idMatch || nameMatch;
 
-            // 2. STATUS LOGIC (Checks if status falls into the category)
+            // 2. STATUS MATCH (Smart Grouping)
             const status = (job.status || "").toLowerCase();
             let isStatusMatch = false;
 
@@ -214,16 +214,15 @@
                 isStatusMatch = true;
             } 
             else if (currentFilter === 'pending') {
-                // "Pending" includes: 'Pending Review', 'Quote Sent', 'Pending Payment'
-                // We check if it has 'pending' OR 'quote' OR 'review'
+                // Shows: "Pending Review", "Quote Sent", "Under Review", "Pending Payment"
                 isStatusMatch = status.includes('pending') || status.includes('quote') || status.includes('review');
             } 
             else if (currentFilter === 'assigned') {
-                // "Assigned" includes: 'Technician Assigned', 'Assigned'
+                // Shows: "Technician Assigned", "Assigned", "Dispatched"
                 isStatusMatch = status.includes('assigned') || status.includes('dispatch');
             } 
             else if (currentFilter === 'completed') {
-                // "Completed" includes: 'Job Completed', 'Complete', 'Done'
+                // Shows: "Job Completed", "Completed", "Done"
                 isStatusMatch = status.includes('complete') || status.includes('done');
             }
 
