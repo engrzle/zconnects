@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZConnects Manager | V9.1 Smart Filter</title>
+    <title>ZConnects Manager | V10 Robust</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         /* CORE STYLES */
@@ -39,7 +39,6 @@
         .job-id { background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; color: #64748b; margin-right: 10px; }
         .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: #e2e8f0; }
         
-        /* CONTROLS */
         .admin-controls { margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
         .control-label { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase; }
         .admin-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
@@ -72,7 +71,7 @@
             <button onclick="loadJobs(currentPass)" style="border:none; background:none; color:#2563eb; font-weight:700; cursor:pointer;">↻ Refresh</button>
         </div>
         <div class="filter-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search name or ID..." onkeyup="filterJobs()">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search name or ID..." onkeyup="applyFilter()">
             
             <button class="filter-btn active" onclick="setFilter('all', this)">All Jobs</button>
             <button class="filter-btn" onclick="setFilter('pending', this)">Pending</button>
@@ -85,16 +84,17 @@
 <div class="container">
     <div id="loader" style="text-align:center; padding:40px; display:none;">Loading secure data...</div>
     <div id="jobsGrid" class="jobs-grid"></div>
+    <p id="noResultsMsg" style="display:none; text-align:center; color:#64748b; width:100%;">No jobs found matching your filters.</p>
 </div>
 
 <script>
-    // REPLACE THIS WITH YOUR DEPLOYMENT URL
+    // === CONFIGURATION ===
     const APP_URL = 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec';
     
     let currentPass = '';
-    let allJobsData = []; 
-    let currentFilter = 'all'; // GLOBAL VARIABLE TO TRACK ACTIVE FILTER
+    let activeCategory = 'all'; // Current selected button
 
+    // === LOGIN LOGIC ===
     function verifyLogin() {
         const pass = document.getElementById('adminPass').value;
         if(pass === "ZConnects2026") {
@@ -106,22 +106,13 @@
         }
     }
 
-    function escapeHTML(str) {
-        if (!str) return "";
-        return str.toString()
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
+    // === DATA FETCHING ===
     async function loadJobs(password) {
         document.getElementById('loader').style.display = 'block';
         document.getElementById('jobsGrid').innerHTML = '';
+        document.getElementById('noResultsMsg').style.display = 'none';
 
         try {
-            // Apps Script robust fetch pattern
             const response = await fetch(`${APP_URL}?action=get_admin_data`, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'get_admin_data', password: password }) 
@@ -132,28 +123,50 @@
 
             if(jobs.error) { alert("Access Denied"); location.reload(); return; }
             
-            allJobsData = jobs; 
-            renderJobs(jobs); // Initial Render
+            renderJobs(jobs);
 
         } catch (err) { 
-            console.log(err);
+            console.error(err);
             alert("Connection Error. Please refresh.");
         }
     }
 
-    // --- RENDER FUNCTION ---
+    // === HELPER: CATEGORIZE STATUS ===
+    // This function decides which filter category a job belongs to based on its status text
+    function getCategory(status) {
+        status = (status || "").toLowerCase();
+        
+        if (status.includes('completed') || status.includes('done') || status.includes('paid')) {
+            return 'completed';
+        }
+        if (status.includes('assigned') || status.includes('dispatch')) {
+            return 'assigned';
+        }
+        // Default to pending for everything else (Quote Sent, Pending Review, etc)
+        return 'pending'; 
+    }
+
+    // === RENDER CARDS (WITH TAGS) ===
     function renderJobs(jobs) {
         const grid = document.getElementById('jobsGrid');
         grid.innerHTML = '';
 
         if (!jobs || jobs.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; grid-column:span 3; color:#64748b;">No jobs found matching your filters.</p>';
+            document.getElementById('noResultsMsg').style.display = 'block';
             return;
         }
 
         jobs.forEach(job => {
+            const categoryTag = getCategory(job.status);
+            const searchText = `${job.id} ${job.name} ${job.status}`.toLowerCase();
+
             const card = document.createElement('div');
             card.className = 'job-card';
+            
+            // WE ADD INVISIBLE DATA ATTRIBUTES HERE FOR FILTERING
+            card.dataset.category = categoryTag;
+            card.dataset.search = searchText;
+
             card.innerHTML = `
                 <button class="delete-btn" onclick="deleteJob('${escapeHTML(job.id)}')" title="Delete Booking">×</button>
                 <div class="card-header">
@@ -182,57 +195,57 @@
             `;
             grid.appendChild(card);
         });
+        
+        applyFilter(); // Run filter immediately after load
     }
 
-    // --- SMART FILTERING LOGIC (THE FIX) ---
-    function setFilter(filterType, btn) {
-        // 1. Update UI Buttons
+    // === THE "FOOLPROOF" FILTER FUNCTION ===
+    function setFilter(category, btn) {
+        // Update UI
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         
-        // 2. Set Global Variable
-        currentFilter = filterType;
-        
-        // 3. Trigger Filter
-        filterJobs();
+        // Set active category
+        activeCategory = category;
+        applyFilter();
     }
 
-    function filterJobs() {
+    function applyFilter() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-        
-        const filtered = allJobsData.filter(job => {
-            // 1. SEARCH MATCH (Name OR ID)
-            const idMatch = (job.id || "").toLowerCase().includes(searchTerm);
-            const nameMatch = (job.name || "").toLowerCase().includes(searchTerm);
-            const isSearchMatch = (searchTerm === "") || idMatch || nameMatch;
+        const cards = document.querySelectorAll('.job-card');
+        let visibleCount = 0;
 
-            // 2. STATUS MATCH (Smart Grouping)
-            const status = (job.status || "").toLowerCase();
-            let isStatusMatch = false;
+        cards.forEach(card => {
+            const cardCategory = card.dataset.category;
+            const cardSearchText = card.dataset.search;
 
-            if (currentFilter === 'all') {
-                isStatusMatch = true;
-            } 
-            else if (currentFilter === 'pending') {
-                // Shows: "Pending Review", "Quote Sent", "Under Review", "Pending Payment"
-                isStatusMatch = status.includes('pending') || status.includes('quote') || status.includes('review');
-            } 
-            else if (currentFilter === 'assigned') {
-                // Shows: "Technician Assigned", "Assigned", "Dispatched"
-                isStatusMatch = status.includes('assigned') || status.includes('dispatch');
-            } 
-            else if (currentFilter === 'completed') {
-                // Shows: "Job Completed", "Completed", "Done"
-                isStatusMatch = status.includes('complete') || status.includes('done');
+            // 1. Check Category Match
+            const categoryMatch = (activeCategory === 'all') || (activeCategory === cardCategory);
+
+            // 2. Check Search Match
+            const searchMatch = cardSearchText.includes(searchTerm);
+
+            // 3. Show or Hide
+            if (categoryMatch && searchMatch) {
+                card.style.display = "block";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
             }
-
-            return isSearchMatch && isStatusMatch;
         });
-        
-        renderJobs(filtered);
+
+        // Toggle "No Results" message
+        const msg = document.getElementById('noResultsMsg');
+        msg.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
     }
 
-    // --- ACTIONS ---
+    // === UTILS ===
+    function escapeHTML(str) {
+        if (!str) return "";
+        return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // === ACTIONS (UNCHANGED) ===
     async function deleteJob(id) {
         if(!confirm(`⚠️ DELETE BOOKING ${id}?\n\nThis cannot be undone.`)) return;
         await sendAction({ action: 'delete_booking', bookingId: id });
