@@ -3,38 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZConnects Manager | V8 Secure</title>
+    <title>ZConnects Manager | V9 Smart Filter</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* SAME STYLES AS BEFORE */
+        /* CORE STYLES */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; margin: 0; color: #0f172a; }
+        
+        /* LOGIN STYLES */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .login-box { background: white; padding: 40px; border-radius: 20px; text-align: center; width: 300px; }
         .login-input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
         .login-btn { background: #2563eb; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; }
+
+        /* HEADER & FILTER BAR */
         .admin-header { padding: 20px 5%; background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top:0; z-index: 100; }
         .header-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-weight: 900; font-size: 1.5rem; color: #0f172a; }
+        
         .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; }
         .search-input { padding: 10px 15px; border: 1px solid #cbd5e1; border-radius: 50px; font-size: 0.9rem; flex: 1; min-width: 200px; }
         .filter-btn { padding: 8px 16px; border: 1px solid #e2e8f0; background: white; border-radius: 50px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2s; }
         .filter-btn.active { background: #0f172a; color: white; border-color: #0f172a; }
         .filter-btn:hover:not(.active) { background: #f1f5f9; }
+
+        /* JOB CARDS */
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 25px; }
         .job-card { background: white; border-radius: 16px; padding: 25px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; }
+        
         .delete-btn { position: absolute; top: 20px; right: 20px; color: #ef4444; background: #fee2e2; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.2rem; }
         .delete-btn:hover { background: #ef4444; color: white; }
+
         .card-header { margin-bottom: 10px; }
         .job-id { background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; color: #64748b; margin-right: 10px; }
         .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: #e2e8f0; }
+        
+        /* CONTROLS */
         .admin-controls { margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
         .control-label { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase; }
         .admin-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
+        
         .btn-quote { background: #2563eb; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-draft { background: white; border: 2px solid #cbd5e1; color: #64748b; width: 100%; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
         .btn-draft:hover { border-color: #64748b; color: #0f172a; }
+
         .btn-row { display: flex; gap: 10px; margin-top: 15px; }
         .btn-small { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
         .btn-assign { background: #fef3c7; color: #92400e; }
@@ -60,10 +73,11 @@
         </div>
         <div class="filter-bar">
             <input type="text" id="searchInput" class="search-input" placeholder="Search name or ID..." onkeyup="filterJobs()">
+            
             <button class="filter-btn active" onclick="setFilter('all', this)">All Jobs</button>
-            <button class="filter-btn" onclick="setFilter('Pending', this)">Pending</button>
-            <button class="filter-btn" onclick="setFilter('Assigned', this)">Assigned</button>
-            <button class="filter-btn" onclick="setFilter('Completed', this)">Completed</button>
+            <button class="filter-btn" onclick="setFilter('pending', this)">Pending</button>
+            <button class="filter-btn" onclick="setFilter('assigned', this)">Assigned</button>
+            <button class="filter-btn" onclick="setFilter('completed', this)">Completed</button>
         </div>
     </div>
 </header>
@@ -74,11 +88,12 @@
 </div>
 
 <script>
-    // REPLACE WITH NEW DEPLOYMENT URL
+    // REPLACE THIS WITH YOUR DEPLOYMENT URL
     const APP_URL = 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec';
     
     let currentPass = '';
     let allJobsData = []; 
+    let currentFilter = 'all'; // Store the active filter in a variable
 
     function verifyLogin() {
         const pass = document.getElementById('adminPass').value;
@@ -91,7 +106,6 @@
         }
     }
 
-    // SECURITY: XSS Sanitizer
     function escapeHTML(str) {
         if (!str) return "";
         return str.toString()
@@ -107,19 +121,12 @@
         document.getElementById('jobsGrid').innerHTML = '';
 
         try {
-            // SECURITY: Send Password in Body (POST), not URL
-            const response = await fetch(APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Apps Script specific
-                body: JSON.stringify({ action: 'get_admin_data', password: password })
-            }).then(resp => resp.json().catch(() => null)); 
-
-            // Robust fetch workaround for Apps Script
-            const realResponse = await fetch(`${APP_URL}?action=get_admin_data`, {
+            // Fetch wrapper to handle Apps Script redirects
+            const response = await fetch(`${APP_URL}?action=get_admin_data`, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'get_admin_data', password: password }) 
             });
-            const jobs = await realResponse.json();
+            const jobs = await response.json();
 
             document.getElementById('loader').style.display = 'none';
 
@@ -130,22 +137,23 @@
 
         } catch (err) { 
             console.log(err);
+            alert("Connection Error. Please refresh.");
         }
     }
 
+    // --- SMART RENDER FUNCTION ---
     function renderJobs(jobs) {
         const grid = document.getElementById('jobsGrid');
         grid.innerHTML = '';
 
         if (!jobs || jobs.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; grid-column:span 3; color:#64748b;">No jobs found matching filters.</p>';
+            grid.innerHTML = '<p style="text-align:center; grid-column:span 3; color:#64748b;">No jobs found matching your filters.</p>';
             return;
         }
 
         jobs.forEach(job => {
             const card = document.createElement('div');
             card.className = 'job-card';
-            // SECURITY: Use escapeHTML() on all user inputs
             card.innerHTML = `
                 <button class="delete-btn" onclick="deleteJob('${escapeHTML(job.id)}')" title="Delete Booking">×</button>
                 <div class="card-header">
@@ -176,51 +184,53 @@
         });
     }
 
-    // --- FIX: ROBUST FILTERING FUNCTION ---
-    function filterJobs() {
-        // 1. Get Search Term (Lowercase, Trimmed)
-        const term = document.getElementById('searchInput').value.toLowerCase().trim();
+    // --- FIX: SMART FILTERING LOGIC ---
+    function setFilter(filterType, btn) {
+        // 1. Update Buttons
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         
-        // 2. Get Active Filter Button Text
-        const activeBtn = document.querySelector('.filter-btn.active');
-        const filterType = activeBtn ? activeBtn.innerText.trim() : 'All Jobs';
+        // 2. Set Global Filter Variable
+        currentFilter = filterType;
+        
+        // 3. Run Filter
+        filterJobs();
+    }
+
+    function filterJobs() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
         
         const filtered = allJobsData.filter(job => {
-            // A. Search Logic (Checks Name OR ID)
-            const idMatch = (job.id || "").toLowerCase().includes(term);
-            const nameMatch = (job.name || "").toLowerCase().includes(term);
-            const searchMatch = term === "" || idMatch || nameMatch;
+            // 1. SEARCH LOGIC (Checks Name or ID)
+            const idMatch = (job.id || "").toLowerCase().includes(searchTerm);
+            const nameMatch = (job.name || "").toLowerCase().includes(searchTerm);
+            const isSearchMatch = (searchTerm === "") || idMatch || nameMatch;
 
-            // B. Status Logic (Smart Matching)
-            const statusData = (job.status || "").toLowerCase();
-            let statusMatch = false;
+            // 2. STATUS LOGIC (Checks if status falls into the category)
+            const status = (job.status || "").toLowerCase();
+            let isStatusMatch = false;
 
-            if (filterType === 'All Jobs') {
-                statusMatch = true;
-            } else if (filterType === 'Pending') {
-                // Matches "Pending Review", "Pending", "Pending Payment"
-                statusMatch = statusData.includes('pending'); 
-            } else if (filterType === 'Assigned') {
-                // Matches "Technician Assigned", "Assigned"
-                statusMatch = statusData.includes('assigned');
-            } else if (filterType === 'Completed') {
-                // Matches "Job Completed", "Completed", "Done"
-                statusMatch = statusData.includes('complete'); 
-            } else {
-                // Catch-all
-                statusMatch = statusData.includes(filterType.toLowerCase());
+            if (currentFilter === 'all') {
+                isStatusMatch = true;
+            } 
+            else if (currentFilter === 'pending') {
+                // "Pending" includes: 'Pending Review', 'Quote Sent', 'Pending Payment'
+                // We check if it has 'pending' OR 'quote' OR 'review'
+                isStatusMatch = status.includes('pending') || status.includes('quote') || status.includes('review');
+            } 
+            else if (currentFilter === 'assigned') {
+                // "Assigned" includes: 'Technician Assigned', 'Assigned'
+                isStatusMatch = status.includes('assigned') || status.includes('dispatch');
+            } 
+            else if (currentFilter === 'completed') {
+                // "Completed" includes: 'Job Completed', 'Complete', 'Done'
+                isStatusMatch = status.includes('complete') || status.includes('done');
             }
 
-            return searchMatch && statusMatch;
+            return isSearchMatch && isStatusMatch;
         });
         
         renderJobs(filtered);
-    }
-
-    function setFilter(filterName, btn) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        filterJobs();
     }
 
     // --- ACTIONS ---
