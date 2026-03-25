@@ -125,20 +125,42 @@
 </div>
 
 <script>
-    // YOUR EXISTING DEPLOYMENT URL
+    // ENSURE THIS URL IS YOUR LATEST DEPLOYMENT
     const APP_URL = 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec';
     
     let currentPass = '';
     let activeCategory = 'all'; 
 
-    function verifyLogin() {
+    async function verifyLogin() {
         const pass = document.getElementById('adminPass').value;
-        if(pass === "ZConnects2026") {
+        const loginBtn = document.querySelector('.login-btn');
+        loginBtn.innerText = "Verifying securely...";
+
+        try {
+            // Secure check: Send password to backend to verify
+            const response = await fetch(`${APP_URL}?action=get_admin_data`, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_admin_data', password: pass }) 
+            });
+            const jobs = await response.json();
+
+            // If backend rejects it
+            if(jobs.error) { 
+                document.getElementById('loginError').style.display = 'block';
+                loginBtn.innerText = "Unlock Dashboard";
+                return; 
+            }
+            
+            // Password accepted!
             currentPass = pass;
             document.getElementById('loginOverlay').style.display = 'none';
-            loadJobs(pass);
-        } else {
-            document.getElementById('loginError').style.display = 'block';
+            document.getElementById('loginError').style.display = 'none';
+            renderJobs(jobs);
+
+        } catch (err) { 
+            console.error(err);
+            alert("Connection Error. Please check your network.");
+            loginBtn.innerText = "Unlock Dashboard";
         }
     }
 
@@ -156,7 +178,11 @@
 
             document.getElementById('loader').style.display = 'none';
 
-            if(jobs.error) { alert("Access Denied"); location.reload(); return; }
+            if(jobs.error) { 
+                alert("Session Expired or Access Denied"); 
+                location.reload(); 
+                return; 
+            }
             
             renderJobs(jobs);
 
@@ -221,15 +247,15 @@
                 <h3 style="margin:0 0 8px 0; color:var(--navy); font-size:1.4rem; font-weight:800; letter-spacing:-0.5px;">${escapeHTML(job.name)}</h3>
                 <div style="color:var(--primary); font-weight:800; font-size:0.95rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px;">${escapeHTML(job.category)} | <span style="color:var(--slate);">${escapeHTML(job.urgency)}</span></div>
                 <div style="background:var(--light); padding:15px; border-radius:12px; font-size:0.95rem; color:var(--slate); margin-bottom:15px; line-height:1.5;">${escapeHTML(job.desc)}</div>
-                ${job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:inline-block; background:#eff6ff; color:var(--primary); font-weight:800; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:0.85rem; margin-bottom:15px; transition:0.2s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">📸 View Attached Photo</a>` : ''}
+                ${job.photo && job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:inline-block; background:#eff6ff; color:var(--primary); font-weight:800; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:0.85rem; margin-bottom:15px; transition:0.2s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">📸 View Attached Photo</a>` : ''}
 
                 ${reviewHtml}
 
                 <div class="admin-controls">
                     <label class="control-label">Quote Price (PHP)</label>
-                    <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price)}">
+                    <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price || '')}">
                     <label class="control-label">Engineer Notes (Internal)</label>
-                    <input type="text" id="notes-${job.id}" class="admin-input" placeholder="Technical details, materials needed..." value="${escapeHTML(job.notes)}">
+                    <input type="text" id="notes-${job.id}" class="admin-input" placeholder="Technical details, materials needed..." value="${escapeHTML(job.notes || '')}">
                     
                     <button class="btn-draft" onclick="saveDraft('${job.id}')">💾 Save Details (No Email)</button>
                     <button class="btn-quote" onclick="sendQuote('${job.id}')">📧 Send Official Quote</button>
@@ -283,15 +309,17 @@
 
     async function moderateReview(id, status) {
         if(!confirm(status === 'APPROVED' ? "Publish this review to the live website?" : "Hide this review from the public?")) return;
-        await sendAction({ action: 'moderate_review', bookingId: id, status: status });
-        alert(status === 'APPROVED' ? "Review is now Live!" : "Review Hidden.");
-        loadJobs(currentPass);
+        const res = await sendAction({ action: 'moderate_review', bookingId: id, status: status });
+        if(!res.error) {
+            alert(status === 'APPROVED' ? "Review is now Live!" : "Review Hidden.");
+            loadJobs(currentPass);
+        }
     }
 
     async function deleteJob(id) {
         if(!confirm(`⚠️ DELETE BOOKING ${id}?\n\nThis cannot be undone.`)) return;
-        await sendAction({ action: 'delete_booking', bookingId: id });
-        loadJobs(currentPass);
+        const res = await sendAction({ action: 'delete_booking', bookingId: id });
+        if(!res.error) loadJobs(currentPass);
     }
 
     async function saveDraft(id) {
@@ -299,9 +327,9 @@
         const notes = document.getElementById(`notes-${id}`).value;
         const btn = event.target;
         btn.innerText = "Saving...";
-        await sendAction({ action: 'save_draft', bookingId: id, price: price, notes: notes });
+        const res = await sendAction({ action: 'save_draft', bookingId: id, price: price, notes: notes });
         btn.innerText = "💾 Save Details (No Email)";
-        alert("Details securely saved!");
+        if(!res.error) alert("Details securely saved!");
     }
 
     async function sendQuote(id) {
@@ -311,23 +339,40 @@
         if(!confirm(`Send official quote of ₱${price} to the client?`)) return;
         const btn = event.target;
         btn.innerText = "Encrypting & Sending...";
-        await sendAction({ action: 'save_and_send_quote', bookingId: id, price: price, notes: notes });
-        alert("Quote successfully sent to client!");
-        loadJobs(currentPass);
+        const res = await sendAction({ action: 'save_and_send_quote', bookingId: id, price: price, notes: notes });
+        if(!res.error) {
+            alert("Quote successfully sent to client!");
+            loadJobs(currentPass);
+        } else {
+            btn.innerText = "📧 Send Official Quote";
+        }
     }
 
     async function updateStatus(id, status) {
         if(!confirm(`Update job status to: ${status}?`)) return;
-        await sendAction({ action: 'update_status', bookingId: id, newStatus: status });
-        loadJobs(currentPass);
+        const res = await sendAction({ action: 'update_status', bookingId: id, newStatus: status });
+        if(!res.error) loadJobs(currentPass);
     }
 
+    // Removed no-cors so we can actually read success/error messages
     async function sendAction(payload) {
         payload.password = currentPass; 
-        await fetch(APP_URL, {
-            method: 'POST', mode: 'no-cors',
-            body: JSON.stringify(payload)
-        });
+        try {
+            const response = await fetch(APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if(data.error) {
+                alert("Error: " + data.error);
+                if(data.error.includes("Unauthorized")) location.reload();
+            }
+            return data;
+        } catch(err) {
+            console.error(err);
+            alert("Network error processing request.");
+            return { error: "Network Error" };
+        }
     }
 </script>
 
