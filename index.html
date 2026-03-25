@@ -7,6 +7,15 @@
     
     <title>Zconnects | Engineering-Led Service Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
     <style>
         :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); scroll-behavior: smooth; }
@@ -134,6 +143,7 @@
             .mobile-nav { display: flex; }
             body { padding-bottom: 75px; }
             .messenger-btn { bottom: 100px !important; }
+            .whatsapp-btn { bottom: 175px !important; } /* Adjusted to sit above messenger on mobile */
         }
 
         /* T&C MODAL STYLES */
@@ -437,6 +447,13 @@
 
     document.getElementById('quoteForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        
+        // --- ADDED: Location Validation Check ---
+        const locCheck = document.getElementById('custLocation').value;
+        if (locCheck === 'Other') {
+            alert("Notice: Our rapid dispatch is currently optimized for Metro Cebu. We will review your request, but please expect potential scheduling delays or out-of-town mobilization charges.");
+        }
+
         const btn = document.getElementById('submitBtn');
         const btnSpinner = document.getElementById('btnSpinner');
         const btnText = document.getElementById('btnText');
@@ -486,6 +503,10 @@
         }
     });
 </script>
+
+<a href="https://wa.me/639155783425" target="_blank" class="whatsapp-btn" style="position: fixed; bottom: 100px; right: 25px; background: #25D366; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9998; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    <svg viewBox="0 0 32 32" width="38" height="38" fill="white"><path d="M16.002 2C8.268 2 2 8.268 2 16.002c0 2.482.65 4.814 1.774 6.86L2.3 29.7l6.983-1.43c1.996 1.034 4.256 1.626 6.72 1.626 7.732 0 14-6.268 14-14S23.734 2 16.002 2zm0 25.545c-2.126 0-4.135-.55-5.9-1.52l-.424-.23-4.38.896.913-4.276-.254-.404A11.455 11.455 0 0 1 4.35 16.002c0-6.426 5.222-11.648 11.652-11.648 6.428 0 11.648 5.22 11.648 11.648S22.43 27.545 16.002 27.545zm6.388-8.736c-.35-.176-2.074-1.024-2.395-1.14-.32-.118-.553-.176-.788.176-.233.35-.905 1.14-1.11 1.374-.202.235-.406.263-.756.088-1.56-.78-2.65-1.442-3.66-3.18-.236-.406.182-.365.526-.88.117-.176.058-.33-.03-.506-.088-.176-.788-1.9-.1-2.075-.853.07-2.6.07-2.776-.176-.235-.553-.66-1.588-1.636-.234-.976.234-1.153.553-1.153 1.34 0 2.222.84 2.536 1.153 3.61 1.66 4.75 2.19 6.205.35 1.454.55 2.51.46 2.872.23.364-.23.554-1.14.364-1.256z"/></svg>
+</a>
 
 <a href="https://m.me/100726905332735" target="_blank" class="messenger-btn" style="position: fixed; bottom: 25px; right: 25px; background: #0084ff; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9999; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
     <svg viewBox="0 0 28 28" width="35" height="35" fill="white"><path d="M14 2C7.37 2 2 6.93 2 13c0 3.5 1.93 6.6 4.95 8.6-.2.98-.98 3.38-1.04 3.5-.1.22.1.47.33.4.15-.04 3.3-1.07 3.55-1.15.2.06.4.12.6.17 1.6.4 3.29.6 5.01.6 6.63 0 12-4.93 12-11S19.63 2 14 2zm1.14 14.38l-2.57-2.74-5.01 2.74 5.51-5.85 2.62 2.72 4.96-2.72-5.51 5.85z"/></svg>
