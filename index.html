@@ -144,7 +144,7 @@
             body { padding-bottom: 75px; }
             .messenger-btn { bottom: 100px !important; }
             .whatsapp-btn { bottom: 175px !important; } 
-            .viber-btn { bottom: 250px !important; } /* Added so Viber perfectly stacks above WhatsApp on mobile */
+            .viber-btn { bottom: 250px !important; }
         }
 
         /* T&C MODAL STYLES */
@@ -169,7 +169,7 @@
     <div class="header-container">
         <h1 class="logo" onclick="location.reload()">Z<span>connects</span></h1>
         <div class="search-container">
-            <input type="text" id="serviceSearch" onkeyup="filterServices()" placeholder="Search (e.g. AC, Leak, Wiring)...">
+            <input type="text" id="serviceSearch" oninput="filterServices()" placeholder="Search (e.g. AC, Leak, Wiring)...">
         </div>
     </div>
 </header>
@@ -395,7 +395,7 @@
         }
     }
 
-    // --- NEW SMART SEARCH ENGINE ---
+    // --- SMART SEARCH ENGINE WITH MOBILE FIX ---
     function filterServices() {
         let rawInput = document.getElementById('serviceSearch').value.toLowerCase().trim();
         
@@ -415,6 +415,13 @@
                 }
             }
             return;
+        }
+
+        // Auto-scroll to the services section so the user sees the search happening
+        // (Disabled on mobile because programmatic scrolling while a virtual keyboard is open causes glitches)
+        let serviceSection = document.getElementById('serviceList');
+        if (rawInput.length === 1 && window.innerWidth > 768 && window.scrollY < serviceSection.offsetTop - 150) {
+            window.scrollTo({ top: serviceSection.offsetTop - 80, behavior: 'smooth' });
         }
 
         for (let i = 0; i < categories.length; i++) {
