@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data:;">
     
-    <title>ZConnects Manager | V11 Integrated</title>
+    <title>ZConnects Manager | V11 Enterprise</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* CORE STYLES */
-        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; }
+        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; --warning: #f59e0b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); }
         
         /* LOGIN STYLES */
@@ -40,7 +40,7 @@
 
         /* JOB CARDS */
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 30px; }
+        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 35px; }
         .job-card { background: var(--white); border-radius: 24px; padding: 30px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(15, 23, 42, 0.04); position: relative; transition: transform 0.3s ease; }
         .job-card:hover { transform: translateY(-4px); box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08); border-color: var(--primary); }
         
@@ -49,46 +49,36 @@
 
         .card-header { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .job-id { background: #f1f5f9; padding: 6px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; color: var(--slate); }
-        .status-pill { padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; background: #e2e8f0; letter-spacing: 0.5px; }
+        .status-pill { padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; background: #e2e8f0; letter-spacing: 0.5px; color: var(--navy); }
         
-        /* NEW PIPELINE CONTROLS STYLES */
-        .admin-controls { margin-top: 25px; padding: 25px; background: #f8fafc; border-radius: 20px; border: 1px solid var(--border); }
-        .admin-section-title { font-size: 0.85rem; font-weight: 900; color: var(--navy); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-        .control-label { font-size: 0.75rem; font-weight: 800; color: var(--slate); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* PIPELINE UI */
+        .pipeline-track { display: flex; justify-content: space-between; background: #f1f5f9; border-radius: 12px; padding: 10px; margin-bottom: 25px; font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; position: relative; }
+        .pipeline-step { flex: 1; text-align: center; position: relative; z-index: 2; }
+        .pipeline-step.active { color: var(--primary); }
+        .pipeline-step.completed { color: var(--success); }
+
+        /* CONTROLS */
+        .admin-controls { margin-top: 20px; }
+        .form-section { background: var(--light); padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .control-label { font-size: 0.75rem; font-weight: 800; color: var(--slate); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        
         .admin-input { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: 0.3s; background: var(--white); }
         .admin-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         
+        .action-group { display: flex; flex-direction: column; gap: 10px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2); }
+        
+        .btn-secondary { background: var(--white); border: 2px solid var(--border); color: var(--navy); width: 100%; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-secondary:hover { border-color: var(--navy); }
+
         .btn-dp { background: #fef08a; color: #92400e; border: 1px solid #fcd34d; width: 100%; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-dp:hover { background: #fde047; transform: translateY(-1px); }
 
-        .btn-quote { background: var(--primary); color: white; width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
-        .btn-quote:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3); }
-        
-        .btn-draft { background: var(--white); border: 2px solid var(--border); color: var(--slate); width: 100%; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-draft:hover { border-color: var(--navy); color: var(--navy); transform: translateY(-1px); }
+        .btn-complete { background: #dcfce7; color: #166534; width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-complete:hover { background: #bbf7d0; }
 
-        .btn-assign { background: #fef3c7; color: #92400e; width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-assign:hover { background: #fde68a; transform: translateY(-1px); }
-
-        .btn-complete { background: #dcfce7; color: #166534; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 5px; }
-        .btn-complete:hover { background: #bbf7d0; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(22, 163, 74, 0.2); }
-
-        /* REVIEW MODERATION STYLES */
-        .review-box { background: #fffbeb; border: 1px solid #fcd34d; padding: 20px; margin-top: 20px; border-radius: 16px; font-size: 0.9rem; }
-        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 800; color: #92400e; }
-        .review-comment { font-style: italic; color: #4b5563; margin-bottom: 15px; display: block; line-height: 1.5; }
-        .mod-btn-row { display: flex; gap: 10px; }
-        .btn-approve { background: var(--success); color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: 0.2s; }
-        .btn-approve:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2); }
-        .btn-reject { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: 0.2s; }
-        .btn-reject:hover { transform: translateY(-1px); }
-        .status-approved { color: var(--success); background: #dcfce7; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
-        .status-hidden { color: #9ca3af; background: #f3f4f6; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
-        
         /* SPINNER */
         .loader-spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(37, 99, 235, 0.2); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s ease-in-out infinite; margin-bottom: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -116,10 +106,10 @@
         <div class="filter-bar">
             <input type="text" id="searchInput" class="search-input" placeholder="Search name, ID, or category..." onkeyup="applyFilter()">
             <button class="filter-btn active" onclick="setFilter('all', this)">All Jobs</button>
-            <button class="filter-btn" onclick="setFilter('pending', this)">Pending</button>
-            <button class="filter-btn" onclick="setFilter('assigned', this)">Assigned</button>
+            <button class="filter-btn" onclick="setFilter('pending', this)">Pending Review</button>
+            <button class="filter-btn" onclick="setFilter('quoted', this)">Quote Sent</button>
+            <button class="filter-btn" onclick="setFilter('assigned', this)">Dispatched</button>
             <button class="filter-btn" onclick="setFilter('completed', this)">Completed</button>
-            <button class="filter-btn" onclick="setFilter('cancelled', this)">Cancelled</button>
         </div>
     </div>
 </header>
@@ -163,7 +153,6 @@
             renderJobs(jobs);
 
         } catch (err) { 
-            console.error(err);
             alert("Connection Error. Please check your network.");
             loginBtn.innerText = "Unlock Dashboard";
         }
@@ -192,7 +181,6 @@
             renderJobs(jobs);
 
         } catch (err) { 
-            console.error(err);
             alert("Connection Error. Please refresh.");
             document.getElementById('loader').style.display = 'none';
         }
@@ -202,7 +190,8 @@
         status = (status || "").toLowerCase();
         if (status.includes('cancelled')) return 'cancelled'; 
         if (status.includes('completed') || status.includes('done') || status.includes('paid')) return 'completed';
-        if (status.includes('assigned') || status.includes('dispatch') || status.includes('received')) return 'assigned';
+        if (status.includes('quote')) return 'quoted';
+        if (status.includes('assigned') || status.includes('dispatch') || status.includes('ready')) return 'assigned';
         return 'pending'; 
     }
 
@@ -218,26 +207,12 @@
         jobs.forEach(job => {
             const categoryTag = getCategory(job.status);
             const searchText = `${job.id} ${job.name} ${job.status} ${job.category}`.toLowerCase();
-
-            // --- REVIEW SECTION ---
-            let reviewHtml = '';
-            if (job.rating > 0) {
-                const stars = '★'.repeat(job.rating);
-                const isLive = job.reviewStatus === 'APPROVED';
-                reviewHtml = `
-                    <div class="review-box">
-                        <div class="review-header">
-                            <span>Client Rating: <span style="color:#fbbf24; font-size:1.1rem; letter-spacing:1px;">${stars}</span></span>
-                            ${isLive ? '<span class="status-approved">LIVE ON SITE</span>' : '<span class="status-hidden">HIDDEN</span>'}
-                        </div>
-                        <span class="review-comment">"${escapeHTML(job.comment)}"</span>
-                        <div class="mod-btn-row">
-                            ${!isLive ? `<button class="btn-approve" onclick="moderateReview('${job.id}', 'APPROVED')">✅ Publish to Site</button>` : ''}
-                            ${isLive ? `<button class="btn-reject" onclick="moderateReview('${job.id}', 'REJECT')">❌ Hide Review</button>` : ''}
-                        </div>
-                    </div>
-                `;
-            }
+            
+            // Calculate Pipeline Step
+            let step = 1;
+            if (categoryTag === 'quoted') step = 2;
+            if (categoryTag === 'assigned') step = 3;
+            if (categoryTag === 'completed') step = 4;
 
             const card = document.createElement('div');
             card.className = 'job-card';
@@ -246,55 +221,64 @@
 
             card.innerHTML = `
                 <button class="delete-btn" onclick="cancelJob('${escapeHTML(job.id)}')" title="Cancel Booking">×</button>
+                
                 <div class="card-header">
                     <span class="job-id">${escapeHTML(job.id)}</span>
                     <span class="status-pill">${escapeHTML(job.status)}</span>
                 </div>
+                
+                <div class="pipeline-track">
+                    <div class="pipeline-step ${step >= 1 ? (step > 1 ? 'completed' : 'active') : ''}">1. Review</div>
+                    <div class="pipeline-step ${step >= 2 ? (step > 2 ? 'completed' : 'active') : ''}">2. Quoted</div>
+                    <div class="pipeline-step ${step >= 3 ? (step > 3 ? 'completed' : 'active') : ''}">3. Dispatched</div>
+                    <div class="pipeline-step ${step >= 4 ? 'completed' : ''}">4. Done</div>
+                </div>
+
                 <h3 style="margin:0 0 8px 0; color:var(--navy); font-size:1.4rem; font-weight:800; letter-spacing:-0.5px;">${escapeHTML(job.name)}</h3>
                 <div style="color:var(--primary); font-weight:800; font-size:0.95rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px;">${escapeHTML(job.category)} | <span style="color:var(--slate);">${escapeHTML(job.urgency)}</span></div>
-                <div style="background:var(--light); padding:15px; border-radius:12px; font-size:0.95rem; color:var(--slate); margin-bottom:15px; line-height:1.5;">${escapeHTML(job.desc)}</div>
+                <div style="background:var(--white); border: 1px solid var(--border); padding:15px; border-radius:12px; font-size:0.95rem; color:var(--slate); margin-bottom:15px; line-height:1.5;">${escapeHTML(job.desc)}</div>
                 ${job.photo && job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:inline-block; background:#eff6ff; color:var(--primary); font-weight:800; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:0.85rem; margin-bottom:15px; transition:0.2s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">📸 View Attached Photo</a>` : ''}
 
-                ${reviewHtml}
-
                 <div class="admin-controls">
-                    
-                    <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
-                    <div class="input-grid">
-                        <div>
-                            <label class="control-label">Quote Price (PHP)</label>
-                            <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price || '')}">
+                    <div class="form-section">
+                        <div class="input-grid">
+                            <div>
+                                <label class="control-label">Quote Price (PHP)</label>
+                                <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price || '')}">
+                            </div>
+                            <div>
+                                <label class="control-label">Actual Cost (PHP)</label>
+                                <input type="number" id="cost-${job.id}" class="admin-input" placeholder="e.g. 1500" value="${escapeHTML(job.cost || '')}">
+                            </div>
                         </div>
-                        <div>
-                            <label class="control-label">Actual Cost (PHP)</label>
-                            <input type="number" id="cost-${job.id}" class="admin-input" placeholder="e.g. 1500" value="${escapeHTML(job.cost || '')}">
+                        
+                        <label class="control-label">Engineer Notes (Internal)</label>
+                        <input type="text" id="notes-${job.id}" class="admin-input" style="margin-bottom:15px;" placeholder="Technical details, materials needed..." value="${escapeHTML(job.notes || '')}">
+                        
+                        <label class="control-label">Assign Technician</label>
+                        <select id="tech-${job.id}" class="admin-input">
+                            <option value="">-- Select Tech --</option>
+                            <option value="Jasper Jubay" ${job.tech === 'Jasper Jubay' ? 'selected' : ''}>Jasper Jubay</option>
+                            <option value="Francis Intong" ${job.tech === 'Francis Intong' ? 'selected' : ''}>Francis Intong</option>
+                            <option value="Jeffrey Canete" ${job.tech === 'Jeffrey Canete' ? 'selected' : ''}>Jeffrey Canete</option>
+                            <option value="Jerome" ${job.tech === 'Jerome' ? 'selected' : ''}>Jerome</option>
+                            <option value="Lyndon Alburo" ${job.tech === 'Lyndon Alburo' ? 'selected' : ''}>Lyndon Alburo</option>
+                        </select>
+                    </div>
+
+                    <div class="action-group">
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-secondary" style="flex:1;" onclick="saveDraft('${job.id}')">💾 Save Details</button>
+                            <button class="btn-dp" style="flex:1; margin:0;" onclick="updateStatus('${job.id}', 'DP Received - Ready for Dispatch')">💳 Verify DP</button>
+                        </div>
+                        
+                        <button class="btn-primary" onclick="sendQuote('${job.id}')">📧 Send Official Quote (PDF)</button>
+                        
+                        <div style="display:flex; gap:10px; margin-top:5px;">
+                            <button class="btn-secondary" style="flex:1;" onclick="assignTechStatus('${job.id}')">🚀 Deploy Tech</button>
+                            <button class="btn-complete" style="flex:1; margin:0;" onclick="updateStatus('${job.id}', 'Job Completed')">✅ Mark Completed</button>
                         </div>
                     </div>
-                    <label class="control-label">Engineer Notes (Internal)</label>
-                    <input type="text" id="notes-${job.id}" class="admin-input" style="margin-bottom:15px;" placeholder="Technical details, materials needed..." value="${escapeHTML(job.notes || '')}">
-                    <div class="action-grid">
-                        <button class="btn-draft" onclick="saveDraft('${job.id}')">💾 Save Draft</button>
-                        <button class="btn-quote" onclick="sendQuote('${job.id}')">📧 Send Quote</button>
-                    </div>
-
-                    <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
-                    <label class="control-label">Assign Technician</label>
-                    <select id="tech-${job.id}" class="admin-input" style="margin-bottom:15px;">
-                        <option value="">-- Select Tech --</option>
-                        <option value="Jasper Jubay" ${job.tech === 'Jasper Jubay' ? 'selected' : ''}>Jasper Jubay</option>
-                        <option value="Francis Intong" ${job.tech === 'Francis Intong' ? 'selected' : ''}>Francis Intong</option>
-                        <option value="Jeffrey Canete" ${job.tech === 'Jeffrey Canete' ? 'selected' : ''}>Jeffrey Canete</option>
-                        <option value="Jerome" ${job.tech === 'Jerome' ? 'selected' : ''}>Jerome</option>
-                        <option value="Lyndon Alburo" ${job.tech === 'Lyndon Alburo' ? 'selected' : ''}>Lyndon Alburo</option>
-                    </select>
-                    <div class="action-grid">
-                        <button class="btn-dp" onclick="updateStatus('${job.id}', 'DP Received - Ready for Dispatch')">💳 Verify DP</button>
-                        <button class="btn-assign" onclick="assignTechStatus('${job.id}')">Deploy Tech</button>
-                    </div>
-
-                    <div class="admin-section-title" style="margin-bottom: 10px;"><span>✅</span> Phase 3: Completion</div>
-                    <button class="btn-complete" onclick="updateStatus('${job.id}', 'Job Completed')">Mark as Completed</button>
-
                 </div>
             `;
             grid.appendChild(card);
@@ -339,17 +323,8 @@
         return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    async function moderateReview(id, status) {
-        if(!confirm(status === 'APPROVED' ? "Publish this review to the live website?" : "Hide this review from the public?")) return;
-        const res = await sendAction({ action: 'moderate_review', bookingId: id, status: status });
-        if(!res.error) {
-            alert(status === 'APPROVED' ? "Review is now Live!" : "Review Hidden.");
-            loadJobs(currentPass);
-        }
-    }
-
     async function cancelJob(id) {
-        if(!confirm(`⚠️ CANCEL BOOKING ${id}?\n\nThis will hide the job from the main view and mark it as cancelled.`)) return;
+        if(!confirm(`⚠️ CANCEL BOOKING ${id}?\n\nThis will mark it as cancelled.`)) return;
         const res = await sendAction({ action: 'cancel_booking', bookingId: id });
         if(!res.error) loadJobs(currentPass);
     }
@@ -363,7 +338,7 @@
         const btn = event.target;
         btn.innerText = "Saving...";
         const res = await sendAction({ action: 'save_draft', bookingId: id, price: price, cost: cost, notes: notes, tech: tech });
-        btn.innerText = "💾 Save Draft";
+        btn.innerText = "💾 Save Details";
         if(!res.error) alert("Details securely saved!");
     }
 
@@ -383,7 +358,7 @@
             alert("Quote successfully sent to client!");
             loadJobs(currentPass);
         } else {
-            btn.innerText = "📧 Send Quote";
+            btn.innerText = "📧 Send Official Quote (PDF)";
         }
     }
 
