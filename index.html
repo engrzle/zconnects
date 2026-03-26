@@ -143,7 +143,8 @@
             .mobile-nav { display: flex; }
             body { padding-bottom: 75px; }
             .messenger-btn { bottom: 100px !important; }
-            .whatsapp-btn { bottom: 175px !important; } /* Adjusted to sit above messenger on mobile */
+            .whatsapp-btn { bottom: 175px !important; } 
+            .viber-btn { bottom: 250px !important; } /* Added so Viber perfectly stacks above WhatsApp on mobile */
         }
 
         /* T&C MODAL STYLES */
@@ -315,7 +316,7 @@
     <div class="contact-grid">
         <div class="contact-item"><h4>📍 Service Area</h4><p>Metro Cebu (Cebu City, Mandaue, Lapu-Lapu, Talisay, and neighboring towns).</p></div>
         <div class="contact-item"><h4>⏰ Operating Hours</h4><p>Mon – Sat | 8:00 AM – 6:00 PM (Emergency 24/7)</p></div>
-        <div class="contact-item"><h4>📱 Mobile</h4><p>0915 578 3425</p></div>
+        <div class="contact-item"><h4>📱 Mobile</h4><p>0992 826 2180</p></div>
         <div class="contact-item"><h4>📧 Email</h4><p>zconnectscebu@gmail.com</p></div>
     </div>
 </section>
@@ -448,7 +449,6 @@
     document.getElementById('quoteForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // --- ADDED: Location Validation Check ---
         const locCheck = document.getElementById('custLocation').value;
         if (locCheck === 'Other') {
             alert("Notice: Our rapid dispatch is currently optimized for Metro Cebu. We will review your request, but please expect potential scheduling delays or out-of-town mobilization charges.");
@@ -504,7 +504,11 @@
     });
 </script>
 
-<a href="https://wa.me/639155783425" target="_blank" class="whatsapp-btn" style="position: fixed; bottom: 100px; right: 25px; background: #25D366; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9998; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+<a href="viber://chat?number=%2B639928262180" target="_blank" class="viber-btn" style="position: fixed; bottom: 175px; right: 25px; background: #7360f2; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9997; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    <svg viewBox="0 0 512 512" width="34" height="34" fill="white"><path d="M444 49.9C431.3 38.2 379.9 .9 265.3 .4c0 0-135.1-8.1-200.9 52.3C27.8 89.3 14.9 143 13.5 209.5c-1.4 66.5-3.1 191.1 117 224.9h.1l-.1 51.6s-.8 20.9 13 25.1c16.6 5.2 26.4-10.7 42.3-27.8 8.7-9.4 20.4-23.2 29.4-33.8 11.4 1.2 23.3 1.9 35.6 1.9 113.9 0 220.3-69 240.2-180.2 25.4-142.1-15.6-193.2-47-221.3zM348.8 300.7c-9.2 24.2-30.8 28.5-36 29.5-6.1 1.2-12.7-1-16.7-2.1-19.4-5.2-61.1-22.7-98-63.5-38.3-42.3-53.5-84.7-57.5-101.4-1.2-5-2.2-12-1-18.4 1-5.6 4.6-26 27.5-35.3 5.4-2.2 12.3-1.6 16.6 .2 4.1 1.7 18 17.5 24 29 4.3 8.3 11 22.8 9.7 33.1-1.3 10.1-11.4 16.7-14.7 18.9-3.2 2.2-7 5.4-2.9 12.7 8.3 14.8 27.2 38.6 49.3 58 20.8 18.2 41.7 30.6 55.7 37 6.4 2.9 9.3 2.1 12.3-.9 4-3.9 12.6-14 15.6-17.5 2.8-3.3 9.3-3.6 13.1-2.4 3.7 1.2 23.7 8.6 32 12.4 8 3.6 12.7 6.6 13.5 10.3 1 4.7-1.1 14.4-4.8 20.3z"/></svg>
+</a>
+
+<a href="https://wa.me/639928262180" target="_blank" class="whatsapp-btn" style="position: fixed; bottom: 100px; right: 25px; background: #25D366; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9998; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
     <svg viewBox="0 0 32 32" width="38" height="38" fill="white"><path d="M16.002 2C8.268 2 2 8.268 2 16.002c0 2.482.65 4.814 1.774 6.86L2.3 29.7l6.983-1.43c1.996 1.034 4.256 1.626 6.72 1.626 7.732 0 14-6.268 14-14S23.734 2 16.002 2zm0 25.545c-2.126 0-4.135-.55-5.9-1.52l-.424-.23-4.38.896.913-4.276-.254-.404A11.455 11.455 0 0 1 4.35 16.002c0-6.426 5.222-11.648 11.652-11.648 6.428 0 11.648 5.22 11.648 11.648S22.43 27.545 16.002 27.545zm6.388-8.736c-.35-.176-2.074-1.024-2.395-1.14-.32-.118-.553-.176-.788.176-.233.35-.905 1.14-1.11 1.374-.202.235-.406.263-.756.088-1.56-.78-2.65-1.442-3.66-3.18-.236-.406.182-.365.526-.88.117-.176.058-.33-.03-.506-.088-.176-.788-1.9-.1-2.075-.853.07-2.6.07-2.776-.176-.235-.553-.66-1.588-1.636-.234-.976.234-1.153.553-1.153 1.34 0 2.222.84 2.536 1.153 3.61 1.66 4.75 2.19 6.205.35 1.454.55 2.51.46 2.872.23.364-.23.554-1.14.364-1.256z"/></svg>
 </a>
 
