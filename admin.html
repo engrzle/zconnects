@@ -5,106 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data:;">
     
-    <title>ZConnects Enterprise | Workspace</title>
+    <title>ZConnects Enterprise | Command Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* CORE STYLES */
-        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; --warning: #f59e0b; --danger: #ef4444; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); }
+        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; --warning: #f59e0b; --danger: #ef4444; --sidebar-bg: #0b1120; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); display: flex; min-height: 100vh; overflow-x: hidden; }
         
-        /* LOGIN STYLES */
+        /* LOGIN & MODALS */
         #loginOverlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .login-box { background: var(--white); padding: 50px 40px; border-radius: 30px; text-align: center; width: 100%; max-width: 320px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .login-box { background: var(--white); padding: 50px 40px; border-radius: 16px; text-align: center; width: 100%; max-width: 320px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .login-logo { font-size: 2rem; font-weight: 900; color: var(--navy); margin: 0 0 20px 0; letter-spacing: -1px; }
         .login-logo span { color: var(--primary); }
-        .login-input { width: 100%; padding: 16px; margin: 15px 0; border: 2px solid var(--border); border-radius: 14px; font-size: 1rem; box-sizing: border-box; transition: 0.3s; background: var(--light); font-family: inherit; }
+        .login-input { width: 100%; padding: 16px; margin: 15px 0; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem; box-sizing: border-box; transition: 0.3s; background: var(--light); font-family: inherit; }
         .login-input:focus { border-color: var(--primary); outline: none; background: var(--white); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .login-btn { background: var(--primary); color: white; width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
+        .login-btn { background: var(--primary); color: white; width: 100%; padding: 16px; border: none; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
         .login-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(37, 99, 235, 0.3); }
-        
-        /* HEADER & DASHBOARD STATS */
-        .admin-header { padding: 20px 5%; background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top:0; z-index: 100; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03); }
-        .header-content { max-width: 1200px; margin: 0 auto; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-weight: 900; font-size: 1.6rem; color: var(--navy); letter-spacing: -1px; }
-        .logo span { color: var(--primary); }
-        
-        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--light); border: 1px solid var(--border); padding: 15px 20px; border-radius: 16px; display: flex; flex-direction: column; }
-        .stat-label { font-size: 0.75rem; font-weight: 800; color: var(--slate); text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 1.8rem; font-weight: 900; color: var(--navy); margin-top: 5px; }
+        .trust-badge { font-size: 0.75rem; color: var(--slate); margin-top: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
-        /* WORKSPACE TABS */
-        .workspace-tabs { display: flex; gap: 10px; border-bottom: 2px solid var(--border); padding-bottom: 15px; overflow-x: auto; scrollbar-width: none; }
-        .workspace-tabs::-webkit-scrollbar { display: none; }
-        .tab-btn { padding: 10px 20px; border: none; background: transparent; cursor: pointer; font-size: 0.95rem; font-weight: 800; color: var(--slate); transition: 0.3s; position: relative; white-space: nowrap; }
-        .tab-btn:hover { color: var(--navy); }
-        .tab-btn.active { color: var(--primary); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -17px; left: 0; width: 100%; height: 4px; background: var(--primary); border-radius: 4px 4px 0 0; }
-        
-        .search-container { display: flex; gap: 10px; margin-top: 20px; }
-        .search-input { padding: 12px 20px; border: 2px solid var(--border); background: #f8fafc; border-radius: 12px; font-size: 0.95rem; flex: 1; transition: 0.3s; outline: none; font-family: inherit; font-weight: 500; }
-        .search-input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.1); }
+        .confirm-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 3000; align-items: center; justify-content: center; }
+        .confirm-box { background: white; width: 90%; max-width: 420px; padding: 45px; border-radius: 16px; text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .confirm-btns { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-reject-action { flex: 2; background: var(--danger); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-reject-action:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-go-back { flex: 1; background: #f1f5f9; color: var(--slate); border: none; padding: 16px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-go-back:hover { background: #e2e8f0; }
 
-        /* JOB CARDS */
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 30px; }
-        .job-card { background: var(--white); border-radius: 24px; padding: 30px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03); position: relative; transition: 0.3s ease; }
-        .job-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06); border-color: #cbd5e1; }
+        /* ENTERPRISE APP LAYOUT */
+        .sidebar { width: 280px; background: var(--sidebar-bg); color: var(--white); display: flex; flex-direction: column; padding: 30px 20px; box-sizing: border-box; position: fixed; height: 100vh; left: 0; top: 0; z-index: 500; border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-logo { font-size: 1.8rem; font-weight: 900; color: var(--white); letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px; }
+        .sidebar-logo span { color: var(--primary); }
         
-        .delete-btn { position: absolute; top: 25px; right: 25px; color: var(--danger); background: #fee2e2; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.2rem; transition: 0.2s; }
-        .delete-btn:hover { background: var(--danger); color: white; transform: scale(1.1); }
+        .workspace-tabs { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .tab-btn { padding: 14px 20px; border: none; background: transparent; cursor: pointer; font-size: 0.95rem; font-weight: 700; color: #94a3b8; text-align: left; border-radius: 8px; transition: 0.2s ease; display: flex; align-items: center; gap: 12px; }
+        .tab-btn:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+        .tab-btn.active { background: var(--primary); color: var(--white); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2); }
+        
+        .sidebar-footer { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; }
+        .btn-sync { background: rgba(255,255,255,0.1); color: var(--white); width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-sync:hover { background: rgba(255,255,255,0.2); }
 
-        .card-header { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .job-id { background: #f1f5f9; padding: 6px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; color: var(--slate); }
-        .status-pill { padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; background: #e2e8f0; letter-spacing: 0.5px; color: var(--navy); }
+        .main-wrapper { margin-left: 280px; width: calc(100% - 280px); display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* TOP BAR */
+        .topbar { background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02); }
+        .search-container { flex: 1; max-width: 500px; }
+        .search-input { width: 100%; padding: 12px 20px; border: 2px solid var(--border); background: #f8fafc; border-radius: 8px; font-size: 0.95rem; transition: 0.3s; outline: none; font-family: inherit; font-weight: 500; box-sizing: border-box; }
+        .search-input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        
+        .analytics-grid { display: flex; gap: 20px; }
+        .stat-card { display: flex; flex-direction: column; text-align: right; }
+        .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--slate); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--navy); line-height: 1; margin-top: 4px; }
+        .stat-value.text-primary { color: var(--primary); }
+
+        /* JOB CARDS CANVAS */
+        .content-canvas { padding: 40px; flex-grow: 1; }
+        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 25px; align-items: start; }
+        
+        .job-card { background: var(--white); border-radius: 12px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(15, 23, 42, 0.02); position: relative; transition: 0.2s ease; }
+        .job-card:hover { border-color: #cbd5e1; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); }
+        
+        .delete-btn { position: absolute; top: 20px; right: 20px; color: var(--slate); background: transparent; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid transparent; font-size: 1.2rem; transition: 0.2s; }
+        .delete-btn:hover { background: #fee2e2; color: var(--danger); border-color: #fca5a5; }
+
+        .card-header { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .job-id { background: #f1f5f9; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 800; color: var(--slate); border: 1px solid var(--border); }
+        .status-pill { padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; background: #e2e8f0; letter-spacing: 0.5px; color: var(--navy); }
         
         /* PIPELINE UI */
-        .pipeline-track { display: flex; justify-content: space-between; background: #f1f5f9; border-radius: 12px; padding: 10px; margin-bottom: 25px; font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pipeline-track { display: flex; justify-content: space-between; background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 25px; font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid var(--border); }
         .pipeline-step { flex: 1; text-align: center; }
         .pipeline-step.active { color: var(--primary); }
         .pipeline-step.completed { color: var(--success); }
 
-        /* COLLAPSIBLE ADMIN CONTROLS */
-        .toggle-manage-btn { background: #f1f5f9; color: var(--navy); width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .job-title { margin:0 0 8px 0; color:var(--navy); font-size:1.3rem; font-weight:800; letter-spacing:-0.5px; }
+        .job-meta { color:var(--primary); font-weight:800; font-size:0.85rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px; }
+        .job-desc { background:var(--light); padding:15px; border-radius:8px; font-size:0.9rem; color:var(--slate); margin-bottom:15px; line-height:1.6; border: 1px solid var(--border); }
+        
+        /* FORM CONTROLS */
+        .toggle-manage-btn { background: #f1f5f9; color: var(--navy); width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .toggle-manage-btn:hover { background: #e2e8f0; }
         
-        .admin-controls { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .admin-controls { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); animation: slideDown 0.2s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .admin-section-title { font-size: 0.85rem; font-weight: 900; color: var(--navy); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-        .control-label { font-size: 0.75rem; font-weight: 800; color: var(--slate); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        .admin-section-title { font-size: 0.75rem; font-weight: 900; color: var(--navy); margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .control-label { font-size: 0.7rem; font-weight: 800; color: var(--slate); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         
-        .admin-input { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: 0.3s; background: var(--white); }
+        .admin-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; transition: 0.2s; background: var(--white); }
         .admin-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         
-        /* BUTTONS */
-        .btn-dp { background: #fef08a; color: #92400e; border: 1px solid #fcd34d; width: 100%; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-dp:hover { background: #fde047; transform: translateY(-1px); }
-        .btn-quote { background: var(--primary); color: white; width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
-        .btn-quote:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3); }
-        .btn-draft { background: var(--white); border: 2px solid var(--border); color: var(--slate); width: 100%; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        /* SHARPER ENTERPRISE BUTTONS */
+        .btn-dp { background: #fef08a; color: #92400e; border: 1px solid #fcd34d; width: 100%; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-dp:hover { background: #fde047; }
+        .btn-quote { background: var(--primary); color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-quote:hover { background: #1d4ed8; }
+        .btn-draft { background: var(--white); border: 1px solid var(--border); color: var(--slate); width: 100%; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .btn-draft:hover { border-color: var(--navy); color: var(--navy); }
-        .btn-assign { background: #fef3c7; color: #92400e; width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-assign { background: #fef3c7; color: #92400e; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .btn-assign:hover { background: #fde68a; }
-        .btn-complete { background: #dcfce7; color: #166534; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 5px; }
-        .btn-complete:hover { background: #bbf7d0; transform: translateY(-2px); }
-
-        /* MODALS */
-        .confirm-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 3000; align-items: center; justify-content: center; }
-        .confirm-box { background: white; width: 90%; max-width: 420px; padding: 45px; border-radius: 30px; text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .confirm-btns { display: flex; gap: 15px; margin-top: 30px; }
-        .btn-reject-action { flex: 2; background: var(--danger); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-reject-action:hover { background: #dc2626; transform: translateY(-2px); }
-        .btn-go-back { flex: 1; background: #f1f5f9; color: var(--slate); border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-go-back:hover { background: #e2e8f0; }
+        .btn-complete { background: #dcfce7; color: #166534; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; margin-top: 5px; }
+        .btn-complete:hover { background: #bbf7d0; }
 
         .loader-spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(37, 99, 235, 0.2); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s ease-in-out infinite; margin-bottom: 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* RESPONSIVE LAYOUT */
+        @media (max-width: 1024px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: static; padding: 20px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .workspace-tabs { flex-direction: row; overflow-x: auto; padding-bottom: 10px; }
+            .sidebar-logo { margin-bottom: 20px; }
+            .sidebar-footer { border-top: none; padding-top: 0; margin-top: 10px; }
+            .main-wrapper { margin-left: 0; width: 100%; }
+            .topbar { flex-direction: column; gap: 20px; align-items: stretch; padding: 20px; }
+            .search-container { max-width: 100%; }
+            .analytics-grid { justify-content: space-between; }
+            .content-canvas { padding: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -114,7 +136,7 @@
         <div class="login-logo">Z<span>connects</span></div>
         <h3 style="margin:0 0 15px 0; color:var(--slate); font-size:1rem;">Enterprise Workspace</h3>
         <input type="password" id="adminPass" class="login-input" placeholder="Enter Secure Password">
-        <button class="login-btn" onclick="verifyLogin()">Unlock Environment</button>
+        <button class="login-btn" onclick="verifyLogin()">Authenticate</button>
         <div class="trust-badge">🔒 256-bit Encrypted Connection</div>
         <p id="loginError" style="color:#ef4444; display:none; margin-top:15px; font-size:0.85rem; font-weight:700;">Incorrect Password</p>
     </div>
@@ -125,7 +147,7 @@
         <h3 style="margin-top:0; color:var(--navy);">Cancel Booking</h3>
         <p style="color:var(--slate); font-size:0.95rem; margin-bottom:20px;">Please select the primary reason for cancellation.</p>
         
-        <select id="cancelReasonInput" class="admin-input" style="text-align: left;">
+        <select id="cancelReasonInput" class="admin-input" style="text-align: left; margin-bottom: 0;">
             <option value="Client will no longer proceed">Client will no longer proceed</option>
             <option value="Out of budget / Price too high">Out of budget / Price too high</option>
             <option value="Resolved internally / Self-fixed">Resolved internally / Self-fixed</option>
@@ -139,41 +161,53 @@
     </div>
 </div>
 
-<header class="admin-header">
-    <div class="header-content">
-        <div class="top-row">
-            <div class="logo">Zconnects <span>Manager</span></div>
-            <button onclick="loadJobs(currentPass)" style="border:none; background:none; color:var(--primary); font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; gap:5px; transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">↻ Sync Data</button>
+<aside class="sidebar">
+    <div class="sidebar-logo">Z<span>connects</span></div>
+    
+    <nav class="workspace-tabs">
+        <button class="tab-btn active" onclick="setWorkspace('inbox', this)">📥 Inbox (New)</button>
+        <button class="tab-btn" onclick="setWorkspace('pipeline', this)">🚀 Active Pipeline</button>
+        <button class="tab-btn" onclick="setWorkspace('completed', this)">✅ Completed</button>
+        <button class="tab-btn" onclick="setWorkspace('archive', this)">🗄️ Cancelled Archive</button>
+        <button class="tab-btn" onclick="setWorkspace('all', this)">📋 All Records</button>
+    </nav>
+
+    <div class="sidebar-footer">
+        <button class="btn-sync" onclick="loadJobs(currentPass)">↻ Sync Data</button>
+    </div>
+</aside>
+
+<main class="main-wrapper">
+    <header class="topbar">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Omni-Search (Name, ID, Phone, Tech, Notes)..." oninput="applyFilter()">
         </div>
         
         <div class="analytics-grid">
-            <div class="stat-card"><span class="stat-label">Inbox (Pending)</span><span class="stat-value" id="stat-inbox">0</span></div>
-            <div class="stat-card"><span class="stat-label">Active Pipeline</span><span class="stat-value" id="stat-active">0</span></div>
-            <div class="stat-card"><span class="stat-label">Completed Jobs</span><span class="stat-value" id="stat-completed">0</span></div>
+            <div class="stat-card">
+                <span class="stat-label">Inbox</span>
+                <span class="stat-value" id="stat-inbox">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Active</span>
+                <span class="stat-value text-primary" id="stat-active">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Completed</span>
+                <span class="stat-value" id="stat-completed">0</span>
+            </div>
         </div>
+    </header>
 
-        <div class="workspace-tabs">
-            <button class="tab-btn active" onclick="setWorkspace('inbox', this)">📥 Inbox (New)</button>
-            <button class="tab-btn" onclick="setWorkspace('pipeline', this)">🚀 Active Pipeline</button>
-            <button class="tab-btn" onclick="setWorkspace('completed', this)">✅ Completed</button>
-            <button class="tab-btn" onclick="setWorkspace('archive', this)">🗄️ Cancelled Archive</button>
-            <button class="tab-btn" onclick="setWorkspace('all', this)">All Records</button>
+    <div class="content-canvas">
+        <div id="loader" style="text-align:center; padding:60px 20px; display:none;">
+            <div class="loader-spinner"></div>
+            <div style="color:var(--slate); font-weight:700;">Syncing secure data...</div>
         </div>
-        
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search ANY keyword (Name, ID, Tech, Description, Notes)..." oninput="applyFilter()">
-        </div>
+        <div id="jobsGrid" class="jobs-grid"></div>
+        <div id="noResultsMsg" style="display:none; text-align:center; color:var(--slate); width:100%; padding: 40px; background:white; border-radius:12px; border:1px dashed var(--border); font-weight:600;">No records found in this workspace.</div>
     </div>
-</header>
-
-<div class="container">
-    <div id="loader" style="text-align:center; padding:60px 20px; display:none;">
-        <div class="loader-spinner"></div>
-        <div style="color:var(--slate); font-weight:700;">Syncing secure data...</div>
-    </div>
-    <div id="jobsGrid" class="jobs-grid"></div>
-    <div id="noResultsMsg" style="display:none; text-align:center; color:var(--slate); width:100%; padding: 40px; background:white; border-radius:20px; border:1px dashed var(--border); font-weight:600;">No records found in this workspace.</div>
-</div>
+</main>
 
 <script>
     const APP_URL = 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec';
@@ -195,7 +229,7 @@
 
             if(jobs.error) { 
                 document.getElementById('loginError').style.display = 'block';
-                loginBtn.innerText = "Unlock Environment";
+                loginBtn.innerText = "Authenticate";
                 return; 
             }
             
@@ -205,7 +239,7 @@
 
         } catch (err) { 
             alert("Connection Error. Please check your network.");
-            loginBtn.innerText = "Unlock Environment";
+            loginBtn.innerText = "Authenticate";
         }
     }
 
@@ -233,7 +267,6 @@
         }
     }
 
-    // Updates Top Level Dashboard Stats
     function updateAnalytics(jobs) {
         let inboxCount = 0, activeCount = 0, completeCount = 0;
         
@@ -249,7 +282,6 @@
         document.getElementById('stat-completed').innerText = completeCount;
     }
 
-    // Maps status text to a Workspace Tab
     function getWorkspaceTag(status) {
         status = (status || "").toLowerCase();
         if (status.includes('cancel')) return 'archive'; 
@@ -270,12 +302,10 @@
 
         jobs.forEach(job => {
             const workspaceTag = getWorkspaceTag(job.status);
-            
-            // UPDATED SEARCH TEXT: We inject Phone, Email, Location, Tech, and Notes!
             const searchText = `${job.id} ${job.name} ${job.email || ''} ${job.phone || ''} ${job.location || ''} ${job.status} ${job.category} ${job.urgency} ${job.desc} ${job.tech || ''} ${job.notes || ''}`.toLowerCase();
             
             let step = 1;
-            if (workspaceTag === 'pipeline') step = 2; // Default to quoted
+            if (workspaceTag === 'pipeline') step = 2; 
             if ((job.status||"").toLowerCase().includes('dispatch') || (job.status||"").toLowerCase().includes('assign')) step = 3;
             if (workspaceTag === 'completed') step = 4;
 
@@ -285,7 +315,7 @@
             card.dataset.search = searchText;
 
             card.innerHTML = `
-                ${workspaceTag !== 'completed' && workspaceTag !== 'archive' ? `<button class="delete-btn" onclick="openCancelModal('${escapeHTML(job.id)}')" title="Cancel Booking">×</button>` : ''}
+                ${workspaceTag !== 'completed' && workspaceTag !== 'archive' ? `<button class="delete-btn" onclick="openCancelModal('${escapeHTML(job.id)}')" title="Cancel Booking">✕</button>` : ''}
                 
                 <div class="card-header">
                     <span class="job-id">${escapeHTML(job.id)}</span>
@@ -295,14 +325,15 @@
                 <div class="pipeline-track">
                     <div class="pipeline-step ${step >= 1 ? (step > 1 ? 'completed' : 'active') : ''}">1. Review</div>
                     <div class="pipeline-step ${step >= 2 ? (step > 2 ? 'completed' : 'active') : ''}">2. Quoted</div>
-                    <div class="pipeline-step ${step >= 3 ? (step > 3 ? 'completed' : 'active') : ''}">3. Dispatched</div>
+                    <div class="pipeline-step ${step >= 3 ? (step > 3 ? 'completed' : 'active') : ''}">3. Dispatch</div>
                     <div class="pipeline-step ${step >= 4 ? 'completed' : ''}">4. Done</div>
                 </div>
 
-                <h3 style="margin:0 0 8px 0; color:var(--navy); font-size:1.4rem; font-weight:800; letter-spacing:-0.5px;">${escapeHTML(job.name)}</h3>
-                <div style="color:var(--primary); font-weight:800; font-size:0.95rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px;">${escapeHTML(job.category)} | <span style="color:var(--slate);">${escapeHTML(job.urgency)}</span></div>
-                <div style="background:var(--white); border: 1px solid var(--border); padding:15px; border-radius:12px; font-size:0.95rem; color:var(--slate); margin-bottom:15px; line-height:1.5;">${escapeHTML(job.desc)}</div>
-                ${job.photo && job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:inline-block; background:#eff6ff; color:var(--primary); font-weight:800; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:0.85rem; margin-bottom:15px; transition:0.2s;">📸 View Attached Photo</a>` : ''}
+                <h3 class="job-title">${escapeHTML(job.name)}</h3>
+                <div class="job-meta">${escapeHTML(job.category)} | <span style="color:var(--slate);">${escapeHTML(job.urgency)}</span></div>
+                <div class="job-desc">${escapeHTML(job.desc)}</div>
+                
+                ${job.photo && job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:inline-block; background:#eff6ff; color:var(--primary); font-weight:800; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:0.8rem; margin-bottom:15px; border: 1px solid #bfdbfe;">📸 Attached Photo</a>` : ''}
 
                 ${workspaceTag !== 'archive' ? `<button class="toggle-manage-btn" onclick="toggleControls('${job.id}')">⚙️ Manage Workflow Options</button>` : ''}
 
@@ -340,7 +371,7 @@
                         <button class="btn-assign" onclick="assignTechStatus('${job.id}')">Deploy Tech</button>
                     </div>
 
-                    <div class="admin-section-title" style="margin-bottom: 10px;"><span>✅</span> Phase 3: Completion</div>
+                    <div class="admin-section-title" style="margin-bottom: 12px;"><span>✅</span> Phase 3: Completion</div>
                     <button class="btn-complete" onclick="updateStatus('${job.id}', 'Job Completed')">Mark as Completed</button>
                 </div>
             `;
@@ -350,7 +381,6 @@
         applyFilter(); 
     }
 
-    // Toggle Collapsible Controls
     function toggleControls(id) {
         const controls = document.getElementById(`controls-${id}`);
         controls.style.display = (controls.style.display === 'block') ? 'none' : 'block';
@@ -392,7 +422,6 @@
         return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // Modal Logic for Cancellation
     function openCancelModal(id) {
         cancelTargetId = id;
         document.getElementById('cancelModal').style.display = 'flex';
@@ -409,13 +438,10 @@
         const statusString = "Cancelled - " + reason;
         
         document.querySelector('.btn-reject-action').innerText = "Cancelling...";
-        
-        // We use 'update_status' to elegantly push the reason into the status column!
         const res = await sendAction({ action: 'update_status', bookingId: cancelTargetId, newStatus: statusString });
         
         closeCancelModal();
         document.querySelector('.btn-reject-action').innerText = "Confirm Cancellation";
-        
         if(!res.error) loadJobs(currentPass);
     }
 
@@ -442,7 +468,7 @@
         if(!confirm(`Send official PDF quote of ₱${price} to the client?`)) return;
         
         const btn = event.target;
-        btn.innerText = "Generating PDF & Sending...";
+        btn.innerText = "Generating PDF...";
         const res = await sendAction({ action: 'save_and_send_quote', bookingId: id, price: price, cost: cost, notes: notes, tech: tech });
         if(!res.error) {
             alert("Quote successfully delivered!");
@@ -466,15 +492,7 @@
         }
         if(!confirm(`Deploy ${tech} for this maintenance job?`)) return;
         
-        await sendAction({ 
-            action: 'save_draft', 
-            bookingId: id, 
-            price: document.getElementById(`price-${id}`).value, 
-            cost: document.getElementById(`cost-${id}`).value, 
-            notes: document.getElementById(`notes-${id}`).value, 
-            tech: tech 
-        });
-        
+        await sendAction({ action: 'save_draft', bookingId: id, price: document.getElementById(`price-${id}`).value, cost: document.getElementById(`cost-${id}`).value, notes: document.getElementById(`notes-${id}`).value, tech: tech });
         const res = await sendAction({ action: 'update_status', bookingId: id, newStatus: `Dispatched: ${tech}` });
         if(!res.error) loadJobs(currentPass);
     }
@@ -483,8 +501,7 @@
         payload.password = currentPass; 
         try {
             const response = await fetch(APP_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
+                method: 'POST', body: JSON.stringify(payload)
             });
             const data = await response.json();
             if(data.error) {
