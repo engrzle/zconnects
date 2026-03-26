@@ -395,12 +395,41 @@
         }
     }
 
+    // UPDATED FUNCTION: Smooth scrolling & exact sub-service matching
     function filterServices() {
         let input = document.getElementById('serviceSearch').value.toLowerCase();
-        let cards = document.getElementsByClassName('category-card');
-        for (let i = 0; i < cards.length; i++) {
-            let txt = cards[i].innerText.toLowerCase();
-            cards[i].style.display = txt.includes(input) ? "block" : "none";
+        let categories = document.getElementsByClassName('category-card');
+        
+        // Auto-scroll to the services section so the user sees the search happening
+        let serviceSection = document.getElementById('serviceList');
+        if (input.length === 1 && window.scrollY < serviceSection.offsetTop - 150) {
+            window.scrollTo({ top: serviceSection.offsetTop - 80, behavior: 'smooth' });
+        }
+
+        for (let i = 0; i < categories.length; i++) {
+            let category = categories[i];
+            let subServices = category.getElementsByClassName('sub-service-item');
+            
+            // Check if the search matches the main category title (e.g., "Plumbing")
+            let categoryMatch = category.querySelector('.cat-title').innerText.toLowerCase().includes(input) || 
+                                category.querySelector('.cat-intro').innerText.toLowerCase().includes(input);
+            
+            let hasVisibleSubService = false;
+
+            for (let j = 0; j < subServices.length; j++) {
+                let subText = subServices[j].innerText.toLowerCase();
+                
+                // Show the specific service if it matches the search, OR if the whole category matches
+                if (categoryMatch || subText.includes(input)) {
+                    subServices[j].style.display = "block";
+                    hasVisibleSubService = true;
+                } else {
+                    subServices[j].style.display = "none"; // Hide irrelevant sub-services
+                }
+            }
+
+            // Hide the entire category box if nothing inside it matches the search
+            category.style.display = hasVisibleSubService ? "block" : "none";
         }
     }
     
