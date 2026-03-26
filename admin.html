@@ -8,7 +8,7 @@
     <title>ZConnects Manager | V11 Integrated</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* CORE STYLES matched with index.html */
+        /* CORE STYLES */
         :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); }
         
@@ -57,6 +57,9 @@
         .admin-input { width: 100%; padding: 14px; margin-bottom: 15px; border: 2px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: 0.3s; background: var(--light); }
         .admin-input:focus { border-color: var(--primary); outline: none; background: var(--white); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         
+        .btn-dp { background: #fef08a; color: #92400e; border: 1px solid #fcd34d; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-bottom: 10px; transition: 0.3s; }
+        .btn-dp:hover { background: #fde047; transform: translateY(-1px); }
+
         .btn-quote { background: var(--primary); color: white; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2); }
         .btn-quote:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(37, 99, 235, 0.3); }
         
@@ -111,6 +114,7 @@
             <button class="filter-btn" onclick="setFilter('pending', this)">Pending</button>
             <button class="filter-btn" onclick="setFilter('assigned', this)">Assigned</button>
             <button class="filter-btn" onclick="setFilter('completed', this)">Completed</button>
+            <button class="filter-btn" onclick="setFilter('cancelled', this)">Cancelled</button>
         </div>
     </div>
 </header>
@@ -137,21 +141,18 @@
         loginBtn.innerText = "Verifying securely...";
 
         try {
-            // Secure check: Send password to backend to verify
             const response = await fetch(`${APP_URL}?action=get_admin_data`, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'get_admin_data', password: pass }) 
             });
             const jobs = await response.json();
 
-            // If backend rejects it
             if(jobs.error) { 
                 document.getElementById('loginError').style.display = 'block';
                 loginBtn.innerText = "Unlock Dashboard";
                 return; 
             }
             
-            // Password accepted!
             currentPass = pass;
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('loginError').style.display = 'none';
@@ -195,8 +196,9 @@
 
     function getCategory(status) {
         status = (status || "").toLowerCase();
+        if (status.includes('cancelled')) return 'cancelled'; 
         if (status.includes('completed') || status.includes('done') || status.includes('paid')) return 'completed';
-        if (status.includes('assigned') || status.includes('dispatch')) return 'assigned';
+        if (status.includes('assigned') || status.includes('dispatch') || status.includes('received')) return 'assigned';
         return 'pending'; 
     }
 
@@ -239,7 +241,7 @@
             card.dataset.search = searchText;
 
             card.innerHTML = `
-                <button class="delete-btn" onclick="deleteJob('${escapeHTML(job.id)}')" title="Delete Booking">×</button>
+                <button class="delete-btn" onclick="cancelJob('${escapeHTML(job.id)}')" title="Cancel Booking">×</button>
                 <div class="card-header">
                     <span class="job-id">${escapeHTML(job.id)}</span>
                     <span class="status-pill">${escapeHTML(job.status)}</span>
@@ -252,16 +254,36 @@
                 ${reviewHtml}
 
                 <div class="admin-controls">
-                    <label class="control-label">Quote Price (PHP)</label>
-                    <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price || '')}">
+                    <div style="display:flex; gap:10px;">
+                        <div style="flex:1;">
+                            <label class="control-label">Quote Price (PHP)</label>
+                            <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price || '')}">
+                        </div>
+                        <div style="flex:1;">
+                            <label class="control-label">Actual Cost (PHP)</label>
+                            <input type="number" id="cost-${job.id}" class="admin-input" placeholder="e.g. 1500" value="${escapeHTML(job.cost || '')}">
+                        </div>
+                    </div>
+                    
                     <label class="control-label">Engineer Notes (Internal)</label>
                     <input type="text" id="notes-${job.id}" class="admin-input" placeholder="Technical details, materials needed..." value="${escapeHTML(job.notes || '')}">
                     
-                    <button class="btn-draft" onclick="saveDraft('${job.id}')">💾 Save Details (No Email)</button>
+                    <label class="control-label">Assign Technician</label>
+                    <select id="tech-${job.id}" class="admin-input">
+                        <option value="">-- Select Tech --</option>
+                        <option value="Jasper Jubay" ${job.tech === 'Jasper Jubay' ? 'selected' : ''}>Jasper Jubay</option>
+                        <option value="Francis Intong" ${job.tech === 'Francis Intong' ? 'selected' : ''}>Francis Intong</option>
+                        <option value="Jeffrey Canete" ${job.tech === 'Jeffrey Canete' ? 'selected' : ''}>Jeffrey Canete</option>
+                        <option value="Jerome" ${job.tech === 'Jerome' ? 'selected' : ''}>Jerome</option>
+                        <option value="Lyndon Alburo" ${job.tech === 'Lyndon Alburo' ? 'selected' : ''}>Lyndon Alburo</option>
+                    </select>
+
+                    <button class="btn-dp" onclick="updateStatus('${job.id}', 'DP Received - Ready for Dispatch')">💳 Verify DP Received</button>
+                    <button class="btn-draft" onclick="saveDraft('${job.id}')">💾 Save Details & Assignment</button>
                     <button class="btn-quote" onclick="sendQuote('${job.id}')">📧 Send Official Quote</button>
 
                     <div class="btn-row">
-                        <button class="btn-small btn-assign" onclick="updateStatus('${job.id}', 'Technician Assigned')">Assign Tech</button>
+                        <button class="btn-small btn-assign" onclick="assignTechStatus('${job.id}')">Deploy Tech</button>
                         <button class="btn-small btn-complete" onclick="updateStatus('${job.id}', 'Job Completed')">Mark Complete</button>
                     </div>
                 </div>
@@ -287,7 +309,9 @@
         cards.forEach(card => {
             const cardCategory = card.dataset.category;
             const cardSearchText = card.dataset.search;
-            const categoryMatch = (activeCategory === 'all') || (activeCategory === cardCategory);
+            
+            // Adjust logic so "All Jobs" excludes "cancelled" unless searched directly
+            const categoryMatch = (activeCategory === 'all' && cardCategory !== 'cancelled') || (activeCategory === cardCategory);
             const searchMatch = cardSearchText.includes(searchTerm);
 
             if (categoryMatch && searchMatch) {
@@ -316,30 +340,37 @@
         }
     }
 
-    async function deleteJob(id) {
-        if(!confirm(`⚠️ DELETE BOOKING ${id}?\n\nThis cannot be undone.`)) return;
-        const res = await sendAction({ action: 'delete_booking', bookingId: id });
+    async function cancelJob(id) {
+        if(!confirm(`⚠️ CANCEL BOOKING ${id}?\n\nThis will hide the job from the main view and mark it as cancelled.`)) return;
+        const res = await sendAction({ action: 'cancel_booking', bookingId: id });
         if(!res.error) loadJobs(currentPass);
     }
 
     async function saveDraft(id) {
         const price = document.getElementById(`price-${id}`).value;
+        const cost = document.getElementById(`cost-${id}`).value;
         const notes = document.getElementById(`notes-${id}`).value;
+        const tech = document.getElementById(`tech-${id}`).value;
+        
         const btn = event.target;
         btn.innerText = "Saving...";
-        const res = await sendAction({ action: 'save_draft', bookingId: id, price: price, notes: notes });
-        btn.innerText = "💾 Save Details (No Email)";
+        const res = await sendAction({ action: 'save_draft', bookingId: id, price: price, cost: cost, notes: notes, tech: tech });
+        btn.innerText = "💾 Save Details & Assignment";
         if(!res.error) alert("Details securely saved!");
     }
 
     async function sendQuote(id) {
         const price = document.getElementById(`price-${id}`).value;
+        const cost = document.getElementById(`cost-${id}`).value;
         const notes = document.getElementById(`notes-${id}`).value;
+        const tech = document.getElementById(`tech-${id}`).value;
+        
         if(!price) return alert("Please enter a quote price before sending.");
         if(!confirm(`Send official quote of ₱${price} to the client?`)) return;
+        
         const btn = event.target;
         btn.innerText = "Encrypting & Sending...";
-        const res = await sendAction({ action: 'save_and_send_quote', bookingId: id, price: price, notes: notes });
+        const res = await sendAction({ action: 'save_and_send_quote', bookingId: id, price: price, cost: cost, notes: notes, tech: tech });
         if(!res.error) {
             alert("Quote successfully sent to client!");
             loadJobs(currentPass);
@@ -354,7 +385,28 @@
         if(!res.error) loadJobs(currentPass);
     }
 
-    // Removed no-cors so we can actually read success/error messages
+    async function assignTechStatus(id) {
+        const tech = document.getElementById(`tech-${id}`).value;
+        if(!tech) {
+            alert("Please select a technician from the dropdown menu first, then click Save Details.");
+            return;
+        }
+        if(!confirm(`Deploy ${tech} for this job?`)) return;
+        
+        // Save the assigned tech first, then immediately update status
+        await sendAction({ 
+            action: 'save_draft', 
+            bookingId: id, 
+            price: document.getElementById(`price-${id}`).value, 
+            cost: document.getElementById(`cost-${id}`).value, 
+            notes: document.getElementById(`notes-${id}`).value, 
+            tech: tech 
+        });
+        
+        const res = await sendAction({ action: 'update_status', bookingId: id, newStatus: `Dispatched: ${tech}` });
+        if(!res.error) loadJobs(currentPass);
+    }
+
     async function sendAction(payload) {
         payload.password = currentPass; 
         try {
