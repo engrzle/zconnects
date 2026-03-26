@@ -395,43 +395,64 @@
         }
     }
 
-    // UPDATED FUNCTION: Smooth scrolling & exact sub-service matching
+    // --- NEW SMART SEARCH ENGINE ---
     function filterServices() {
-        let input = document.getElementById('serviceSearch').value.toLowerCase();
-        let categories = document.getElementsByClassName('category-card');
+        let rawInput = document.getElementById('serviceSearch').value.toLowerCase().trim();
         
-        // Auto-scroll to the services section so the user sees the search happening
-        let serviceSection = document.getElementById('serviceList');
-        if (input.length === 1 && window.scrollY < serviceSection.offsetTop - 150) {
-            window.scrollTo({ top: serviceSection.offsetTop - 80, behavior: 'smooth' });
+        // Premium feature: synonym mapping so "aircon" or "air" automatically finds "AC"
+        let input = rawInput.replace(/aircon|air conditioner|air/g, "ac");
+        
+        let categories = document.getElementsByClassName('category-card');
+        let searchTerms = input.split(' ').filter(t => t !== '');
+
+        // If search is empty, show everything
+        if (searchTerms.length === 0) {
+            for (let i = 0; i < categories.length; i++) {
+                categories[i].style.display = "block";
+                let subServices = categories[i].getElementsByClassName('sub-service-item');
+                for (let j = 0; j < subServices.length; j++) {
+                    subServices[j].style.display = "block";
+                }
+            }
+            return;
         }
 
         for (let i = 0; i < categories.length; i++) {
             let category = categories[i];
+            let titleText = category.querySelector('.cat-title').innerText.toLowerCase();
             let subServices = category.getElementsByClassName('sub-service-item');
             
-            // Check if the search matches the main category title (e.g., "Plumbing")
-            let categoryMatch = category.querySelector('.cat-title').innerText.toLowerCase().includes(input) || 
-                                category.querySelector('.cat-intro').innerText.toLowerCase().includes(input);
+            // Check if any search term PERFECTLY matches the main category title using word boundaries
+            let categoryMatch = searchTerms.some(term => {
+                let regex = new RegExp('\\b' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                return regex.test(titleText);
+            });
             
             let hasVisibleSubService = false;
 
             for (let j = 0; j < subServices.length; j++) {
-                let subText = subServices[j].innerText.toLowerCase();
+                let subItem = subServices[j];
+                let subText = subItem.innerText.toLowerCase();
                 
-                // Show the specific service if it matches the search, OR if the whole category matches
-                if (categoryMatch || subText.includes(input)) {
-                    subServices[j].style.display = "block";
+                // Match if every search term is found as a whole word (so "ac" doesn't match "replacement")
+                let subMatch = searchTerms.every(term => {
+                    let regex = new RegExp('\\b' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                    return regex.test(subText);
+                });
+
+                if (categoryMatch || subMatch) {
+                    subItem.style.display = "block";
                     hasVisibleSubService = true;
                 } else {
-                    subServices[j].style.display = "none"; // Hide irrelevant sub-services
+                    subItem.style.display = "none";
                 }
             }
 
-            // Hide the entire category box if nothing inside it matches the search
+            // Only show the category box if something inside it matches
             category.style.display = hasVisibleSubService ? "block" : "none";
         }
     }
+    // --- END SMART SEARCH ENGINE ---
     
     function promptBooking(service, category) {
         const modal = document.getElementById('confirmModal');
