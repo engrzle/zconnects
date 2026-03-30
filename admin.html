@@ -98,8 +98,13 @@
         .theme-toggle { background: var(--white); border: 1.5px solid var(--border); color: var(--navy); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 1.2rem; flex-shrink: 0; box-shadow: var(--shadow-sm); }
         .theme-toggle:hover { border-color: var(--primary); }
 
-        .analytics-grid { display: flex; gap: 25px; }
-        .stat-card { display: flex; flex-direction: column; text-align: right; }
+        .analytics-grid { display: flex; gap: 15px; align-items: center; }
+        
+        /* NEW: Clickable Stat Cards */
+        .stat-card { display: flex; flex-direction: column; text-align: right; padding: 10px 18px; border-radius: 12px; border: 1px solid transparent; transition: 0.2s ease; cursor: pointer; }
+        .stat-card:hover { background: var(--white); border-color: var(--border); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+        [data-theme="dark"] .stat-card:hover { background: rgba(255,255,255,0.05); }
+        
         .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--slate-light); text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-value { font-size: 1.3rem; font-weight: 900; color: var(--navy); line-height: 1; margin-top: 4px; transition: 0.3s; }
 
@@ -180,6 +185,12 @@
         .btn-cancel-job { background: transparent; color: var(--danger); width: 100%; border: 1.5px dashed var(--danger); }
         .btn-cancel-job:hover { background: rgba(239, 68, 68, 0.1); }
 
+        /* NEW: FINANCIAL DASHBOARD METRICS */
+        .fin-metric-box { padding: 18px; border-radius: 14px; background: var(--bg-main); border: 1px solid var(--border); margin-bottom: 12px; }
+        .fin-metric-title { font-size: 0.75rem; font-weight: 800; color: var(--slate); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); line-height: 1; }
+        .profit-badge { display: inline-block; padding: 4px 10px; border-radius: 50px; background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 0.8rem; font-weight: 800; }
+
         /* TOAST NOTIFICATION SYSTEM */
         #toastContainer { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; animation: slideUpToast 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transition: opacity 0.3s ease; }
@@ -239,16 +250,16 @@
             </div>
             
             <div class="analytics-grid">
-                <div class="stat-card">
+                <div class="stat-card" style="cursor:default;">
                     <span class="stat-label">Inbox</span>
                     <span class="stat-value" id="stat-inbox">0</span>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-label" style="color: var(--warning);">Pipeline</span>
+                <div class="stat-card" onclick="openFinanceDrawer()" title="Click for Financial Breakdown">
+                    <span class="stat-label" style="color: var(--warning);">Pipeline (Active)</span>
                     <span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-label" style="color: var(--success);">Revenue</span>
+                <div class="stat-card" onclick="openFinanceDrawer()" title="Click for Financial Breakdown">
+                    <span class="stat-label" style="color: var(--success);">Realized Revenue</span>
                     <span class="stat-value" id="stat-revenue" style="color: var(--success);">₱0</span>
                 </div>
             </div>
@@ -271,11 +282,12 @@
     </main>
 </div>
 
-<div id="drawerOverlay" class="drawer-overlay" onclick="closeDrawer()"></div>
+<div id="drawerOverlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
+
 <div id="manageDrawer" class="drawer-panel">
     <div class="drawer-header">
         <h2 id="drawerTitle" class="drawer-title">Manage ZC-000</h2>
-        <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
     </div>
     
     <div class="drawer-body">
@@ -329,6 +341,56 @@
     </div>
 </div>
 
+<div id="financeDrawer" class="drawer-panel">
+    <div class="drawer-header">
+        <h2 class="drawer-title" style="display:flex; align-items:center; gap:10px;">📊 Financial Insights</h2>
+        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
+    </div>
+    
+    <div class="drawer-body">
+        
+        <div class="admin-section-title" style="color: var(--success); border-bottom-color: rgba(16, 185, 129, 0.3);"><span>💰</span> Realized Revenue (Completed Jobs)</div>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+            <div class="fin-metric-box">
+                <div class="fin-metric-title">Gross Income</div>
+                <div class="fin-metric-val" id="fin-gross">₱0</div>
+            </div>
+            <div class="fin-metric-box">
+                <div class="fin-metric-title">Operating Costs</div>
+                <div class="fin-metric-val" id="fin-costs" style="color: var(--danger);">₱0</div>
+            </div>
+        </div>
+
+        <div class="fin-metric-box" style="border-color: var(--success); background: rgba(16, 185, 129, 0.05); margin-bottom: 40px;">
+            <div class="fin-metric-title" style="color: var(--success);">Net Profit</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="fin-metric-val" id="fin-net" style="color: var(--success); font-size: 2.4rem;">₱0</div>
+                <div class="profit-badge" id="fin-margin">0% Margin</div>
+            </div>
+        </div>
+
+        <div class="admin-section-title" style="color: var(--warning); border-bottom-color: rgba(245, 158, 11, 0.3);"><span>⚡</span> Active Pipeline (Potential Income)</div>
+        
+        <div class="fin-metric-box" style="border-color: var(--warning); background: rgba(245, 158, 11, 0.05);">
+            <div class="fin-metric-title" style="color: var(--warning);">Total Pipeline Value</div>
+            <div class="fin-metric-val" id="fin-pipe-total" style="color: var(--warning);">₱0</div>
+        </div>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div class="fin-metric-box">
+                <div class="fin-metric-title">Quoting Phase</div>
+                <div class="fin-metric-val" id="fin-pipe-quote" style="font-size: 1.4rem;">₱0</div>
+            </div>
+            <div class="fin-metric-box">
+                <div class="fin-metric-title" style="color: var(--purple);">Dispatched (Locked)</div>
+                <div class="fin-metric-val" id="fin-pipe-disp" style="font-size: 1.4rem; color: var(--purple);">₱0</div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
 <div id="toastContainer"></div>
 
 <script>
@@ -341,6 +403,7 @@
     };
 
     const STATE = { pass: '', workspace: 'inbox', jobsData: [] };
+    let FINANCE_STATE = { gross: 0, cost: 0, net: 0, pipeQuote: 0, pipeDisp: 0, pipeTotal: 0 };
 
     // Initialize Tech Dropdown
     document.getElementById('drawerTech').innerHTML = `<option value="">-- Select Tech --</option>` + 
@@ -400,7 +463,6 @@
                 return; 
             }
             
-            // Security: Inject UI only after valid response
             STATE.pass = pass;
             STATE.jobsData = jobs;
             document.getElementById('loginOverlay').style.display = 'none';
@@ -436,10 +498,9 @@
     }
 
     // ==========================================
-    // 4. UI RENDERING (THE STREAM & SLA MATH)
+    // 4. UI RENDERING & FINANCIAL MATH
     // ==========================================
     
-    // --- SLA TRACKING MATH ---
     function timeAgo(dateString) {
         if (!dateString) return "Unknown";
         const date = new Date(dateString);
@@ -448,7 +509,6 @@
         let interval = seconds / 86400;
         if (interval >= 1) {
             if (interval > 7) { 
-                // Return actual date if older than a week (e.g., "Mar 28")
                 return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             }
             return Math.floor(interval) + "d ago";
@@ -463,15 +523,12 @@
     function getSlaClass(dateString, workspaceTag) {
         if (!dateString) return 'sla-healthy';
         const hoursAge = (new Date() - new Date(dateString)) / 3600000;
-        
-        // Only trigger SLA alerts for items sitting in Inbox or Pipeline waiting for action
         if (workspaceTag === 'inbox' || workspaceTag === 'pipeline') {
-            if (hoursAge > 48) return 'sla-danger';   // Critical Alert: Over 2 days
-            if (hoursAge > 24) return 'sla-warning';  // Warning Alert: Over 1 day
+            if (hoursAge > 48) return 'sla-danger';   
+            if (hoursAge > 24) return 'sla-warning';  
         }
-        return 'sla-healthy'; // Default state
+        return 'sla-healthy'; 
     }
-    // --- END SLA MATH ---
 
     function getSemanticClass(status) {
         status = (status || "").toLowerCase();
@@ -493,7 +550,9 @@
 
     function renderStream() {
         let inboxCount = 0;
-        let pipelineValue = 0, revenueValue = 0; // LIVE REVENUE ENGINE CALCULATION
+        
+        // Reset Finance State
+        FINANCE_STATE = { gross: 0, cost: 0, net: 0, pipeQuote: 0, pipeDisp: 0, pipeTotal: 0 };
         
         const list = document.getElementById('jobsList');
         list.innerHTML = '';
@@ -511,15 +570,29 @@
             const semanticClass = getSemanticClass(job.status);
             const searchText = `${job.id} ${job.name} ${job.status} ${job.category} ${job.tech || ''}`.toLowerCase();
             
-            // Financial Calculation
+            // --- DETAILED FINANCIAL MATH ---
             const price = Number(job.price) || 0;
-            if(workspaceTag === 'inbox') inboxCount++;
-            if(workspaceTag === 'pipeline' || workspaceTag === 'dispatched') pipelineValue += price;
-            if(workspaceTag === 'completed') revenueValue += price;
+            const cost = Number(job.cost) || 0;
+            
+            if (workspaceTag === 'inbox') {
+                inboxCount++;
+            } 
+            else if (workspaceTag === 'completed') {
+                FINANCE_STATE.gross += price;
+                FINANCE_STATE.cost += cost;
+                FINANCE_STATE.net += (price - cost);
+            } 
+            else if (workspaceTag === 'pipeline') {
+                FINANCE_STATE.pipeQuote += price;
+                FINANCE_STATE.pipeTotal += price;
+            } 
+            else if (workspaceTag === 'dispatched') {
+                FINANCE_STATE.pipeDisp += price;
+                FINANCE_STATE.pipeTotal += price;
+            }
+            // -------------------------------
 
-            // Ensure we use rawDate for accurate math, fallback to string date
             const targetDate = job.rawDate || job.date;
-
             const row = document.createElement('div');
             row.className = 'job-row';
             row.dataset.workspace = workspaceTag;
@@ -552,8 +625,8 @@
 
         // Update Topbar UI with formatted currency
         document.getElementById('stat-inbox').innerText = inboxCount;
-        document.getElementById('stat-pipeline').innerText = '₱' + pipelineValue.toLocaleString('en-PH');
-        document.getElementById('stat-revenue').innerText = '₱' + revenueValue.toLocaleString('en-PH');
+        document.getElementById('stat-pipeline').innerText = '₱' + FINANCE_STATE.pipeTotal.toLocaleString('en-PH');
+        document.getElementById('stat-revenue').innerText = '₱' + FINANCE_STATE.gross.toLocaleString('en-PH');
         
         applyFilter(); 
     }
@@ -593,8 +666,35 @@
     }
 
     // ==========================================
-    // 5. CONTEXT DRAWER LOGIC
+    // 5. DRAWER LOGIC (Manage & Financial)
     // ==========================================
+    
+    // Closes whichever drawer is currently open
+    function closeAllDrawers() {
+        document.getElementById('manageDrawer').classList.remove('open');
+        document.getElementById('financeDrawer').classList.remove('open');
+        document.getElementById('drawerOverlay').classList.remove('open');
+    }
+
+    // --- FINANCIAL DRAWER ---
+    function openFinanceDrawer() {
+        // Inject mathematical breakdown into UI
+        document.getElementById('fin-gross').innerText = '₱' + FINANCE_STATE.gross.toLocaleString('en-PH');
+        document.getElementById('fin-costs').innerText = '₱' + FINANCE_STATE.cost.toLocaleString('en-PH');
+        document.getElementById('fin-net').innerText = '₱' + FINANCE_STATE.net.toLocaleString('en-PH');
+        
+        const margin = FINANCE_STATE.gross > 0 ? Math.round((FINANCE_STATE.net / FINANCE_STATE.gross) * 100) : 0;
+        document.getElementById('fin-margin').innerText = margin + '% Net Margin';
+
+        document.getElementById('fin-pipe-total').innerText = '₱' + FINANCE_STATE.pipeTotal.toLocaleString('en-PH');
+        document.getElementById('fin-pipe-quote').innerText = '₱' + FINANCE_STATE.pipeQuote.toLocaleString('en-PH');
+        document.getElementById('fin-pipe-disp').innerText = '₱' + FINANCE_STATE.pipeDisp.toLocaleString('en-PH');
+
+        document.getElementById('drawerOverlay').classList.add('open');
+        document.getElementById('financeDrawer').classList.add('open');
+    }
+
+    // --- MANAGE JOB DRAWER ---
     function openDrawer(id) {
         const job = STATE.jobsData.find(j => j.id === id);
         if(!job) return;
@@ -605,9 +705,8 @@
         document.getElementById('drawerCost').value = job.cost || '';
         document.getElementById('drawerNotes').value = job.notes || '';
         document.getElementById('drawerTech').value = job.tech || '';
-        document.getElementById('delayNote').value = ''; // Reset delay alert box
+        document.getElementById('delayNote').value = ''; 
         
-        // --- DYNAMIC PHOTO SECTION ---
         const photoSection = document.getElementById('drawerPhotoSection');
         if (job.photo && job.photo !== 'No Photo' && job.photo !== '') {
             photoSection.innerHTML = `<a href="${escapeHTML(job.photo)}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:var(--pill-inbox-bg); color:var(--primary); padding:12px; border-radius:10px; text-decoration:none; font-weight:800; font-size:0.85rem; border:1px solid rgba(37, 99, 235, 0.2); transition:0.2s;">📸 View Attached Client Photo &nearr;</a>`;
@@ -619,11 +718,6 @@
         document.getElementById('manageDrawer').classList.add('open');
     }
 
-    function closeDrawer() {
-        document.getElementById('drawerOverlay').classList.remove('open');
-        document.getElementById('manageDrawer').classList.remove('open');
-    }
-
     // ==========================================
     // 6. ACTION HANDLERS
     // ==========================================
@@ -631,18 +725,14 @@
     // --- DOUBLE-TAP SAFETY LOCKS ---
     function confirmDPVerify(btn) {
         if (btn.dataset.confirmed === "true") {
-            // Second Click: Execute the action
             btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Verifying...";
             btn.style.background = ""; 
             btn.style.color = "";
             btn.style.borderColor = "";
             
             executeAction('verify_dp');
-            
-            // Reset button state
             btn.dataset.confirmed = "false";
         } else {
-            // First Click: Arm the safety lock
             const originalText = btn.innerHTML;
             btn.dataset.confirmed = "true";
             btn.innerHTML = "⚠️ Click again to CONFIRM";
@@ -650,7 +740,6 @@
             btn.style.color = "var(--white)";
             btn.style.borderColor = "var(--danger)";
             
-            // Disarm the lock automatically after 3 seconds
             setTimeout(() => {
                 if (btn.dataset.confirmed === "true") {
                     btn.dataset.confirmed = "false";
@@ -668,18 +757,14 @@
         if(!note) return showToast("Enter a delay reason first!", "error");
 
         if (btn.dataset.confirmed === "true") {
-            // Second Click: Execute the action
             btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Sending...";
             btn.style.background = ""; 
             btn.style.color = "";
             btn.style.borderColor = "";
             
             executeAction('send_delay_alert');
-            
-            // Reset button state
             btn.dataset.confirmed = "false";
         } else {
-            // First Click: Arm the safety lock
             const originalText = btn.innerHTML;
             btn.dataset.confirmed = "true";
             btn.innerHTML = "⚠️ Confirm Email?";
@@ -687,7 +772,6 @@
             btn.style.color = "var(--white)";
             btn.style.borderColor = "var(--danger)";
             
-            // Disarm the lock automatically after 3 seconds
             setTimeout(() => {
                 if (btn.dataset.confirmed === "true") {
                     btn.dataset.confirmed = "false";
@@ -749,7 +833,7 @@
             showToast("Saving changes...", "info");
         }
 
-        closeDrawer();
+        closeAllDrawers();
         const res = await sendAction(payload);
         
         if(!res.error) {
