@@ -121,6 +121,15 @@
         .pill-completed { background: var(--pill-comp-bg); color: var(--pill-comp-txt); }
         .pill-archive { background: var(--pill-arch-bg); color: var(--pill-arch-txt); }
 
+        /* SLA AGING BADGE */
+        .sla-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 4px; letter-spacing: 0.3px; transition: 0.3s; }
+        .sla-healthy { background: transparent; color: var(--slate-light); border: 1.5px solid var(--border); }
+        .sla-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1.5px solid rgba(245, 158, 11, 0.3); animation: pulseWarning 2s infinite; }
+        .sla-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1.5px solid rgba(239, 68, 68, 0.3); animation: pulseDanger 1.5s infinite; }
+        
+        @keyframes pulseWarning { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
+        @keyframes pulseDanger { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
         .job-title { margin: 0 0 4px 0; color: var(--navy); font-size: 1.15rem; font-weight: 800; letter-spacing: -0.3px; transition: 0.3s; }
         .job-meta { color: var(--slate); font-weight: 600; font-size: 0.85rem; margin-bottom: 12px; }
         .job-meta span { color: var(--primary); font-weight: 800; }
@@ -132,7 +141,7 @@
         
         .action-bar { display: flex; gap: 10px; }
         .btn-stream-action { padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; }
-        .btn-open-drawer { background: var(--bg-main); color: var(--navy); border: 1px solid var(--border); }
+        .btn-open-drawer { background: var(--bg-main); color: var(--navy); border: 1.5px solid var(--border); }
         .btn-open-drawer:hover { background: var(--border); }
 
         /* THE CONTEXT DRAWER */
@@ -162,9 +171,9 @@
         .btn-draft:hover { border-color: var(--primary); color: var(--primary); }
         .btn-quote { background: var(--primary); color: #ffffff; }
         .btn-quote:hover { background: var(--primary-hover); }
-        .btn-dp { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .btn-dp { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1.5px solid rgba(245, 158, 11, 0.3); }
         .btn-dp:hover { background: rgba(245, 158, 11, 0.2); }
-        .btn-assign { background: rgba(139, 92, 246, 0.1); color: var(--purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .btn-assign { background: rgba(139, 92, 246, 0.1); color: var(--purple); border: 1.5px solid rgba(139, 92, 246, 0.3); }
         .btn-assign:hover { background: rgba(139, 92, 246, 0.2); }
         .btn-complete { background: var(--success); color: #ffffff; width: 100%; margin-bottom: 30px; }
         .btn-complete:hover { background: #059669; }
@@ -409,6 +418,41 @@
     // ==========================================
     // 4. UI RENDERING (THE STREAM)
     // ==========================================
+    
+    // --- SLA TRACKING MATH ---
+    function timeAgo(dateString) {
+        if (!dateString) return "Unknown";
+        const date = new Date(dateString);
+        const seconds = Math.floor((new Date() - date) / 1000);
+        
+        let interval = seconds / 86400;
+        if (interval >= 1) {
+            if (interval > 7) { 
+                // Return actual date if older than a week (e.g., "Mar 28")
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+            return Math.floor(interval) + "d ago";
+        }
+        interval = seconds / 3600;
+        if (interval >= 1) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval >= 1) return Math.floor(interval) + "m ago";
+        return "Just now";
+    }
+
+    function getSlaClass(dateString, workspaceTag) {
+        if (!dateString) return 'sla-healthy';
+        const hoursAge = (new Date() - new Date(dateString)) / 3600000;
+        
+        // Only trigger SLA alerts for items sitting in Inbox or Pipeline waiting for action
+        if (workspaceTag === 'inbox' || workspaceTag === 'pipeline') {
+            if (hoursAge > 48) return 'sla-danger';   // Critical Alert: Over 2 days
+            if (hoursAge > 24) return 'sla-warning';  // Warning Alert: Over 1 day
+        }
+        return 'sla-healthy'; // Default state
+    }
+    // --- END SLA MATH ---
+
     function getSemanticClass(status) {
         status = (status || "").toLowerCase();
         if (status.includes('cancel')) return 'pill-archive'; 
@@ -445,6 +489,9 @@
             if(workspaceTag === 'inbox') inboxCount++;
             if(workspaceTag === 'pipeline' || workspaceTag === 'dispatched') activeCount++;
 
+            // Ensure we use rawDate for accurate math, fallback to string date
+            const targetDate = job.rawDate || job.date;
+
             const row = document.createElement('div');
             row.className = 'job-row';
             row.dataset.workspace = workspaceTag;
@@ -452,8 +499,11 @@
             
             row.innerHTML = `
                 <div class="row-header">
-                    <span class="job-id">${escapeHTML(job.id)}</span>
-                    <span class="status-pill ${semanticClass}">${escapeHTML(job.status)}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="job-id">${escapeHTML(job.id)}</span>
+                        <span class="status-pill ${semanticClass}">${escapeHTML(job.status)}</span>
+                    </div>
+                    <span class="sla-badge ${getSlaClass(targetDate, workspaceTag)}">⏱ ${timeAgo(targetDate)}</span>
                 </div>
                 <h3 class="job-title">${escapeHTML(job.name)}</h3>
                 <div class="job-meta"><span>${escapeHTML(job.category)}</span> • ${escapeHTML(job.urgency)}</div>
