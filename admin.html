@@ -239,7 +239,8 @@
             </div>
             <div class="analytics-grid">
                 <div class="stat-card"><span class="stat-label">Inbox</span><span class="stat-value" id="stat-inbox">0</span></div>
-                <div class="stat-card"><span class="stat-label">Active</span><span class="stat-value text-primary" id="stat-active">0</span></div>
+                <div class="stat-card"><span class="stat-label" style="color: var(--warning);">Pipeline</span><span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span></div>
+                <div class="stat-card"><span class="stat-label" style="color: var(--success);">Revenue</span><span class="stat-value" id="stat-revenue" style="color: var(--success);">₱0</span></div>
             </div>
         </header>
 
@@ -388,6 +389,7 @@
                 return; 
             }
             
+            // Security: Inject UI only after valid response
             STATE.pass = pass;
             STATE.jobsData = jobs;
             document.getElementById('loginOverlay').style.display = 'none';
@@ -479,12 +481,16 @@
     }
 
     function renderStream() {
-        let inboxCount = 0, activeCount = 0;
+        let inboxCount = 0;
+        let pipelineValue = 0, revenueValue = 0; // LIVE REVENUE ENGINE CALCULATION
         const list = document.getElementById('jobsList');
         list.innerHTML = '';
 
         if (!STATE.jobsData || STATE.jobsData.length === 0) {
             document.getElementById('noResultsMsg').style.display = 'block';
+            document.getElementById('stat-inbox').innerText = '0';
+            document.getElementById('stat-pipeline').innerText = '₱0';
+            document.getElementById('stat-revenue').innerText = '₱0';
             return;
         }
 
@@ -493,8 +499,11 @@
             const semanticClass = getSemanticClass(job.status);
             const searchText = `${job.id} ${job.name} ${job.status} ${job.category} ${job.tech || ''}`.toLowerCase();
             
+            // Financial Calculation
+            const price = Number(job.price) || 0;
             if(workspaceTag === 'inbox') inboxCount++;
-            if(workspaceTag === 'pipeline' || workspaceTag === 'dispatched') activeCount++;
+            if(workspaceTag === 'pipeline' || workspaceTag === 'dispatched') pipelineValue += price;
+            if(workspaceTag === 'completed') revenueValue += price;
 
             // Ensure we use rawDate for accurate math, fallback to string date
             const targetDate = job.rawDate || job.date;
@@ -529,8 +538,11 @@
             list.appendChild(row);
         });
 
+        // Update Topbar UI with formatted currency
         document.getElementById('stat-inbox').innerText = inboxCount;
-        document.getElementById('stat-active').innerText = activeCount;
+        document.getElementById('stat-pipeline').innerText = '₱' + pipelineValue.toLocaleString('en-PH');
+        document.getElementById('stat-revenue').innerText = '₱' + revenueValue.toLocaleString('en-PH');
+        
         applyFilter(); 
     }
 
@@ -583,7 +595,7 @@
         document.getElementById('drawerTech').value = job.tech || '';
         document.getElementById('delayNote').value = ''; // Reset delay alert box
         
-        // --- NEW: DYNAMIC PHOTO SECTION ---
+        // --- DYNAMIC PHOTO SECTION ---
         const photoSection = document.getElementById('drawerPhotoSection');
         if (job.photo && job.photo !== 'No Photo' && job.photo !== '') {
             photoSection.innerHTML = `<a href="${escapeHTML(job.photo)}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:var(--pill-inbox-bg); color:var(--primary); padding:12px; border-radius:10px; text-decoration:none; font-weight:800; font-size:0.85rem; border:1px solid rgba(37, 99, 235, 0.2); transition:0.2s;">📸 View Attached Client Photo &nearr;</a>`;
@@ -750,8 +762,5 @@
         }
     }
 </script>
-
-</body>
-</html>
 </body>
 </html>
