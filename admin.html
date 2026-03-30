@@ -269,6 +269,8 @@
     <div class="drawer-body">
         <input type="hidden" id="drawerJobId">
         
+        <div id="drawerPhotoSection" style="margin-bottom: 25px;"></div>
+        
         <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
         <div class="input-grid">
             <div>
@@ -281,7 +283,7 @@
             </div>
         </div>
         <label class="control-label">Engineer Notes (Internal)</label>
-        <input type="text" id="drawerNotes" class="admin-input" style="margin-bottom:20px;" placeholder="Technical details...">
+        <textarea id="drawerNotes" class="admin-input" style="height:60px; margin-bottom:20px;" placeholder="Technical details..."></textarea>
         <div class="action-grid">
             <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
             <button class="btn-solid btn-quote" onclick="executeAction('send_quote')">📧 Send Quote</button>
@@ -386,7 +388,6 @@
                 return; 
             }
             
-            // Security: Inject UI only after valid response
             STATE.pass = pass;
             STATE.jobsData = jobs;
             document.getElementById('loginOverlay').style.display = 'none';
@@ -582,6 +583,14 @@
         document.getElementById('drawerTech').value = job.tech || '';
         document.getElementById('delayNote').value = ''; // Reset delay alert box
         
+        // --- NEW: DYNAMIC PHOTO SECTION ---
+        const photoSection = document.getElementById('drawerPhotoSection');
+        if (job.photo && job.photo !== 'No Photo' && job.photo !== '') {
+            photoSection.innerHTML = `<a href="${escapeHTML(job.photo)}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:var(--pill-inbox-bg); color:var(--primary); padding:12px; border-radius:10px; text-decoration:none; font-weight:800; font-size:0.85rem; border:1px solid rgba(37, 99, 235, 0.2); transition:0.2s;">📸 View Attached Client Photo &nearr;</a>`;
+        } else {
+            photoSection.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; padding:12px; background:var(--bg-main); color:var(--slate-light); border-radius:10px; border:1px dashed var(--border); font-weight:700; font-size:0.85rem;">📷 No photo attached</div>`;
+        }
+        
         document.getElementById('drawerOverlay').classList.add('open');
         document.getElementById('manageDrawer').classList.add('open');
     }
@@ -595,7 +604,7 @@
     // 6. ACTION HANDLERS
     // ==========================================
     
-    // --- DOUBLE-TAP SAFETY LOCK FOR DP ---
+    // --- DOUBLE-TAP SAFETY LOCKS ---
     function confirmDPVerify(btn) {
         if (btn.dataset.confirmed === "true") {
             // Second Click: Execute the action
@@ -630,7 +639,6 @@
         }
     }
 
-    // --- DOUBLE-TAP SAFETY LOCK FOR DELAY ALERT ---
     function confirmDelayAlert(btn) {
         const note = document.getElementById('delayNote').value.trim();
         if(!note) return showToast("Enter a delay reason first!", "error");
@@ -743,5 +751,7 @@
     }
 </script>
 
+</body>
+</html>
 </body>
 </html>
