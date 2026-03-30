@@ -173,7 +173,7 @@
     </nav>
 
     <div class="sidebar-footer">
-        <button class="btn-sync" onclick="loadJobs(currentPass)">↻ Sync Data</button>
+        <button class="btn-sync" onclick="loadJobs(STATE.pass)">↻ Sync Data</button>
     </div>
 </aside>
 
@@ -210,19 +210,38 @@
 </main>
 
 <script>
-    const APP_URL = 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec';
-    
-    let currentPass = '';
-    let currentWorkspace = 'inbox'; 
-    let cancelTargetId = null;
+    // ==========================================
+    // 1. SYSTEM CONFIGURATION & STATE
+    // ==========================================
+    const CONFIG = {
+        APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec',
+        // Update your technicians here easily without touching the HTML below
+        TECHNICIANS: [
+            "Jasper Jubay", 
+            "Francis Intong", 
+            "Jeffrey Canete", 
+            "Jerome", 
+            "Lyndon Alburo",
+            "Clark Toquero" // Example of easily adding a new tech
+        ]
+    };
 
+    const STATE = {
+        pass: '',
+        workspace: 'inbox',
+        cancelTargetId: null
+    };
+
+    // ==========================================
+    // 2. AUTHENTICATION & DATA FETCHING
+    // ==========================================
     async function verifyLogin() {
         const pass = document.getElementById('adminPass').value;
         const loginBtn = document.querySelector('.login-btn');
         loginBtn.innerText = "Authenticating...";
 
         try {
-            const response = await fetch(`${APP_URL}?action=get_admin_data`, {
+            const response = await fetch(`${CONFIG.APP_URL}?action=get_admin_data`, {
                 method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: pass }) 
             });
             const jobs = await response.json();
@@ -233,7 +252,7 @@
                 return; 
             }
             
-            currentPass = pass;
+            STATE.pass = pass;
             document.getElementById('loginOverlay').style.display = 'none';
             renderJobs(jobs);
 
@@ -249,7 +268,7 @@
         document.getElementById('noResultsMsg').style.display = 'none';
 
         try {
-            const response = await fetch(`${APP_URL}?action=get_admin_data`, {
+            const response = await fetch(`${CONFIG.APP_URL}?action=get_admin_data`, {
                 method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: password }) 
             });
             const jobs = await response.json();
@@ -267,6 +286,9 @@
         }
     }
 
+    // ==========================================
+    // 3. UI RENDERING & LOGIC
+    // ==========================================
     function updateAnalytics(jobs) {
         let inboxCount = 0, activeCount = 0, completeCount = 0;
         
@@ -313,74 +335,86 @@
             card.className = 'job-card';
             card.dataset.workspace = workspaceTag;
             card.dataset.search = searchText;
-
-            card.innerHTML = `
-                ${workspaceTag !== 'completed' && workspaceTag !== 'archive' ? `<button class="delete-btn" onclick="openCancelModal('${escapeHTML(job.id)}')" title="Cancel Booking">✕</button>` : ''}
-                
-                <div class="card-header">
-                    <span class="job-id">${escapeHTML(job.id)}</span>
-                    <span class="status-pill">${escapeHTML(job.status)}</span>
-                </div>
-                
-                <div class="pipeline-track">
-                    <div class="pipeline-step ${step >= 1 ? (step > 1 ? 'completed' : 'active') : ''}">1. Review</div>
-                    <div class="pipeline-step ${step >= 2 ? (step > 2 ? 'completed' : 'active') : ''}">2. Quoted</div>
-                    <div class="pipeline-step ${step >= 3 ? (step > 3 ? 'completed' : 'active') : ''}">3. Dispatch</div>
-                    <div class="pipeline-step ${step >= 4 ? 'completed' : ''}">4. Done</div>
-                </div>
-
-                <h3 class="job-title">${escapeHTML(job.name)}</h3>
-                <div class="job-meta">${escapeHTML(job.category)} | <span style="color:var(--slate);">${escapeHTML(job.urgency)}</span></div>
-                <div class="job-desc">${escapeHTML(job.desc)}</div>
-                
-                ${job.photo && job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:inline-block; background:#eff6ff; color:var(--primary); font-weight:800; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:0.8rem; margin-bottom:15px; border: 1px solid #bfdbfe;">📸 Attached Photo</a>` : ''}
-
-                ${workspaceTag !== 'archive' ? `<button class="toggle-manage-btn" onclick="toggleControls('${job.id}')">⚙️ Manage Workflow Options</button>` : ''}
-
-                <div id="controls-${job.id}" class="admin-controls">
-                    <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
-                    <div class="input-grid">
-                        <div>
-                            <label class="control-label">Quote Price (PHP)</label>
-                            <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price || '')}">
-                        </div>
-                        <div>
-                            <label class="control-label">Actual Cost (PHP)</label>
-                            <input type="number" id="cost-${job.id}" class="admin-input" placeholder="e.g. 1500" value="${escapeHTML(job.cost || '')}">
-                        </div>
-                    </div>
-                    <label class="control-label">Engineer Notes (Internal)</label>
-                    <input type="text" id="notes-${job.id}" class="admin-input" style="margin-bottom:15px;" placeholder="Technical details..." value="${escapeHTML(job.notes || '')}">
-                    <div class="action-grid">
-                        <button class="btn-draft" onclick="saveDraft('${job.id}')">💾 Save Draft</button>
-                        <button class="btn-quote" onclick="sendQuote('${job.id}')">📧 Send Quote</button>
-                    </div>
-
-                    <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
-                    <label class="control-label">Assign Technician</label>
-                    <select id="tech-${job.id}" class="admin-input" style="margin-bottom:15px;">
-                        <option value="">-- Select Tech --</option>
-                        <option value="Jasper Jubay" ${job.tech === 'Jasper Jubay' ? 'selected' : ''}>Jasper Jubay</option>
-                        <option value="Francis Intong" ${job.tech === 'Francis Intong' ? 'selected' : ''}>Francis Intong</option>
-                        <option value="Jeffrey Canete" ${job.tech === 'Jeffrey Canete' ? 'selected' : ''}>Jeffrey Canete</option>
-                        <option value="Jerome" ${job.tech === 'Jerome' ? 'selected' : ''}>Jerome</option>
-                        <option value="Lyndon Alburo" ${job.tech === 'Lyndon Alburo' ? 'selected' : ''}>Lyndon Alburo</option>
-                    </select>
-                    <div class="action-grid">
-                        <button class="btn-dp" onclick="updateStatus('${job.id}', 'DP Received - Ready for Dispatch')">💳 Verify DP</button>
-                        <button class="btn-assign" onclick="assignTechStatus('${job.id}')">Deploy Tech</button>
-                    </div>
-
-                    <div class="admin-section-title" style="margin-bottom: 12px;"><span>✅</span> Phase 3: Completion</div>
-                    <button class="btn-complete" onclick="updateStatus('${job.id}', 'Job Completed')">Mark as Completed</button>
-                </div>
-            `;
+            
+            // Calls the extracted component function
+            card.innerHTML = generateCardHTML(job, workspaceTag, step);
             grid.appendChild(card);
         });
         
         applyFilter(); 
     }
 
+    // ==========================================
+    // 4. COMPONENT: JOB CARD GENERATOR
+    // ==========================================
+    function generateCardHTML(job, workspaceTag, step) {
+        // Dynamically build the technician options from the CONFIG array
+        const techOptions = CONFIG.TECHNICIANS.map(tech => 
+            `<option value="${tech}" ${job.tech === tech ? 'selected' : ''}>${tech}</option>`
+        ).join('');
+
+        return `
+            ${workspaceTag !== 'completed' && workspaceTag !== 'archive' ? `<button class="delete-btn" onclick="openCancelModal('${escapeHTML(job.id)}')" title="Cancel Booking">✕</button>` : ''}
+            
+            <div class="card-header">
+                <span class="job-id">${escapeHTML(job.id)}</span>
+                <span class="status-pill">${escapeHTML(job.status)}</span>
+            </div>
+            
+            <div class="pipeline-track">
+                <div class="pipeline-step ${step >= 1 ? (step > 1 ? 'completed' : 'active') : ''}">1. Review</div>
+                <div class="pipeline-step ${step >= 2 ? (step > 2 ? 'completed' : 'active') : ''}">2. Quoted</div>
+                <div class="pipeline-step ${step >= 3 ? (step > 3 ? 'completed' : 'active') : ''}">3. Dispatch</div>
+                <div class="pipeline-step ${step >= 4 ? 'completed' : ''}">4. Done</div>
+            </div>
+
+            <h3 class="job-title">${escapeHTML(job.name)}</h3>
+            <div class="job-meta">${escapeHTML(job.category)} | <span style="color:var(--slate);">${escapeHTML(job.urgency)}</span></div>
+            <div class="job-desc">${escapeHTML(job.desc)}</div>
+            
+            ${job.photo && job.photo !== 'No Photo' ? `<a href="${job.photo}" target="_blank" style="display:inline-block; background:#eff6ff; color:var(--primary); font-weight:800; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:0.8rem; margin-bottom:15px; border: 1px solid #bfdbfe;">📸 Attached Photo</a>` : ''}
+
+            ${workspaceTag !== 'archive' ? `<button class="toggle-manage-btn" onclick="toggleControls('${job.id}')">⚙️ Manage Workflow Options</button>` : ''}
+
+            <div id="controls-${job.id}" class="admin-controls">
+                <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
+                <div class="input-grid">
+                    <div>
+                        <label class="control-label">Quote Price (PHP)</label>
+                        <input type="number" id="price-${job.id}" class="admin-input" placeholder="e.g. 3500" value="${escapeHTML(job.price || '')}">
+                    </div>
+                    <div>
+                        <label class="control-label">Actual Cost (PHP)</label>
+                        <input type="number" id="cost-${job.id}" class="admin-input" placeholder="e.g. 1500" value="${escapeHTML(job.cost || '')}">
+                    </div>
+                </div>
+                <label class="control-label">Engineer Notes (Internal)</label>
+                <input type="text" id="notes-${job.id}" class="admin-input" style="margin-bottom:15px;" placeholder="Technical details..." value="${escapeHTML(job.notes || '')}">
+                <div class="action-grid">
+                    <button class="btn-draft" onclick="saveDraft('${job.id}')">💾 Save Draft</button>
+                    <button class="btn-quote" onclick="sendQuote('${job.id}')">📧 Send Quote</button>
+                </div>
+
+                <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
+                <label class="control-label">Assign Technician</label>
+                <select id="tech-${job.id}" class="admin-input" style="margin-bottom:15px;">
+                    <option value="">-- Select Tech --</option>
+                    ${techOptions}
+                </select>
+                <div class="action-grid">
+                    <button class="btn-dp" onclick="updateStatus('${job.id}', 'DP Received - Ready for Dispatch')">💳 Verify DP</button>
+                    <button class="btn-assign" onclick="assignTechStatus('${job.id}')">Deploy Tech</button>
+                </div>
+
+                <div class="admin-section-title" style="margin-bottom: 12px;"><span>✅</span> Phase 3: Completion</div>
+                <button class="btn-complete" onclick="updateStatus('${job.id}', 'Job Completed')">Mark as Completed</button>
+            </div>
+        `;
+    }
+
+    // ==========================================
+    // 5. INTERACTIVITY & FILTERS
+    // ==========================================
     function toggleControls(id) {
         const controls = document.getElementById(`controls-${id}`);
         controls.style.display = (controls.style.display === 'block') ? 'none' : 'block';
@@ -389,7 +423,7 @@
     function setWorkspace(workspace, btn) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentWorkspace = workspace;
+        STATE.workspace = workspace;
         applyFilter();
     }
 
@@ -402,7 +436,7 @@
             const cardWorkspace = card.dataset.workspace;
             const cardSearchText = card.dataset.search;
             
-            const workspaceMatch = (currentWorkspace === 'all') || (currentWorkspace === cardWorkspace);
+            const workspaceMatch = (STATE.workspace === 'all') || (STATE.workspace === cardWorkspace);
             const searchMatch = cardSearchText.includes(searchTerm);
 
             if (workspaceMatch && searchMatch) {
@@ -422,27 +456,30 @@
         return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
+    // ==========================================
+    // 6. ACTION HANDLERS (CRUD)
+    // ==========================================
     function openCancelModal(id) {
-        cancelTargetId = id;
+        STATE.cancelTargetId = id;
         document.getElementById('cancelModal').style.display = 'flex';
     }
     
     function closeCancelModal() {
-        cancelTargetId = null;
+        STATE.cancelTargetId = null;
         document.getElementById('cancelModal').style.display = 'none';
     }
 
     async function confirmCancel() {
-        if(!cancelTargetId) return;
+        if(!STATE.cancelTargetId) return;
         const reason = document.getElementById('cancelReasonInput').value;
         const statusString = "Cancelled - " + reason;
         
         document.querySelector('.btn-reject-action').innerText = "Cancelling...";
-        const res = await sendAction({ action: 'update_status', bookingId: cancelTargetId, newStatus: statusString });
+        const res = await sendAction({ action: 'update_status', bookingId: STATE.cancelTargetId, newStatus: statusString });
         
         closeCancelModal();
         document.querySelector('.btn-reject-action').innerText = "Confirm Cancellation";
-        if(!res.error) loadJobs(currentPass);
+        if(!res.error) loadJobs(STATE.pass);
     }
 
     async function saveDraft(id) {
@@ -472,7 +509,7 @@
         const res = await sendAction({ action: 'save_and_send_quote', bookingId: id, price: price, cost: cost, notes: notes, tech: tech });
         if(!res.error) {
             alert("Quote successfully delivered!");
-            loadJobs(currentPass);
+            loadJobs(STATE.pass);
         } else {
             btn.innerText = "📧 Send Quote";
         }
@@ -481,7 +518,7 @@
     async function updateStatus(id, status) {
         if(!confirm(`Move this job to: ${status}?`)) return;
         const res = await sendAction({ action: 'update_status', bookingId: id, newStatus: status });
-        if(!res.error) loadJobs(currentPass);
+        if(!res.error) loadJobs(STATE.pass);
     }
 
     async function assignTechStatus(id) {
@@ -494,13 +531,13 @@
         
         await sendAction({ action: 'save_draft', bookingId: id, price: document.getElementById(`price-${id}`).value, cost: document.getElementById(`cost-${id}`).value, notes: document.getElementById(`notes-${id}`).value, tech: tech });
         const res = await sendAction({ action: 'update_status', bookingId: id, newStatus: `Dispatched: ${tech}` });
-        if(!res.error) loadJobs(currentPass);
+        if(!res.error) loadJobs(STATE.pass);
     }
 
     async function sendAction(payload) {
-        payload.password = currentPass; 
+        payload.password = STATE.pass; 
         try {
-            const response = await fetch(APP_URL, {
+            const response = await fetch(CONFIG.APP_URL, {
                 method: 'POST', body: JSON.stringify(payload)
             });
             const data = await response.json();
