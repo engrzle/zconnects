@@ -328,7 +328,7 @@
         </div>
 
         <div class="admin-section-title" style="margin-bottom: 15px;"><span>✅</span> Phase 3: Completion</div>
-        <button class="btn-solid btn-complete" onclick="executeAction('mark_complete')">Mark as Completed</button>
+        <button class="btn-solid btn-complete" id="btnCompleteJob" onclick="confirmComplete(this)">Mark as Completed</button>
 
         <div class="admin-section-title" style="margin-bottom: 15px; color: var(--danger); border-bottom-color: var(--border);"><span>⚠️</span> Danger Zone</div>
         <select id="drawerCancelReason" class="admin-input" style="margin-bottom:10px;">
@@ -337,7 +337,7 @@
             <option value="Resolved internally / Self-fixed">Resolved internally / Self-fixed</option>
             <option value="Schedule conflict / Unresponsive">Schedule conflict / Unresponsive</option>
         </select>
-        <button class="btn-solid btn-cancel-job" onclick="executeAction('cancel_job')">Cancel & Archive Booking</button>
+        <button class="btn-solid btn-cancel-job" id="btnCancelJob" onclick="confirmCancel(this)">Cancel & Archive Booking</button>
     </div>
 </div>
 
@@ -784,6 +784,63 @@
         }
     }
 
+    // NEW: Double-Tap for Complete Job
+    function confirmComplete(btn) {
+        if (btn.dataset.confirmed === "true") {
+            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Processing...";
+            btn.style.background = "";
+            
+            executeAction('mark_complete');
+            btn.dataset.confirmed = "false";
+        } else {
+            const originalText = btn.innerHTML;
+            btn.dataset.confirmed = "true";
+            btn.innerHTML = "⚠️ Click again to FINALIZE JOB";
+            btn.style.background = "#059669"; // Darker green for caution
+            
+            setTimeout(() => {
+                if (btn.dataset.confirmed === "true") {
+                    btn.dataset.confirmed = "false";
+                    btn.innerHTML = originalText;
+                    btn.style.background = "";
+                }
+            }, 3000);
+        }
+    }
+
+    // NEW: Double-Tap for Cancel Job
+    function confirmCancel(btn) {
+        const reason = document.getElementById('drawerCancelReason').value;
+        if(!reason) return showToast("Please select a cancellation reason.", "error");
+
+        if (btn.dataset.confirmed === "true") {
+            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Archiving...";
+            btn.style.background = "";
+            btn.style.color = "";
+            btn.style.borderColor = "";
+            
+            executeAction('cancel_job');
+            btn.dataset.confirmed = "false";
+        } else {
+            const originalText = btn.innerHTML;
+            btn.dataset.confirmed = "true";
+            btn.innerHTML = "⚠️ Confirm Permanent Cancellation?";
+            btn.style.background = "var(--danger)";
+            btn.style.color = "#ffffff";
+            btn.style.borderColor = "var(--danger)";
+            
+            setTimeout(() => {
+                if (btn.dataset.confirmed === "true") {
+                    btn.dataset.confirmed = "false";
+                    btn.innerHTML = originalText;
+                    btn.style.background = "";
+                    btn.style.color = "";
+                    btn.style.borderColor = "";
+                }
+            }, 3000);
+        }
+    }
+
     async function executeAction(actionType) {
         const id = document.getElementById('drawerJobId').value;
         const price = document.getElementById('drawerPrice').value;
@@ -822,7 +879,6 @@
             showToast("Marking as completed...", "info");
         }
         else if (actionType === 'cancel_job') {
-            if(!confirm("Are you sure you want to permanently cancel this job?")) return;
             const reason = document.getElementById('drawerCancelReason').value;
             payload.action = 'update_status';
             payload.newStatus = `Cancelled - ${reason}`;
