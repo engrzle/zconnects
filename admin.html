@@ -295,6 +295,12 @@
             <button class="btn-solid btn-assign" onclick="executeAction('assign_tech')">Deploy Tech</button>
         </div>
 
+        <div style="background: var(--bg-main); padding: 18px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
+            <label class="control-label" style="color: var(--warning);">⚠️ SEND DELAY NOTICE</label>
+            <textarea id="delayNote" class="admin-input" style="height:60px; margin-top:10px; margin-bottom:12px; font-size: 0.85rem;" placeholder="Reason (e.g. Heavy traffic, parts delay)"></textarea>
+            <button class="btn-solid" id="btnDelayAlert" style="background: var(--warning); color:white; margin-bottom:0;" onclick="confirmDelayAlert(this)">Notify Client of Delay</button>
+        </div>
+
         <div class="admin-section-title" style="margin-bottom: 15px;"><span>✅</span> Phase 3: Completion</div>
         <button class="btn-solid btn-complete" onclick="executeAction('mark_complete')">Mark as Completed</button>
 
@@ -458,7 +464,7 @@
         if (status.includes('cancel')) return 'pill-archive'; 
         if (status.includes('completed') || status.includes('done')) return 'pill-completed';
         if (status.includes('quote') || status.includes('received')) return 'pill-pipeline';
-        if (status.includes('dispatch') || status.includes('assign')) return 'pill-dispatch';
+        if (status.includes('dispatch') || status.includes('assign') || status.includes('delay')) return 'pill-dispatch';
         return 'pill-inbox'; 
     }
 
@@ -466,7 +472,7 @@
         status = (status || "").toLowerCase();
         if (status.includes('cancel')) return 'archive'; 
         if (status.includes('completed') || status.includes('done')) return 'completed';
-        if (status.includes('dispatch') || status.includes('assign')) return 'dispatched';
+        if (status.includes('dispatch') || status.includes('assign') || status.includes('delay')) return 'dispatched';
         if (status.includes('quote') || status.includes('received')) return 'pipeline';
         return 'inbox'; 
     }
@@ -574,6 +580,7 @@
         document.getElementById('drawerCost').value = job.cost || '';
         document.getElementById('drawerNotes').value = job.notes || '';
         document.getElementById('drawerTech').value = job.tech || '';
+        document.getElementById('delayNote').value = ''; // Reset delay alert box
         
         document.getElementById('drawerOverlay').classList.add('open');
         document.getElementById('manageDrawer').classList.add('open');
@@ -623,12 +630,51 @@
         }
     }
 
+    // --- DOUBLE-TAP SAFETY LOCK FOR DELAY ALERT ---
+    function confirmDelayAlert(btn) {
+        const note = document.getElementById('delayNote').value.trim();
+        if(!note) return showToast("Enter a delay reason first!", "error");
+
+        if (btn.dataset.confirmed === "true") {
+            // Second Click: Execute the action
+            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Sending...";
+            btn.style.background = ""; 
+            btn.style.color = "";
+            btn.style.borderColor = "";
+            
+            executeAction('send_delay_alert');
+            
+            // Reset button state
+            btn.dataset.confirmed = "false";
+        } else {
+            // First Click: Arm the safety lock
+            const originalText = btn.innerHTML;
+            btn.dataset.confirmed = "true";
+            btn.innerHTML = "⚠️ Confirm Email?";
+            btn.style.background = "var(--danger)";
+            btn.style.color = "var(--white)";
+            btn.style.borderColor = "var(--danger)";
+            
+            // Disarm the lock automatically after 3 seconds
+            setTimeout(() => {
+                if (btn.dataset.confirmed === "true") {
+                    btn.dataset.confirmed = "false";
+                    btn.innerHTML = originalText;
+                    btn.style.background = "var(--warning)";
+                    btn.style.color = "white";
+                    btn.style.borderColor = "";
+                }
+            }, 3000);
+        }
+    }
+
     async function executeAction(actionType) {
         const id = document.getElementById('drawerJobId').value;
         const price = document.getElementById('drawerPrice').value;
         const cost = document.getElementById('drawerCost').value;
         const notes = document.getElementById('drawerNotes').value;
         const tech = document.getElementById('drawerTech').value;
+        const delayNote = document.getElementById('delayNote') ? document.getElementById('delayNote').value : '';
         
         let payload = { bookingId: id, price: price, cost: cost, notes: notes, tech: tech };
 
@@ -648,6 +694,11 @@
             payload.action = 'update_status';
             payload.newStatus = 'DP Received - Ready for Dispatch';
             showToast("Verifying payment...", "info");
+        }
+        else if (actionType === 'send_delay_alert') {
+            payload.action = 'send_delay_alert';
+            payload.delayNote = delayNote;
+            showToast("Broadcasting delay notice...", "info");
         }
         else if (actionType === 'mark_complete') {
             payload.action = 'update_status';
