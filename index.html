@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline';">
     
     <title>Zconnects | Engineering-Led Service Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+    <link rel="stylesheet" href="styles.css">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -15,153 +17,6 @@
       gtag('js', new Date());
       gtag('config', 'G-XXXXXXXXXX');
     </script>
-
-    <style>
-        :root { --primary: #2563eb; --navy: #0f172a; --slate: #64748b; --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --success: #16a34a; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); margin: 0; color: var(--navy); scroll-behavior: smooth; }
-        
-        /* HEADER */
-        header { background: var(--white); padding: 25px 6%; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03); }
-        .header-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .logo { font-size: 2.8rem; font-weight: 900; letter-spacing: -2px; color: var(--navy); margin: 0; cursor: pointer; }
-        .logo span { color: var(--primary); }
-        .search-container { position: relative; background: #f1f5f9; border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; border: 1.5px solid transparent; transition: 0.3s; width: 100%; max-width: 450px; }
-        .search-container:focus-within { border-color: var(--primary); background: var(--white); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1); }
-        .search-container input { border: none; background: transparent; width: 100%; outline: none; font-size: 1rem; font-family: inherit; color: var(--navy); }
-        
-        /* HERO */
-        .hero { padding: 100px 6% 80px; background: var(--white); text-align: center; border-bottom: 1px solid var(--border); }
-        .hero .badge { display: inline-block; padding: 6px 16px; background: #eff6ff; color: var(--primary); border-radius: 50px; font-weight: 800; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        .hero h1 { font-size: 3.5rem; margin: 0; font-weight: 900; color: var(--navy); line-height: 1.05; letter-spacing: -2px; }
-        .hero h1 span { color: var(--primary); }
-        .hero p { color: var(--slate); font-size: 1.25rem; margin: 25px auto 0; max-width: 650px; line-height: 1.6; font-weight: 500; }
-        
-        /* TRACKING */
-        .tracking-section { padding: 60px 6%; background: var(--light); text-align: center; }
-        .tracking-card { background: white; max-width: 600px; margin: 0 auto; padding: 40px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(15, 23, 42, 0.04); transition: transform 0.3s ease; }
-        .tracking-card:hover { transform: translateY(-3px); }
-        .track-input-group { display: flex; gap: 10px; margin-top: 25px; }
-        .track-input { flex: 1; padding: 16px; border: 2px solid var(--border); border-radius: 14px; font-size: 1rem; outline: none; transition: 0.3s; }
-        .track-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .track-btn { background: var(--navy); color: white; padding: 16px 32px; border-radius: 14px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; }
-        .track-btn:hover { background: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
-        .status-result { margin-top: 25px; padding: 20px; background: #f8fafc; border-radius: 12px; display: none; text-align: left; border-left: 4px solid var(--primary); }
-        .status-label { font-size: 0.8rem; text-transform: uppercase; color: var(--slate); font-weight: 700; letter-spacing: 1px; }
-        .status-value { font-size: 1.3rem; font-weight: 800; color: var(--navy); margin: 5px 0 0 0; }
-        
-        /* GRID */
-        .section-header { padding: 80px 6% 30px; font-weight: 800; color: var(--navy); font-size: 2.2rem; text-align: center; letter-spacing: -1px; }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 35px; padding: 20px 6% 100px; }
-        .category-card { background: var(--white); border-radius: 28px; padding: 40px; border: 1px solid var(--border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; box-shadow: 0 15px 40px rgba(15, 23, 42, 0.04); }
-        .category-card:hover { border-color: var(--primary); transform: translateY(-8px); box-shadow: 0 30px 60px rgba(15, 23, 42, 0.08); }
-        .cat-icon-top { font-size: 3.5rem; margin-bottom: 25px; display: block; }
-        .cat-title { font-size: 1.5rem; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
-        .cat-intro { font-size: 0.85rem; color: var(--primary); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1.5px; }
-        .sub-service-list { list-style: none; padding: 0; margin: 0; }
-        .sub-service-item { padding: 20px; border-radius: 18px; border: 1.5px solid transparent; transition: 0.3s; cursor: pointer; margin-bottom: 10px; background: #f8fafc; }
-        .sub-service-item:hover { background: var(--white); border-color: var(--primary); transform: scale(1.02); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.05); }
-        .sub-service-item strong { font-size: 1.1rem; color: var(--navy); display: block; }
-        .sub-service-item p { font-size: 0.9rem; color: var(--slate); margin: 8px 0 0; line-height: 1.5; }
-        
-        /* REVIEWS SECTION */
-        .reviews-section { padding: 100px 6%; background: white; border-top: 1px solid var(--border); }
-        .reviews-header { text-align: center; margin-bottom: 50px; }
-        .reviews-header h2 { font-size: 2.5rem; color: var(--navy); margin: 0; font-weight: 800; letter-spacing: -1px; }
-        .reviews-header p { color: var(--slate); margin-top: 10px; font-size: 1.1rem; }
-        .reviews-container { display: flex; gap: 30px; overflow-x: auto; padding-bottom: 40px; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
-        .reviews-container::-webkit-scrollbar { display: none; }
-        
-        .review-card { min-width: 320px; max-width: 320px; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 24px; padding: 35px; box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.06); transition: transform 0.3s ease; display: flex; flex-direction: column; }
-        .review-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 30px 50px -10px rgba(15, 23, 42, 0.1); }
-        .r-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .r-avatar { width: 50px; height: 50px; background: #eff6ff; color: var(--primary); font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        .r-info h4 { margin: 0; color: var(--navy); font-size: 1.1rem; font-weight: 700; }
-        .r-info span { font-size: 0.8rem; color: var(--slate); text-transform: uppercase; letter-spacing: 0.5px; }
-        .r-stars { color: #fbbf24; margin-bottom: 15px; font-size: 1.2rem; letter-spacing: 2px; }
-        .r-body { font-size: 1rem; color: #475569; line-height: 1.6; font-style: italic; flex-grow: 1; }
-        .r-footer { margin-top: 25px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .verified-badge { color: #16a34a; display: flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.75rem; }
-
-        /* MODAL */
-        .confirm-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 3000; align-items: center; justify-content: center; }
-        .confirm-box { background: white; width: 90%; max-width: 420px; padding: 45px; border-radius: 30px; text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .confirm-btns { display: flex; gap: 15px; margin-top: 30px; }
-        .btn-yes { flex: 2; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-yes:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
-        .btn-no { flex: 1; background: #f1f5f9; color: var(--slate); border: none; padding: 18px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-no:hover { background: #e2e8f0; }
-        
-        /* FORM */
-        .quote-section { background: var(--navy); padding: 100px 6%; }
-        .form-container { background: var(--white); max-width: 850px; margin: 0 auto; padding: 60px; border-radius: 40px; box-shadow: 0 40px 100px rgba(0,0,0,0.4); }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .form-group.full { grid-column: span 2; }
-        label { display: block; font-weight: 800; font-size: 0.85rem; margin-bottom: 12px; color: var(--slate); text-transform: uppercase; letter-spacing: 1px; }
-        input, select, textarea { width: 100%; padding: 18px 20px; border-radius: 16px; border: 2px solid var(--border); font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: 0.3s; background: #f8fafc; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .urgency-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-        .urgency-option { border: 2px solid var(--border); padding: 18px; border-radius: 16px; cursor: pointer; transition: 0.3s; position: relative; background: #f8fafc; }
-        .urgency-option input { display: none; }
-        .urgency-option.active { border-color: var(--primary); background: #eff6ff; box-shadow: 0 5px 15px rgba(37, 99, 235, 0.1); }
-        .urgency-option .days-info { display: none; font-size: 0.85rem; color: var(--primary); font-weight: 700; margin-top: 5px; text-transform: uppercase; }
-        .urgency-option.active .days-info { display: block; }
-        .submit-btn-large { width: 100%; background: var(--primary); color: white; padding: 24px; border-radius: 20px; border: none; font-size: 1.25rem; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 35px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); }
-        .submit-btn-large:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4); }
-        .submit-btn-large:disabled { background: var(--slate); cursor: not-allowed; transform: none; box-shadow: none; }
-        
-        .trust-badges { display: flex; justify-content: center; gap: 20px; margin-top: 20px; font-size: 0.9rem; font-weight: 700; color: var(--slate); }
-        
-        .spinner { display: none; width: 24px; height: 24px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        /* SUCCESS & FOOTER */
-        .success-card { background: white; border-radius: 28px; padding: 50px; text-align: center; max-width: 500px; margin: 0 auto; border: 1px solid var(--border); }
-        .success-icon { width: 90px; height: 90px; background: #f0fdf4; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; margin: 0 auto 30px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.1); }
-        .status-badge { display: inline-block; padding: 8px 16px; background: #eff6ff; color: #2563eb; border-radius: 50px; font-weight: 800; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase; }
-        .next-steps { text-align: left; background: var(--light); padding: 25px; border-radius: 20px; margin: 30px 0; }
-        .step-item { display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.95rem; line-height: 1.5; }
-        .step-number { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; flex-shrink: 0; }
-        
-        .contact-info-footer { padding: 80px 6%; background: #f1f5f9; text-align: center; }
-        .contact-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 50px; margin-top: 40px; }
-        .contact-item h4 { margin: 10px 0 8px; color: var(--navy); font-size: 1.1rem; font-weight: 800; }
-        .contact-item p { color: var(--slate); font-size: 0.95rem; margin: 0; font-weight: 500; }
-        footer { background: var(--navy); color: #94a3b8; padding: 60px 6% 100px; text-align: center; }
-        
-        /* MOBILE BOTTOM NAVIGATION */
-        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); box-shadow: 0 -5px 20px rgba(15, 23, 42, 0.06); z-index: 2500; justify-content: space-around; padding: 12px 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border); }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: var(--slate); text-decoration: none; font-size: 0.75rem; font-weight: 800; gap: 6px; transition: 0.2s; }
-        .mobile-nav-item.active, .mobile-nav-item:hover { color: var(--primary); transform: translateY(-2px); }
-        .mobile-nav-icon { font-size: 1.5rem; }
-        
-        @media (max-width: 768px) { 
-            .form-grid { grid-template-columns: 1fr; } 
-            .form-group.full { grid-column: span 1; } 
-            .hero h1 { font-size: 2.8rem; } 
-            .form-container { padding: 30px; border-radius: 30px; } 
-            .mobile-nav { display: flex; }
-            body { padding-bottom: 75px; }
-            .messenger-btn { bottom: 100px !important; }
-            .whatsapp-btn { bottom: 175px !important; } 
-            .viber-btn { bottom: 250px !important; }
-        }
-
-        /* T&C MODAL STYLES */
-        .tc-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); z-index: 4000; align-items: center; justify-content: center; }
-        .tc-content { background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 24px; padding: 40px; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); position: relative; animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .tc-header { font-size: 1.6rem; font-weight: 800; color: var(--navy); margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .tc-body { font-size: 0.95rem; color: var(--slate); line-height: 1.7; }
-        .tc-body h4 { color: var(--navy); margin-top: 20px; margin-bottom: 8px; font-weight: 800; }
-        .tc-close { position: absolute; top: 25px; right: 25px; background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-weight: bold; color: var(--slate); font-size: 1.2rem; transition: 0.2s; }
-        .tc-close:hover { background: #e2e8f0; color: var(--navy); transform: scale(1.1); }
-
-        /* CHECKBOX STYLE */
-        .checkbox-container { display: flex; align-items: flex-start; gap: 15px; margin: 25px 0; font-size: 0.95rem; color: var(--slate); line-height: 1.5; }
-        .checkbox-container input { width: 22px; height: 22px; margin-top: 2px; cursor: pointer; accent-color: var(--primary); }
-        .link-text { color: var(--primary); font-weight: 800; text-decoration: underline; cursor: pointer; }
-    </style>
 </head>
 <body>
 
@@ -232,7 +87,7 @@
     <div id="reviewsLoader" style="text-align:center; color:#64748b;">Loading verified reviews...</div>
     
     <div class="reviews-container" id="reviewsTrack">
-        </div>
+    </div>
 </section>
 
 <section id="quote-form" class="quote-section">
@@ -240,7 +95,7 @@
         <div id="formContent">
             <h2 id="form-title" style="margin-top:0; font-size:2rem; letter-spacing:-1px;">Start Your Free Quote</h2>
             <form id="quoteForm">
-                <input type="text" id="website_hp" style="display:none" tabindex="-1" autocomplete="off">
+                <input type="text" id="website_hp" name="website_hp" tabindex="-1" autocomplete="off" class="visually-hidden" aria-hidden="true">
                 
                 <div class="form-grid">
                     <div class="form-group"><label>Full Name</label><input type="text" id="custName" placeholder="Juan Dela Cruz" required></div>
@@ -271,7 +126,12 @@
                         </div>
                     </div>
                     <div class="form-group full"><label>Project Description</label><textarea id="projDesc" rows="4" placeholder="Describe the problem..."></textarea></div>
-                    <div class="form-group full"><label>Upload Photo (Optional)</label><input type="file" id="projPhotos" accept="image/*" style="padding: 14px;"></div>
+                    
+                    <div class="form-group full">
+                        <label>Upload Photo (Optional)</label>
+                        <input type="file" id="projPhotos" accept="image/*" style="padding: 14px;">
+                        <img id="photoPreview" src="" alt="Image Preview" style="display:none; max-width: 100%; border-radius: 16px; margin-top: 15px; border: 2px solid var(--border);">
+                    </div>
                 </div>
 
                 <div class="checkbox-container">
@@ -320,7 +180,7 @@
 <section class="contact-info-footer">
     <h2>Get in Touch with Our Experts</h2>
     <div class="contact-grid">
-        <div class="contact-item"><h4>📍 Service Area</h4><p>Metro Cebu (Cebu City, Mandaue, Lapu-Lapu, Talisay, and neighboring towns).</p></div>
+        <div class="contact-item"><h4>📍 Location</h4><p>Danlag, Consolacion<br>(Serving Metro Cebu)</p></div>
         <div class="contact-item"><h4>⏰ Operating Hours</h4><p>Mon – Sat | 8:00 AM – 6:00 PM (Emergency 24/7)</p></div>
         <div class="contact-item"><h4>📱 Mobile</h4><p>0992 826 2180</p></div>
         <div class="contact-item"><h4>📧 Email</h4><p>zconnectscebu@gmail.com</p></div>
@@ -355,229 +215,22 @@
     </div>
 </div>
 
-<script>
-    const APP_URL = 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec';
+<div class="fab-container">
+    <button class="fab-main" id="fabMain">💬</button>
+    <div class="fab-options" id="fabOptions">
+        <a href="viber://chat?number=%2B639928262180" target="_blank" class="fab-item viber-fab" title="Chat on Viber">
+            <svg viewBox="0 0 512 512" width="24" height="24" fill="white"><path d="M444 49.9C431.3 38.2 379.9 .9 265.3 .4c0 0-135.1-8.1-200.9 52.3C27.8 89.3 14.9 143 13.5 209.5c-1.4 66.5-3.1 191.1 117 224.9h.1l-.1 51.6s-.8 20.9 13 25.1c16.6 5.2 26.4-10.7 42.3-27.8 8.7-9.4 20.4-23.2 29.4-33.8 11.4 1.2 23.3 1.9 35.6 1.9 113.9 0 220.3-69 240.2-180.2 25.4-142.1-15.6-193.2-47-221.3zM348.8 300.7c-9.2 24.2-30.8 28.5-36 29.5-6.1 1.2-12.7-1-16.7-2.1-19.4-5.2-61.1-22.7-98-63.5-38.3-42.3-53.5-84.7-57.5-101.4-1.2-5-2.2-12-1-18.4 1-5.6 4.6-26 27.5-35.3 5.4-2.2 12.3-1.6 16.6 .2 4.1 1.7 18 17.5 24 29 4.3 8.3 11 22.8 9.7 33.1-1.3 10.1-11.4 16.7-14.7 18.9-3.2 2.2-7 5.4-2.9 12.7 8.3 14.8 27.2 38.6 49.3 58 20.8 18.2 41.7 30.6 55.7 37 6.4 2.9 9.3 2.1 12.3-.9 4-3.9 12.6-14 15.6-17.5 2.8-3.3 9.3-3.6 13.1-2.4 3.7 1.2 23.7 8.6 32 12.4 8 3.6 12.7 6.6 13.5 10.3 1 4.7-1.1 14.4-4.8 20.3z"/></svg>
+        </a>
+        <a href="https://wa.me/639928262180" target="_blank" class="fab-item wa-fab" title="Chat on WhatsApp">
+            <svg viewBox="0 0 32 32" width="24" height="24" fill="white"><path d="M16.002 2C8.268 2 2 8.268 2 16.002c0 2.482.65 4.814 1.774 6.86L2.3 29.7l6.983-1.43c1.996 1.034 4.256 1.626 6.72 1.626 7.732 0 14-6.268 14-14S23.734 2 16.002 2zm0 25.545c-2.126 0-4.135-.55-5.9-1.52l-.424-.23-4.38.896.913-4.276-.254-.404A11.455 11.455 0 0 1 4.35 16.002c0-6.426 5.222-11.648 11.652-11.648 6.428 0 11.648 5.22 11.648 11.648S22.43 27.545 16.002 27.545zm6.388-8.736c-.35-.176-2.074-1.024-2.395-1.14-.32-.118-.553-.176-.788.176-.233.35-.905 1.14-1.11 1.374-.202.235-.406.263-.756.088-1.56-.78-2.65-1.442-3.66-3.18-.236-.406.182-.365.526-.88.117-.176.058-.33-.03-.506-.088-.176-.788-1.9-.1-2.075-.853.07-2.6.07-2.776-.176-.235-.553-.66-1.588-1.636-.234-.976.234-1.153.553-1.153 1.34 0 2.222.84 2.536 1.153 3.61 1.66 4.75 2.19 6.205.35 1.454.55 2.51.46 2.872.23.364-.23.554-1.14.364-1.256z"/></svg>
+        </a>
+        <a href="https://m.me/100726905332735" target="_blank" class="fab-item msgr-fab" title="Chat on Messenger">
+            <svg viewBox="0 0 28 28" width="24" height="24" fill="white"><path d="M14 2C7.37 2 2 6.93 2 13c0 3.5 1.93 6.6 4.95 8.6-.2.98-.98 3.38-1.04 3.5-.1.22.1.47.33.4.15-.04 3.3-1.07 3.55-1.15.2.06.4.12.6.17 1.6.4 3.29.6 5.01.6 6.63 0 12-4.93 12-11S19.63 2 14 2zm1.14 14.38l-2.57-2.74-5.01 2.74 5.51-5.85 2.62 2.72 4.96-2.72-5.51 5.85z"/></svg>
+        </a>
+    </div>
+</div>
 
-    document.addEventListener("DOMContentLoaded", loadPublicReviews);
-
-    async function loadPublicReviews() {
-        try {
-            const response = await fetch(`${APP_URL}?action=get_public_reviews`);
-            const reviews = await response.json();
-            
-            const track = document.getElementById('reviewsTrack');
-            document.getElementById('reviewsLoader').style.display = 'none';
-
-            if (reviews.length === 0) {
-                track.innerHTML = '<p style="text-align:center; width:100%; color:#94a3b8;">No public reviews yet.</p>';
-                return;
-            }
-
-            reviews.forEach(r => {
-                const stars = '★'.repeat(Math.floor(r.rating)) + (r.rating % 1 ? '½' : '');
-                const card = document.createElement('div');
-                card.className = 'review-card';
-                card.innerHTML = `
-                    <div class="r-header">
-                        <div class="r-avatar">${r.name.charAt(0)}</div>
-                        <div class="r-info">
-                            <h4>${r.name}</h4>
-                            <span>${r.service}</span>
-                        </div>
-                    </div>
-                    <div class="r-stars">${stars}</div>
-                    <div class="r-body">"${r.comment}"</div>
-                    <div class="r-footer">
-                        <span>${r.date}</span>
-                        <div class="verified-badge">✓ Verified Client</div>
-                    </div>
-                `;
-                track.appendChild(card);
-            });
-
-        } catch (err) {
-            console.error("Review Load Error:", err);
-            document.getElementById('reviewsLoader').innerText = "Unable to load reviews.";
-        }
-    }
-
-    // --- SMART SEARCH ENGINE WITH MOBILE FIX ---
-    function filterServices() {
-        let rawInput = document.getElementById('serviceSearch').value.toLowerCase().trim();
-        
-        // Premium feature: synonym mapping so "aircon" or "air" automatically finds "AC"
-        let input = rawInput.replace(/aircon|air conditioner|air/g, "ac");
-        
-        let categories = document.getElementsByClassName('category-card');
-        let searchTerms = input.split(' ').filter(t => t !== '');
-
-        // If search is empty, show everything
-        if (searchTerms.length === 0) {
-            for (let i = 0; i < categories.length; i++) {
-                categories[i].style.display = "block";
-                let subServices = categories[i].getElementsByClassName('sub-service-item');
-                for (let j = 0; j < subServices.length; j++) {
-                    subServices[j].style.display = "block";
-                }
-            }
-            return;
-        }
-
-        // Auto-scroll to the services section so the user sees the search happening
-        // (Disabled on mobile because programmatic scrolling while a virtual keyboard is open causes glitches)
-        let serviceSection = document.getElementById('serviceList');
-        if (rawInput.length === 1 && window.innerWidth > 768 && window.scrollY < serviceSection.offsetTop - 150) {
-            window.scrollTo({ top: serviceSection.offsetTop - 80, behavior: 'smooth' });
-        }
-
-        for (let i = 0; i < categories.length; i++) {
-            let category = categories[i];
-            let titleText = category.querySelector('.cat-title').innerText.toLowerCase();
-            let subServices = category.getElementsByClassName('sub-service-item');
-            
-            // Check if any search term PERFECTLY matches the main category title using word boundaries
-            let categoryMatch = searchTerms.some(term => {
-                let regex = new RegExp('\\b' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-                return regex.test(titleText);
-            });
-            
-            let hasVisibleSubService = false;
-
-            for (let j = 0; j < subServices.length; j++) {
-                let subItem = subServices[j];
-                let subText = subItem.innerText.toLowerCase();
-                
-                // Match if every search term is found as a whole word (so "ac" doesn't match "replacement")
-                let subMatch = searchTerms.every(term => {
-                    let regex = new RegExp('\\b' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-                    return regex.test(subText);
-                });
-
-                if (categoryMatch || subMatch) {
-                    subItem.style.display = "block";
-                    hasVisibleSubService = true;
-                } else {
-                    subItem.style.display = "none";
-                }
-            }
-
-            // Only show the category box if something inside it matches
-            category.style.display = hasVisibleSubService ? "block" : "none";
-        }
-    }
-    // --- END SMART SEARCH ENGINE ---
-    
-    function promptBooking(service, category) {
-        const modal = document.getElementById('confirmModal');
-        const proceedBtn = document.getElementById('confirmProceed');
-        document.getElementById('confirmText').innerText = `Proceed with a request for ${service}?`;
-        modal.style.display = 'flex';
-        proceedBtn.onclick = function() { populateForm(service, category); closePrompt(); };
-    }
-    
-    function closePrompt() { document.getElementById('confirmModal').style.display = 'none'; }
-    
-    function populateForm(service, category) {
-        document.getElementById('quote-form').scrollIntoView({ behavior: 'smooth' });
-        document.getElementById('serviceCat').value = category;
-        document.getElementById('projDesc').value = `Requesting service for: ${service}\n---\n[Describe details here]`;
-    }
-    
-    function updateUrgency(element) {
-        document.querySelectorAll('.urgency-option').forEach(opt => opt.classList.remove('active'));
-        element.classList.add('active');
-        element.querySelector('input').checked = true;
-    }
-    
-    function checkStatus() {
-        const id = document.getElementById('trackId').value;
-        const resultBox = document.getElementById('statusResult');
-        const statusVal = document.getElementById('statusValue');
-        const clientVal = document.getElementById('statusClient');
-        if(!id) return alert("Please enter a Booking ID");
-        resultBox.style.display = 'block';
-        statusVal.innerText = "Searching...";
-        fetch(`${APP_URL}?action=track&id=${id}`).then(res => res.json()).then(data => {
-            if(data.status === 'success') { statusVal.innerText = data.jobStatus; statusVal.style.color = '#16a34a'; clientVal.innerText = data.clientName; } 
-            else { statusVal.innerText = "Booking Not Found"; statusVal.style.color = '#ef4444'; clientVal.innerText = "-"; }
-        }).catch(err => { statusVal.innerText = "Error checking status"; });
-    }
-
-    function openTC() { document.getElementById('tcModal').style.display = 'flex'; }
-    function closeTC() { document.getElementById('tcModal').style.display = 'none'; }
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('tcModal')) { closeTC(); }
-    }
-
-    document.getElementById('quoteForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const locCheck = document.getElementById('custLocation').value;
-        if (locCheck === 'Other') {
-            alert("Notice: Our rapid dispatch is currently optimized for Metro Cebu. We will review your request, but please expect potential scheduling delays or out-of-town mobilization charges.");
-        }
-
-        const btn = document.getElementById('submitBtn');
-        const btnSpinner = document.getElementById('btnSpinner');
-        const btnText = document.getElementById('btnText');
-        const photoFile = document.getElementById('projPhotos').files[0];
-        
-        btn.disabled = true;
-        btnSpinner.style.display = 'block';
-        btnText.innerText = "Dispatching Request...";
-
-        const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-
-        try {
-            const data = {
-                honeypot: document.getElementById('website_hp').value,
-                name: document.getElementById('custName').value,
-                phone: document.getElementById('custPhone').value,
-                email: document.getElementById('custEmail').value,
-                location: document.getElementById('custLocation').value,
-                category: document.getElementById('serviceCat').value,
-                urgency: document.querySelector('input[name="urgency"]:checked').value,
-                description: document.getElementById('projDesc').value,
-                image: photoFile ? await toBase64(photoFile) : null
-            };
-
-            await fetch(APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify(data)
-            });
-
-            document.getElementById('formContent').style.display = 'none';
-            document.getElementById('formSuccess').style.display = 'block';
-            window.scrollTo({ top: document.getElementById('quote-form').offsetTop - 100, behavior: 'smooth' });
-
-        } catch (err) {
-            console.error("Submission Error:", err);
-            alert("Technical error. Please check your connection and try again.");
-            btn.disabled = false;
-            btnSpinner.style.display = 'none';
-            btnText.innerText = "Submit Secure Request";
-        }
-    });
-</script>
-
-<a href="viber://chat?number=%2B639928262180" target="_blank" class="viber-btn" style="position: fixed; bottom: 175px; right: 25px; background: #7360f2; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9997; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-    <svg viewBox="0 0 512 512" width="34" height="34" fill="white"><path d="M444 49.9C431.3 38.2 379.9 .9 265.3 .4c0 0-135.1-8.1-200.9 52.3C27.8 89.3 14.9 143 13.5 209.5c-1.4 66.5-3.1 191.1 117 224.9h.1l-.1 51.6s-.8 20.9 13 25.1c16.6 5.2 26.4-10.7 42.3-27.8 8.7-9.4 20.4-23.2 29.4-33.8 11.4 1.2 23.3 1.9 35.6 1.9 113.9 0 220.3-69 240.2-180.2 25.4-142.1-15.6-193.2-47-221.3zM348.8 300.7c-9.2 24.2-30.8 28.5-36 29.5-6.1 1.2-12.7-1-16.7-2.1-19.4-5.2-61.1-22.7-98-63.5-38.3-42.3-53.5-84.7-57.5-101.4-1.2-5-2.2-12-1-18.4 1-5.6 4.6-26 27.5-35.3 5.4-2.2 12.3-1.6 16.6 .2 4.1 1.7 18 17.5 24 29 4.3 8.3 11 22.8 9.7 33.1-1.3 10.1-11.4 16.7-14.7 18.9-3.2 2.2-7 5.4-2.9 12.7 8.3 14.8 27.2 38.6 49.3 58 20.8 18.2 41.7 30.6 55.7 37 6.4 2.9 9.3 2.1 12.3-.9 4-3.9 12.6-14 15.6-17.5 2.8-3.3 9.3-3.6 13.1-2.4 3.7 1.2 23.7 8.6 32 12.4 8 3.6 12.7 6.6 13.5 10.3 1 4.7-1.1 14.4-4.8 20.3z"/></svg>
-</a>
-
-<a href="https://wa.me/639928262180" target="_blank" class="whatsapp-btn" style="position: fixed; bottom: 100px; right: 25px; background: #25D366; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9998; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-    <svg viewBox="0 0 32 32" width="38" height="38" fill="white"><path d="M16.002 2C8.268 2 2 8.268 2 16.002c0 2.482.65 4.814 1.774 6.86L2.3 29.7l6.983-1.43c1.996 1.034 4.256 1.626 6.72 1.626 7.732 0 14-6.268 14-14S23.734 2 16.002 2zm0 25.545c-2.126 0-4.135-.55-5.9-1.52l-.424-.23-4.38.896.913-4.276-.254-.404A11.455 11.455 0 0 1 4.35 16.002c0-6.426 5.222-11.648 11.652-11.648 6.428 0 11.648 5.22 11.648 11.648S22.43 27.545 16.002 27.545zm6.388-8.736c-.35-.176-2.074-1.024-2.395-1.14-.32-.118-.553-.176-.788.176-.233.35-.905 1.14-1.11 1.374-.202.235-.406.263-.756.088-1.56-.78-2.65-1.442-3.66-3.18-.236-.406.182-.365.526-.88.117-.176.058-.33-.03-.506-.088-.176-.788-1.9-.1-2.075-.853.07-2.6.07-2.776-.176-.235-.553-.66-1.588-1.636-.234-.976.234-1.153.553-1.153 1.34 0 2.222.84 2.536 1.153 3.61 1.66 4.75 2.19 6.205.35 1.454.55 2.51.46 2.872.23.364-.23.554-1.14.364-1.256z"/></svg>
-</a>
-
-<a href="https://m.me/100726905332735" target="_blank" class="messenger-btn" style="position: fixed; bottom: 25px; right: 25px; background: #0084ff; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9999; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-    <svg viewBox="0 0 28 28" width="35" height="35" fill="white"><path d="M14 2C7.37 2 2 6.93 2 13c0 3.5 1.93 6.6 4.95 8.6-.2.98-.98 3.38-1.04 3.5-.1.22.1.47.33.4.15-.04 3.3-1.07 3.55-1.15.2.06.4.12.6.17 1.6.4 3.29.6 5.01.6 6.63 0 12-4.93 12-11S19.63 2 14 2zm1.14 14.38l-2.57-2.74-5.01 2.74 5.51-5.85 2.62 2.72 4.96-2.72-5.51 5.85z"/></svg>
-</a>
+<script src="app.js"></script>
 
 </body>
 </html>
