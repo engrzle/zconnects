@@ -237,11 +237,22 @@
                 <input type="text" id="searchInput" class="search-input" placeholder="Search ID, Name, Tech..." oninput="applyFilter()">
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode" id="themeBtn">🌙</button>
             </div>
+            
             <div class="analytics-grid">
-                <div class="stat-card"><span class="stat-label">Inbox</span><span class="stat-value" id="stat-inbox">0</span></div>
-                <div class="stat-card"><span class="stat-label" style="color: var(--warning);">Pipeline</span><span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span></div>
-                <div class="stat-card"><span class="stat-label" style="color: var(--success);">Revenue</span><span class="stat-value" id="stat-revenue" style="color: var(--success);">₱0</span></div>
+                <div class="stat-card">
+                    <span class="stat-label">Inbox</span>
+                    <span class="stat-value" id="stat-inbox">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label" style="color: var(--warning);">Pipeline</span>
+                    <span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label" style="color: var(--success);">Revenue</span>
+                    <span class="stat-value" id="stat-revenue" style="color: var(--success);">₱0</span>
+                </div>
             </div>
+            
         </header>
 
         <div class="content-canvas">
@@ -483,6 +494,7 @@
     function renderStream() {
         let inboxCount = 0;
         let pipelineValue = 0, revenueValue = 0; // LIVE REVENUE ENGINE CALCULATION
+        
         const list = document.getElementById('jobsList');
         list.innerHTML = '';
 
@@ -762,5 +774,6 @@
         }
     }
 </script>
+
 </body>
 </html>
