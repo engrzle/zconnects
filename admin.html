@@ -291,7 +291,7 @@
         <label class="control-label">Assign Technician</label>
         <select id="drawerTech" class="admin-input" style="margin-bottom:20px;"></select>
         <div class="action-grid">
-            <button class="btn-solid btn-dp" onclick="executeAction('verify_dp')">💳 Verify DP</button>
+            <button class="btn-solid btn-dp" id="btnVerifyDp" onclick="confirmDPVerify(this)">💳 Verify DP</button>
             <button class="btn-solid btn-assign" onclick="executeAction('assign_tech')">Deploy Tech</button>
         </div>
 
@@ -416,7 +416,7 @@
     }
 
     // ==========================================
-    // 4. UI RENDERING (THE STREAM)
+    // 4. UI RENDERING (THE STREAM & SLA MATH)
     // ==========================================
     
     // --- SLA TRACKING MATH ---
@@ -587,6 +587,42 @@
     // ==========================================
     // 6. ACTION HANDLERS
     // ==========================================
+    
+    // --- DOUBLE-TAP SAFETY LOCK FOR DP ---
+    function confirmDPVerify(btn) {
+        if (btn.dataset.confirmed === "true") {
+            // Second Click: Execute the action
+            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Verifying...";
+            btn.style.background = ""; 
+            btn.style.color = "";
+            btn.style.borderColor = "";
+            
+            executeAction('verify_dp');
+            
+            // Reset button state
+            btn.dataset.confirmed = "false";
+        } else {
+            // First Click: Arm the safety lock
+            const originalText = btn.innerHTML;
+            btn.dataset.confirmed = "true";
+            btn.innerHTML = "⚠️ Click again to CONFIRM";
+            btn.style.background = "var(--danger)";
+            btn.style.color = "var(--white)";
+            btn.style.borderColor = "var(--danger)";
+            
+            // Disarm the lock automatically after 3 seconds
+            setTimeout(() => {
+                if (btn.dataset.confirmed === "true") {
+                    btn.dataset.confirmed = "false";
+                    btn.innerHTML = originalText;
+                    btn.style.background = "";
+                    btn.style.color = "";
+                    btn.style.borderColor = "";
+                }
+            }, 3000);
+        }
+    }
+
     async function executeAction(actionType) {
         const id = document.getElementById('drawerJobId').value;
         const price = document.getElementById('drawerPrice').value;
