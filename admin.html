@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data:;">
     <title>ZConnects Enterprise | Command Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -12,9 +11,7 @@
             --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --purple: #8b5cf6;
             --bg-main: #f8fafc; --white: #ffffff; --navy: #0f172a; --slate: #64748b; 
             --slate-light: #94a3b8; --border: #e2e8f0; --sidebar-bg: #020617;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1); --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
             --pill-inbox-bg: #eff6ff; --pill-inbox-txt: #1e3a8a;
             --pill-pipe-bg: #fffbeb; --pill-pipe-txt: #92400e;
             --pill-disp-bg: #f3e8ff; --pill-disp-txt: #581c87;
@@ -23,16 +20,11 @@
         }
 
         [data-theme="dark"] {
-            --bg-main: #0f172a; --white: #1e293b; --navy: #f8fafc; --slate: #cbd5e1; 
-            --slate-light: #64748b; --border: #334155; --sidebar-bg: #020617;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+            --bg-main: #0f172a; --white: #1e293b; --navy: #f8fafc; --slate: #cbd5e1; --slate-light: #64748b; --border: #334155; --sidebar-bg: #020617;
             --pill-inbox-bg: rgba(37, 99, 235, 0.2); --pill-inbox-txt: #60a5fa;
             --pill-pipe-bg: rgba(245, 158, 11, 0.2); --pill-pipe-txt: #fbbf24;
             --pill-disp-bg: rgba(139, 92, 246, 0.2); --pill-disp-txt: #c084fc;
             --pill-comp-bg: rgba(16, 185, 129, 0.2); --pill-comp-txt: #34d399;
-            --pill-arch-bg: rgba(148, 163, 184, 0.2); --pill-arch-txt: #94a3b8;
         }
 
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-main); margin: 0; color: var(--navy); display: flex; min-height: 100vh; overflow-x: hidden; transition: 0.3s; }
@@ -41,44 +33,36 @@
 
         /* Login */
         #loginOverlay { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .login-box { background: var(--white); padding: 50px 40px; border-radius: 20px; text-align: center; width: 100%; max-width: 340px; box-shadow: var(--shadow-lg); animation: popIn 0.4s; }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .login-box { background: var(--white); padding: 50px 40px; border-radius: 20px; text-align: center; width: 100%; max-width: 340px; box-shadow: var(--shadow-lg); }
         .login-logo { font-size: 2.2rem; font-weight: 900; color: var(--navy); margin: 0 0 20px 0; letter-spacing: -1px; }
         .login-logo span { color: var(--primary); }
-        .login-input { width: 100%; padding: 16px; margin: 15px 0; border: 1.5px solid var(--border); border-radius: 12px; font-size: 1rem; box-sizing: border-box; background: var(--bg-main); color: var(--navy); }
-        .login-input:focus { border-color: var(--primary); outline: none; background: var(--white); }
-        .login-btn { background: var(--primary); color: #ffffff; width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .login-btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .admin-input { width: 100%; padding: 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit; font-weight: 600; margin-bottom: 15px; box-sizing: border-box; background: var(--bg-main); color: var(--navy); outline:none; transition:0.2s;}
+        .admin-input:focus { border-color: var(--primary); background: var(--white); }
+        .btn-solid { padding: 14px; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-draft { background: var(--bg-main); border: 1.5px solid var(--border); color: var(--slate); }
 
-        /* Sidebar & Layout */
-        .sidebar { width: 260px; background: var(--sidebar-bg); color: #ffffff; display: flex; flex-direction: column; padding: 30px 20px; box-sizing: border-box; position: fixed; height: 100vh; left: 0; top: 0; z-index: 500; }
+        /* Sidebar & Topbar */
+        .sidebar { width: 260px; background: var(--sidebar-bg); color: #ffffff; display: flex; flex-direction: column; padding: 30px 20px; box-sizing: border-box; position: fixed; height: 100vh; left: 0; top: 0; }
         .sidebar-logo { font-size: 1.6rem; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px; }
         .sidebar-logo span { color: var(--primary); }
         .workspace-tabs { display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
-        .tab-btn { padding: 12px 16px; border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-align: left; border-radius: 10px; display: flex; align-items: center; gap: 12px; }
-        .tab-btn:hover { background: rgba(255,255,255,0.05); color: #ffffff; }
+        .tab-btn { padding: 12px 16px; border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-align: left; border-radius: 10px; }
         .tab-btn.active { background: rgba(37, 99, 235, 0.15); color: var(--primary); border-left: 3px solid var(--primary); }
         .sidebar-footer { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto; }
-        .btn-sync { background: rgba(255,255,255,0.05); color: #94a3b8; width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
         .main-wrapper { margin-left: 260px; width: calc(100% - 260px); display: flex; flex-direction: column; min-height: 100vh; }
         .topbar { background: var(--bg-main); padding: 15px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .search-input { width: 100%; max-width: 400px; padding: 12px 18px; border: 1.5px solid var(--border); background: var(--white); border-radius: 50px; font-weight: 600; color: var(--navy); }
-        .theme-toggle { background: var(--white); border: 1.5px solid var(--border); color: var(--navy); width: 42px; height: 42px; border-radius: 50%; cursor: pointer; margin-left:10px; }
-
         .analytics-grid { display: flex; gap: 15px; align-items: center; }
         .stat-card { display: flex; flex-direction: column; text-align: right; padding: 10px 18px; border-radius: 12px; border: 1px solid transparent; cursor: pointer; }
-        .stat-card:hover { background: var(--white); border-color: var(--border); box-shadow: var(--shadow-sm); }
         .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--slate-light); text-transform: uppercase; }
         .stat-value { font-size: 1.3rem; font-weight: 900; color: var(--navy); margin-top: 4px; }
 
-        /* Stream */
+        /* Stream & Rows */
         .content-canvas { padding: 40px; flex-grow: 1; display: flex; justify-content: center; }
         .stream-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 16px; }
-        .job-row { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); position: relative; }
-        .job-row:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
-        
-        /* PILLAR 2: CODE RED CSS */
+        .job-row { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .row-emergency { border: 2px solid var(--danger) !important; background: rgba(239, 68, 68, 0.02); animation: redPulse 2s infinite; }
         @keyframes redPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
@@ -87,96 +71,79 @@
         .status-pill { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
         .pill-inbox { background: var(--pill-inbox-bg); color: var(--pill-inbox-txt); }
         .pill-pipeline { background: var(--pill-pipe-bg); color: var(--pill-pipe-txt); }
-        .pill-dispatch { background: var(--pill-disp-bg); color: var(--pill-disp-txt); }
-        .pill-completed { background: var(--pill-comp-bg); color: var(--pill-comp-txt); }
-        .pill-archive { background: var(--pill-arch-bg); color: var(--pill-arch-txt); }
-
+        .pill-disp { background: var(--pill-disp-bg); color: var(--pill-disp-txt); }
         .sla-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 8px; border: 1.5px solid var(--border); }
-        .sla-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: rgba(245, 158, 11, 0.3); }
         .sla-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
 
         .job-title { margin: 0 0 4px 0; font-size: 1.15rem; font-weight: 800; }
-        .job-meta { color: var(--slate); font-weight: 600; font-size: 0.85rem; margin-bottom: 12px; }
-        .job-meta span { color: var(--primary); font-weight: 800; }
-        .job-desc { font-size: 0.9rem; color: var(--slate); line-height: 1.5; margin-bottom: 16px; }
+        .job-desc { font-size: 0.9rem; color: var(--slate); line-height: 1.5; margin-bottom: 16px; margin-top: 10px; }
         .row-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px; }
-        .btn-open-drawer { padding: 8px 16px; border-radius: 8px; font-weight: 800; background: var(--bg-main); border: 1.5px solid var(--border); cursor: pointer; }
+        .btn-action { padding: 8px 16px; border-radius: 8px; font-weight: 800; background: var(--bg-main); border: 1.5px solid var(--border); cursor: pointer; color:var(--navy); }
 
-        /* Drawers */
+        /* Drawers & Gateway */
         .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .drawer-overlay.open { opacity: 1; pointer-events: auto; }
         .drawer-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 480px; background: var(--white); z-index: 2001; transform: translateX(100%); transition: 0.3s; display: flex; flex-direction: column; }
         .drawer-panel.open { transform: translateX(0); }
         .drawer-header { padding: 25px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; background: var(--bg-main); }
-        .drawer-title { margin: 0; font-size: 1.2rem; font-weight: 900; }
-        .drawer-close { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; }
         .drawer-body { padding: 30px; overflow-y: auto; flex-grow: 1; }
         
-        .admin-section-title { font-size: 0.75rem; font-weight: 900; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1.5px dashed var(--border); padding-bottom: 8px; }
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .admin-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit; font-weight: 600; background: var(--bg-main); box-sizing: border-box; }
-        .admin-input:focus { border-color: var(--primary); outline: none; background: var(--white); }
-        
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
-        .btn-solid { padding: 14px; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; }
-        .btn-draft { background: var(--bg-main); border: 1.5px solid var(--border); }
-        .btn-quote { background: var(--primary); color: #ffffff; }
-        .btn-dp { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1.5px solid rgba(245, 158, 11, 0.3); }
-        .btn-assign { background: rgba(139, 92, 246, 0.1); color: var(--purple); border: 1.5px solid rgba(139, 92, 246, 0.3); }
-        .btn-complete { background: var(--success); color: #ffffff; width: 100%; margin-bottom: 30px; }
+        .gateway-box { background: var(--white); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
 
-        /* PILLAR 3: AUDIT TRAIL CSS */
+        .admin-section-title { font-size: 0.75rem; font-weight: 900; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1.5px dashed var(--border); padding-bottom: 8px; }
         .audit-timeline { margin-top: 15px; padding: 15px; background: var(--bg-main); border-radius: 12px; border: 1px solid var(--border); max-height: 200px; overflow-y: auto; margin-bottom: 30px; }
         .audit-item { font-size: 0.8rem; color: var(--slate); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); display: flex; flex-direction: column; }
-        .audit-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .audit-time { font-weight: 800; color: var(--primary); margin-bottom: 2px; font-size: 0.75rem; }
 
+        /* Financials */
         .fin-metric-box { padding: 18px; border-radius: 14px; background: var(--bg-main); border: 1px solid var(--border); margin-bottom: 12px; }
-        .fin-metric-title { font-size: 0.75rem; font-weight: 800; color: var(--slate); text-transform: uppercase; margin-bottom: 6px; }
-        .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); }
+        .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); margin-top:6px; }
 
         #toastContainer { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: flex; gap: 10px; }
-        .toast-success { background: var(--success); } .toast-error { background: var(--danger); }
     </style>
 </head>
 <body>
 
+<div id="proofModal" class="drawer-overlay">
+    <div class="gateway-box">
+        <h3 id="proofTitle" style="color:var(--navy); margin-top:0;">Verification Required</h3>
+        <p id="proofDesc" style="color:var(--slate); font-size:0.85rem; margin-bottom:20px;">Upload proof to proceed.</p>
+        <input type="number" id="proofAmount" class="admin-input" placeholder="Amount Received (PHP)" required>
+        <input type="file" id="proofFile" accept="image/*" class="admin-input" style="padding:10px;" required>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-solid btn-draft" onclick="closeProofGateway()">Cancel</button>
+            <button class="btn-solid btn-primary" id="btnSubmitProof" onclick="submitProof()">Upload & Confirm</button>
+        </div>
+    </div>
+</div>
+
 <div id="loginOverlay">
     <div class="login-box">
         <div class="login-logo">Z<span>connects</span></div>
-        <h3 style="margin:0 0 15px 0; color:var(--slate); font-size:1rem;">Enterprise Command</h3>
-        <input type="password" id="adminPass" class="login-input" placeholder="Secure Key">
-        <button class="login-btn" onclick="verifyLogin()">Authenticate</button>
-        <p id="loginError" style="color:var(--danger); display:none; margin-top:15px; font-size:0.85rem; font-weight:700;">Invalid Credentials</p>
+        <h3 style="margin:0 0 15px 0; color:var(--slate); font-size:1rem;">Command Center</h3>
+        <input type="password" id="adminPass" class="admin-input" placeholder="Secure Key">
+        <button class="btn-solid btn-primary" onclick="verifyLogin()" id="btnLogin">Authenticate</button>
     </div>
 </div>
 
 <div id="appContainer">
     <aside class="sidebar">
         <div class="sidebar-logo">Z<span>connects</span></div>
-        <nav class="workspace-tabs">
-            <button class="tab-btn active" onclick="setWorkspace('inbox', this)">📥 Inbox (New)</button>
-            <button class="tab-btn" onclick="setWorkspace('pipeline', this)">⚡ Quoted / Pipeline</button>
-            <button class="tab-btn" onclick="setWorkspace('dispatched', this)">🚀 Dispatched</button>
-            <button class="tab-btn" onclick="setWorkspace('completed', this)">✅ Completed</button>
-            <button class="tab-btn" onclick="setWorkspace('archive', this)">🗄️ Archive</button>
-        </nav>
+        <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:20px; padding-left:10px; text-transform:uppercase; font-weight:800;" id="userRoleLabel">Role</div>
+        <nav class="workspace-tabs" id="navTabs">
+            </nav>
         <div class="sidebar-footer">
-            <button class="btn-sync" onclick="loadJobs(true)">↻ Sync Data</button>
+            <button class="btn-solid btn-draft" style="background:rgba(255,255,255,0.05); border:none; color:#94a3b8;" onclick="loadJobs(true)">↻ Sync Data</button>
         </div>
     </aside>
 
     <main class="main-wrapper">
         <header class="topbar">
-            <div style="display:flex; align-items:center;">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search ID, Name..." oninput="applyFilter()">
-                <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-            </div>
+            <input type="text" id="searchInput" class="admin-input" style="max-width:400px; margin:0; border-radius:50px;" placeholder="Search ID, Name..." oninput="applyFilter()">
             <div class="analytics-grid" id="topbarAnalytics">
                 <div class="stat-card"><span class="stat-label">Inbox</span><span class="stat-value" id="stat-inbox">0</span></div>
-                <div class="stat-card" onclick="openFinanceDrawer()"><span class="stat-label" style="color: var(--warning);">Pipeline (Active)</span><span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span></div>
-                <div class="stat-card" onclick="openFinanceDrawer()"><span class="stat-label" style="color: var(--success);">Revenue</span><span class="stat-value" id="stat-revenue" style="color: var(--success);">₱0</span></div>
+                <div class="stat-card" onclick="openFinanceDrawer()"><span class="stat-label" style="color: var(--warning);">Pipeline</span><span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span></div>
             </div>
         </header>
 
@@ -192,35 +159,15 @@
 <div id="drawerOverlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
 
 <div id="manageDrawer" class="drawer-panel">
-    <div class="drawer-header">
-        <h2 id="drawerTitle" class="drawer-title">Manage Job</h2>
-        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
-    </div>
+    <div class="drawer-header"><h2 id="drawerTitle" class="drawer-title">Manage Job</h2><button class="drawer-close" onclick="closeAllDrawers()">✕</button></div>
     <div class="drawer-body">
         <input type="hidden" id="drawerJobId">
-        <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
-        <div class="input-grid">
-            <div><label style="font-size:0.75rem; font-weight:800;">Quote (PHP)</label><input type="number" id="drawerPrice" class="admin-input"></div>
-            <div><label style="font-size:0.75rem; font-weight:800;">Cost (PHP)</label><input type="number" id="drawerCost" class="admin-input"></div>
-        </div>
-        <textarea id="drawerNotes" class="admin-input" style="height:60px; margin-bottom:20px;" placeholder="Engineer Notes..."></textarea>
-        <div class="action-grid">
-            <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
-            <button class="btn-solid btn-quote" onclick="executeAction('send_quote')">📧 Send Quote</button>
-        </div>
-
-        <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
-        <select id="drawerTech" class="admin-input" style="margin-bottom:20px;"></select>
-        <div class="action-grid">
-            <button class="btn-solid btn-dp" onclick="executeAction('verify_dp')">💳 Verify DP</button>
-            <button class="btn-solid btn-assign" onclick="executeAction('assign_tech')">Deploy Tech</button>
-        </div>
+        <input type="hidden" id="drawerJobTech">
+        
+        <div id="drawerDynamicContent"></div>
 
         <div class="admin-section-title" style="margin-top: 20px;"><span>🕒</span> Official Audit Trail</div>
         <div id="drawerAuditTrail" class="audit-timeline"></div>
-
-        <div class="admin-section-title"><span>✅</span> Phase 3: Completion</div>
-        <button class="btn-solid btn-complete" onclick="executeAction('mark_complete')">Mark as Completed</button>
     </div>
 </div>
 
@@ -229,183 +176,215 @@
     <div class="drawer-body">
         <div class="admin-section-title" style="color: var(--success);"><span>💰</span> Realized Revenue</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-            <div class="fin-metric-box"><div class="fin-metric-title">Gross</div><div class="fin-metric-val" id="fin-gross">₱0</div></div>
-            <div class="fin-metric-box"><div class="fin-metric-title">Costs</div><div class="fin-metric-val" id="fin-costs" style="color: var(--danger);">₱0</div></div>
+            <div class="fin-metric-box"><div style="font-size:0.75rem; font-weight:800; color:var(--slate);">Gross</div><div class="fin-metric-val" id="fin-gross">₱0</div></div>
+            <div class="fin-metric-box"><div style="font-size:0.75rem; font-weight:800; color:var(--slate);">Costs</div><div class="fin-metric-val" id="fin-costs" style="color: var(--danger);">₱0</div></div>
         </div>
-        <div class="fin-metric-box" style="border-color: var(--success);"><div class="fin-metric-title" style="color: var(--success);">Net Profit</div><div class="fin-metric-val" id="fin-net" style="color: var(--success);">₱0</div><div id="fin-margin" style="font-size:0.8rem; font-weight:800; color:var(--success);">0% Margin</div></div>
+        <div class="fin-metric-box" style="border-color: var(--success);"><div style="font-size:0.75rem; font-weight:800; color:var(--success);">Net Profit</div><div class="fin-metric-val" id="fin-net" style="color: var(--success);">₱0</div></div>
     </div>
 </div>
 
 <div id="toastContainer"></div>
 
 <script>
-    const CONFIG = {
-        APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec',
-        TECHNICIANS: ["Jasper Jubay", "Francis Intong", "Jeffrey Canete", "Jerome", "Lyndon Alburo", "Clark Toquero"]
-    };
+    // 🛑 REPLACE THIS URL WITH YOUR NEW DEPLOYMENT URL
+    const CONFIG = { APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec' };
+    
+    const STATE = { pass: '', role: '', techName: '', workspace: 'all', jobsData: [] };
+    let pendingAction = null;
 
-    const STATE = { pass: '', role: '', workspace: 'inbox', jobsData: [] };
-    let FINANCE_STATE = null;
-
-    document.getElementById('drawerTech').innerHTML = `<option value="">-- Select Tech --</option>` + CONFIG.TECHNICIANS.map(t => `<option value="${t}">${t}</option>`).join('');
-
-    function initTheme() {
-        if(localStorage.getItem('theme') === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').innerText = '☀️'; }
-    }
-    function toggleTheme() {
-        const doc = document.documentElement;
-        if (doc.getAttribute('data-theme') === 'dark') { doc.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); document.getElementById('themeBtn').innerText = '🌙'; } 
-        else { doc.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); document.getElementById('themeBtn').innerText = '☀️'; }
-    }
-    initTheme();
-
-    function showToast(message, type = 'info') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3000);
+    function showToast(msg, type = 'info') {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div'); t.className = `toast toast-${type}`;
+        t.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${msg}</span>`;
+        c.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
 
     async function verifyLogin() {
-        const pass = document.getElementById('adminPass').value;
-        document.querySelector('.login-btn').innerText = "Authenticating...";
+        STATE.pass = document.getElementById('adminPass').value;
+        const btn = document.getElementById('btnLogin'); btn.innerText = "Authenticating...";
 
         try {
-            const response = await fetch(`${CONFIG.APP_URL}?action=get_admin_data`, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: pass }) });
-            const data = await response.json();
+            const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: STATE.pass }) });
+            const data = await res.json();
 
-            if(data.error) { document.getElementById('loginError').style.display = 'block'; document.querySelector('.login-btn').innerText = "Authenticate"; return; }
+            if(data.error) { showToast("Invalid Key", "error"); btn.innerText = "Authenticate"; return; }
             
-            STATE.pass = pass;
             STATE.role = data.userRole; 
+            STATE.techName = data.techName || '';
             STATE.jobsData = data.jobs;
             
-            if (data.metrics) {
-                FINANCE_STATE = data.metrics;
-                updateFinancialDashboard(FINANCE_STATE);
+            document.getElementById('userRoleLabel').innerText = `Role: ${STATE.role}`;
+            buildNavMenu();
+
+            if (STATE.role !== 'Technician' && data.metrics) {
+                document.getElementById('stat-inbox').innerText = data.metrics.inboxCount;
+                document.getElementById('stat-pipeline').innerText = '₱' + data.metrics.pipeTotal.toLocaleString('en-PH');
+                document.getElementById('fin-gross').innerText = '₱' + data.metrics.gross.toLocaleString('en-PH');
+                document.getElementById('fin-costs').innerText = '₱' + data.metrics.cost.toLocaleString('en-PH');
+                document.getElementById('fin-net').innerText = '₱' + data.metrics.net.toLocaleString('en-PH');
+            } else {
+                document.getElementById('topbarAnalytics').style.display = 'none';
             }
-            if (STATE.role === 'Technician') document.getElementById('topbarAnalytics').style.display = 'none';
 
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appContainer').classList.add('authenticated');
-            showToast(`Connected as: ${STATE.role}`, "success");
+            showToast(`Connected: ${STATE.role}`, "success");
             renderStream();
-        } catch (err) { showToast("Connection Error", "error"); document.querySelector('.login-btn').innerText = "Authenticate"; }
+        } catch (err) { showToast("Network Error", "error"); btn.innerText = "Authenticate"; }
     }
 
-    async function loadJobs(showFeedback = false) {
-        const response = await fetch(`${CONFIG.APP_URL}?action=get_admin_data`, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: STATE.pass }) });
-        const data = await response.json();
-        if(!data.error) {
-            STATE.jobsData = data.jobs;
-            if (data.metrics) updateFinancialDashboard(data.metrics);
-            renderStream();
-            if(showFeedback) showToast("Data synced", "success");
+    async function loadJobs(feedback = false) {
+        const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: STATE.pass }) });
+        const data = await res.json();
+        if(!data.error) { STATE.jobsData = data.jobs; renderStream(); if(feedback) showToast("Synced", "success"); }
+    }
+
+    function buildNavMenu() {
+        const nav = document.getElementById('navTabs');
+        if (STATE.role === 'Technician') {
+            nav.innerHTML = `
+                <button class="tab-btn active" onclick="setWorkspace('all', this)">📋 Job Board (Available)</button>
+                <button class="tab-btn" onclick="setWorkspace('my_jobs', this)">🛠️ My Active Jobs</button>
+            `;
+            STATE.workspace = 'all';
+        } else {
+            nav.innerHTML = `
+                <button class="tab-btn active" onclick="setWorkspace('inbox', this)">📥 Inbox</button>
+                <button class="tab-btn" onclick="setWorkspace('pipeline', this)">⚡ Quoted/Claims</button>
+                <button class="tab-btn" onclick="setWorkspace('dispatched', this)">🚀 Dispatched</button>
+                <button class="tab-btn" onclick="setWorkspace('all', this)">🗄️ All Records</button>
+            `;
+            STATE.workspace = 'inbox';
         }
     }
 
-    function updateFinancialDashboard(metrics) {
-        document.getElementById('stat-inbox').innerText = metrics.inboxCount;
-        document.getElementById('stat-pipeline').innerText = '₱' + metrics.pipeTotal.toLocaleString('en-PH');
-        document.getElementById('stat-revenue').innerText = '₱' + metrics.gross.toLocaleString('en-PH');
-        document.getElementById('fin-gross').innerText = '₱' + metrics.gross.toLocaleString('en-PH');
-        document.getElementById('fin-costs').innerText = '₱' + metrics.cost.toLocaleString('en-PH');
-        document.getElementById('fin-net').innerText = '₱' + metrics.net.toLocaleString('en-PH');
-        const margin = metrics.gross > 0 ? Math.round((metrics.net / metrics.gross) * 100) : 0;
-        document.getElementById('fin-margin').innerText = margin + '% Net Margin';
-    }
-
-    function timeAgo(dateString) { return "Live"; } 
-    function getSlaClass(dateString, tag) { return 'sla-healthy'; }
-    function getSemanticClass(status) { return 'pill-inbox'; }
-    function getWorkspaceTag(status) {
-        status = (status || "").toLowerCase();
-        if (status.includes('cancel')) return 'archive'; 
-        if (status.includes('completed') || status.includes('done')) return 'completed';
-        if (status.includes('dispatch') || status.includes('assign')) return 'dispatched';
-        if (status.includes('quote') || status.includes('received')) return 'pipeline';
-        return 'inbox'; 
-    }
-
-    function renderStream() {
-        const list = document.getElementById('jobsList');
-        list.innerHTML = '';
-
-        STATE.jobsData.forEach(job => {
-            const workspaceTag = getWorkspaceTag(job.status);
-            const searchText = `${job.id} ${job.name} ${job.status} ${job.category} ${job.tech || ''}`.toLowerCase();
-            
-            // PILLAR 2: Code Red
-            const isEmergency = String(job.status).includes("EMERGENCY");
-            const rowClass = isEmergency ? 'job-row row-emergency' : 'job-row';
-
-            const row = document.createElement('div');
-            row.className = rowClass;
-            row.dataset.workspace = workspaceTag;
-            row.dataset.search = searchText;
-            
-            row.innerHTML = `
-                <div class="row-header">
-                    <div><span class="job-id">${job.id}</span> <span class="status-pill ${getSemanticClass(job.status)}">${job.status}</span></div>
-                    <span class="sla-badge ${isEmergency ? 'sla-danger' : getSlaClass()}">⏱ Active</span>
-                </div>
-                <h3 class="job-title">${job.name}</h3>
-                <div class="job-meta"><span>${job.category}</span> • ${job.urgency}</div>
-                <div class="job-desc">${job.desc}</div>
-                <div class="row-footer">
-                    <div style="font-size:0.8rem; font-weight:700;">${job.tech ? `Deployed: ${job.tech}` : ''}</div>
-                    <button class="btn-open-drawer" onclick="openDrawer('${job.id}')">⚙️ Manage</button>
-                </div>
-            `;
-            list.appendChild(row);
-        });
-        applyFilter(); 
-    }
-
-    function setWorkspace(workspace, btn) {
+    function setWorkspace(ws, btn) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        STATE.workspace = workspace;
-        applyFilter();
+        btn.classList.add('active'); STATE.workspace = ws; applyFilter();
     }
 
     function applyFilter() {
         const term = document.getElementById('searchInput').value.toLowerCase().trim();
         const rows = document.querySelectorAll('.job-row');
         let count = 0;
-        rows.forEach(row => {
-            if ((STATE.workspace === 'all' || STATE.workspace === row.dataset.workspace) && row.dataset.search.includes(term)) {
-                row.style.display = "block"; count++;
-            } else { row.style.display = "none"; }
+        rows.forEach(r => {
+            let show = false;
+            const status = r.dataset.status.toLowerCase();
+            const tech = r.dataset.tech;
+
+            if (STATE.role === 'Technician') {
+                if (STATE.workspace === 'all' && tech === '') show = true; // Job Board
+                if (STATE.workspace === 'my_jobs' && (tech === STATE.techName || status.includes(STATE.techName.toLowerCase()))) show = true;
+            } else {
+                if (STATE.workspace === 'all') show = true;
+                else if (STATE.workspace === 'inbox' && (status.includes('pending') || status.includes('emergency'))) show = true;
+                else if (STATE.workspace === 'pipeline' && (status.includes('quote') || status.includes('claim') || status.includes('receive'))) show = true;
+                else if (STATE.workspace === 'dispatched' && status.includes('dispatch')) show = true;
+            }
+
+            if (show && r.innerText.toLowerCase().includes(term)) { r.style.display = "block"; count++; } 
+            else r.style.display = "none";
         });
         document.getElementById('noResultsMsg').style.display = count === 0 ? 'block' : 'none';
     }
 
-    function openFinanceDrawer() {
-        if(STATE.role !== 'Technician') {
-            document.getElementById('drawerOverlay').classList.add('open');
-            document.getElementById('financeDrawer').classList.add('open');
-        }
+    function renderStream() {
+        const list = document.getElementById('jobsList'); list.innerHTML = '';
+        STATE.jobsData.forEach(job => {
+            const isEmergency = String(job.status).includes("EMERGENCY");
+            let pillClass = 'pill-inbox';
+            if(job.status.includes('Claim') || job.status.includes('Quote')) pillClass = 'pill-pipe';
+            if(job.status.includes('Dispatch')) pillClass = 'pill-disp';
+
+            const row = document.createElement('div');
+            row.className = isEmergency ? 'job-row row-emergency' : 'job-row';
+            row.dataset.status = job.status; row.dataset.tech = job.tech;
+            
+            row.innerHTML = `
+                <div class="row-header">
+                    <div><span class="job-id">${job.id}</span> <span class="status-pill ${pillClass}">${job.status}</span></div>
+                    ${isEmergency ? '<span class="sla-badge sla-danger">URGENT</span>' : ''}
+                </div>
+                <h3 class="job-title">${job.name}</h3>
+                <div style="font-size:0.85rem; color:var(--slate); margin-bottom:10px;"><b>Loc:</b> ${job.location} • <b>Cat:</b> ${job.category}</div>
+                <div class="job-desc">${job.desc}</div>
+                <div class="row-footer">
+                    <div style="font-size:0.8rem; font-weight:700; color:var(--purple);">${job.tech ? `Assigned: ${job.tech}` : ''}</div>
+                    <button class="btn-action" onclick="openDrawer('${job.id}')">⚙️ Open Action Panel</button>
+                </div>
+            `;
+            list.appendChild(row);
+        });
+        applyFilter();
     }
 
     function openDrawer(id) {
         const job = STATE.jobsData.find(j => j.id === id);
         if(!job) return;
 
-        document.getElementById('drawerTitle').innerText = `Manage ${job.id}`;
+        document.getElementById('drawerTitle').innerText = `Panel: ${job.id}`;
         document.getElementById('drawerJobId').value = job.id;
-        document.getElementById('drawerPrice').value = job.price || '';
-        document.getElementById('drawerCost').value = job.cost || '';
-        document.getElementById('drawerNotes').value = job.notes || '';
-        document.getElementById('drawerTech').value = job.tech || '';
-        
-        // PILLAR 3: Audit Trail
+        document.getElementById('drawerJobTech').value = job.tech; // Current tech
+
+        const content = document.getElementById('drawerDynamicContent');
+        content.innerHTML = ''; // Clear
+
+        // --- ROLE BASED UI RENDERING ---
+        if (STATE.role === 'Technician') {
+            if (job.tech === "") {
+                content.innerHTML = `
+                    <div class="admin-section-title"><span>✋</span> Job Board Action</div>
+                    <p style="font-size:0.9rem; color:var(--slate); margin-bottom:20px;">Review the location and issue. If you have the tools, claim this job to request dispatch.</p>
+                    <button class="btn-solid" style="background:var(--purple); color:white;" onclick="executeAction('claim_job')">Claim Job & Request Dispatch</button>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="admin-section-title"><span>✅</span> Active Job Execution</div>
+                    <p style="font-size:0.9rem; color:var(--slate); margin-bottom:20px;">Once repairs are complete, upload the after-photo and collect payment.</p>
+                    <button class="btn-solid btn-primary" style="background:var(--success);" onclick="openProofGateway('mark_complete')">Complete Job & Upload Proof</button>
+                `;
+            }
+        } else {
+            // ADMIN / DISPATCHER VIEW
+            let adminUI = `
+                <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <input type="number" id="drawerPrice" class="admin-input" placeholder="Quote (PHP)" value="${job.price}">
+                    <input type="number" id="drawerCost" class="admin-input" placeholder="Cost (PHP)" value="${job.cost}">
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+                    <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
+                    <button class="btn-solid btn-primary" onclick="executeAction('save_and_send_quote')">📧 Send Quote</button>
+                </div>
+            `;
+
+            if (job.status.includes('Claim Pending')) {
+                // Someone claimed it. Admin must approve.
+                const claimer = job.status.split(':')[1].trim();
+                adminUI += `
+                    <div class="admin-section-title" style="color:var(--purple); border-bottom-color:var(--purple);"><span>🛡️</span> Tech Claim Approval</div>
+                    <div style="background:rgba(139, 92, 246, 0.1); padding:15px; border-radius:10px; margin-bottom:20px; text-align:center;">
+                        <p style="margin:0 0 15px 0; font-weight:700; color:var(--navy);">Tech <b>${claimer}</b> wants to take this job.</p>
+                        <button class="btn-solid" style="background:var(--purple); color:white;" onclick="executeAction('approve_claim', '${claimer}')">Approve Dispatch & Notify Client</button>
+                    </div>
+                `;
+            } else {
+                // Standard Dispatch Tools
+                adminUI += `
+                    <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+                        <button class="btn-solid" style="background:rgba(245, 158, 11, 0.1); color:var(--warning); border:1.5px solid rgba(245, 158, 11, 0.3);" onclick="openProofGateway('verify_dp')">💳 Verify DP</button>
+                        <button class="btn-solid btn-primary" style="background:var(--success);" onclick="openProofGateway('mark_complete')">Mark Complete (Ledger)</button>
+                    </div>
+                `;
+            }
+            content.innerHTML = adminUI;
+        }
+
+        // Render History
         const auditCont = document.getElementById('drawerAuditTrail');
         if (job.history) {
-            const lines = job.history.split('\n').filter(l => l.trim() !== '');
-            auditCont.innerHTML = lines.map(line => {
+            auditCont.innerHTML = job.history.split('\n').filter(l => l.trim() !== '').map(line => {
                 const match = line.match(/^\[(.*?)\] (.*)$/);
                 if (match) return `<div class="audit-item"><span class="audit-time">${match[1]}</span><span>${match[2]}</span></div>`;
                 return `<div class="audit-item"><span>${line}</span></div>`;
@@ -416,32 +395,53 @@
         document.getElementById('manageDrawer').classList.add('open');
     }
 
-    function closeAllDrawers() {
-        document.getElementById('manageDrawer').classList.remove('open');
-        document.getElementById('financeDrawer').classList.remove('open');
-        document.getElementById('drawerOverlay').classList.remove('open');
+    function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('financeDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
+    function openFinanceDrawer() { if(STATE.role !== 'Technician') { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('financeDrawer').classList.add('open'); } }
+
+    // --- Hard-Stop Gateway ---
+    function openProofGateway(action) {
+        pendingAction = action;
+        document.getElementById('proofTitle').innerText = action === 'verify_dp' ? "DP Verification" : "Final Completion";
+        document.getElementById('proofDesc').innerText = action === 'verify_dp' ? "Attach DP receipt." : "Attach final payment receipt/photo.";
+        document.getElementById('proofAmount').value = ''; document.getElementById('proofFile').value = '';
+        document.getElementById('proofModal').classList.add('open');
+    }
+    function closeProofGateway() { document.getElementById('proofModal').classList.remove('open'); }
+
+    const toBase64 = file => new Promise((res, rej) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = () => res(r.result); r.onerror = e => rej(e); });
+
+    async function submitProof() {
+        const amt = document.getElementById('proofAmount').value;
+        const file = document.getElementById('proofFile').files[0];
+        if (!amt || !file) return alert("Amount and File are mandatory.");
+        
+        const btn = document.getElementById('btnSubmitProof'); btn.innerText = "Uploading..."; btn.disabled = true;
+
+        try {
+            const b64 = await toBase64(file);
+            await sendPayload({ action: pendingAction, bookingId: document.getElementById('drawerJobId').value, amount: amt, base64Image: b64 });
+            closeProofGateway();
+        } catch(err) { alert("Upload Failed."); }
+        btn.innerText = "Upload & Confirm"; btn.disabled = false;
     }
 
-    async function executeAction(actionType) {
-        const payload = { 
-            password: STATE.pass, bookingId: document.getElementById('drawerJobId').value,
-            price: document.getElementById('drawerPrice').value, cost: document.getElementById('drawerCost').value,
-            notes: document.getElementById('drawerNotes').value, tech: document.getElementById('drawerTech').value
-        };
+    // --- Action Execution ---
+    async function executeAction(action, targetTech = null) {
+        const p = { action: action, bookingId: document.getElementById('drawerJobId').value };
+        if (STATE.role !== 'Technician') {
+            p.price = document.getElementById('drawerPrice') ? document.getElementById('drawerPrice').value : '';
+            p.cost = document.getElementById('drawerCost') ? document.getElementById('drawerCost').value : '';
+        }
+        if (action === 'approve_claim') p.tech = targetTech;
+        await sendPayload(p);
+    }
 
-        if (actionType === 'send_quote') payload.action = 'save_and_send_quote';
-        else if (actionType === 'assign_tech') { payload.action = 'update_status'; payload.newStatus = `Dispatched: ${payload.tech}`; }
-        else if (actionType === 'verify_dp') { payload.action = 'update_status'; payload.newStatus = 'DP Received - Ready for Dispatch'; }
-        else if (actionType === 'mark_complete') { payload.action = 'update_status'; payload.newStatus = 'Job Completed'; }
-        else payload.action = 'save_draft';
-
-        closeAllDrawers();
-        showToast("Processing...", "info");
+    async function sendPayload(payload) {
+        payload.password = STATE.pass;
+        closeAllDrawers(); showToast("Processing...", "info");
         const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify(payload) });
         const data = await res.json();
-        
-        if(!data.error) { showToast("Success!", "success"); loadJobs(false); }
-        else showToast(data.error, "error");
+        if(!data.error) { showToast("Success!", "success"); loadJobs(); } else showToast(data.error, "error");
     }
 </script>
 </body>
