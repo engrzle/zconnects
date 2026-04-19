@@ -4,30 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data:;">
-    
     <title>ZConnects Enterprise | Command Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* CORE ENTERPRISE STYLES (Light & Dark Theme Variables) */
         :root { 
             --primary: #2563eb; --primary-hover: #1d4ed8;
             --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --purple: #8b5cf6;
-            
-            /* Light Theme Defaults */
-            --bg-main: #f8fafc; 
-            --white: #ffffff; 
-            --navy: #0f172a; 
-            --slate: #64748b; 
-            --slate-light: #94a3b8; 
-            --border: #e2e8f0; 
-            --sidebar-bg: #020617; 
-            
-            /* Shadows */
+            --bg-main: #f8fafc; --white: #ffffff; --navy: #0f172a; --slate: #64748b; 
+            --slate-light: #94a3b8; --border: #e2e8f0; --sidebar-bg: #020617;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            
-            /* Semantic Pills (Light) */
             --pill-inbox-bg: #eff6ff; --pill-inbox-txt: #1e3a8a;
             --pill-pipe-bg: #fffbeb; --pill-pipe-txt: #92400e;
             --pill-disp-bg: #f3e8ff; --pill-disp-txt: #581c87;
@@ -35,20 +22,12 @@
             --pill-arch-bg: #f1f5f9; --pill-arch-txt: #475569;
         }
 
-        /* Dark Theme Overrides */
         [data-theme="dark"] {
-            --bg-main: #0f172a; 
-            --white: #1e293b; 
-            --navy: #f8fafc; 
-            --slate: #cbd5e1; 
-            --slate-light: #64748b; 
-            --border: #334155; 
-            --sidebar-bg: #020617;
-            
+            --bg-main: #0f172a; --white: #1e293b; --navy: #f8fafc; --slate: #cbd5e1; 
+            --slate-light: #64748b; --border: #334155; --sidebar-bg: #020617;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
-
             --pill-inbox-bg: rgba(37, 99, 235, 0.2); --pill-inbox-txt: #60a5fa;
             --pill-pipe-bg: rgba(245, 158, 11, 0.2); --pill-pipe-txt: #fbbf24;
             --pill-disp-bg: rgba(139, 92, 246, 0.2); --pill-disp-txt: #c084fc;
@@ -56,162 +35,109 @@
             --pill-arch-bg: rgba(148, 163, 184, 0.2); --pill-arch-txt: #94a3b8;
         }
 
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-main); margin: 0; color: var(--navy); display: flex; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
-        
-        /* APP CONTAINER (Hidden initially for security) */
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-main); margin: 0; color: var(--navy); display: flex; min-height: 100vh; overflow-x: hidden; transition: 0.3s; }
         #appContainer { display: none; width: 100%; flex-direction: row; }
         #appContainer.authenticated { display: flex; }
 
-        /* LOGIN OVERLAY */
+        /* Login */
         #loginOverlay { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .login-box { background: var(--white); padding: 50px 40px; border-radius: 20px; text-align: center; width: 100%; max-width: 340px; box-shadow: var(--shadow-lg); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .login-box { background: var(--white); padding: 50px 40px; border-radius: 20px; text-align: center; width: 100%; max-width: 340px; box-shadow: var(--shadow-lg); animation: popIn 0.4s; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .login-logo { font-size: 2.2rem; font-weight: 900; color: var(--navy); margin: 0 0 20px 0; letter-spacing: -1px; }
         .login-logo span { color: var(--primary); }
-        .login-input { width: 100%; padding: 16px; margin: 15px 0; border: 1.5px solid var(--border); border-radius: 12px; font-size: 1rem; box-sizing: border-box; transition: 0.2s; background: var(--bg-main); font-family: inherit; font-weight: 600; color: var(--navy); }
-        .login-input:focus { border-color: var(--primary); outline: none; background: var(--white); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .login-btn { background: var(--primary); color: #ffffff; width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+        .login-input { width: 100%; padding: 16px; margin: 15px 0; border: 1.5px solid var(--border); border-radius: 12px; font-size: 1rem; box-sizing: border-box; background: var(--bg-main); color: var(--navy); }
+        .login-input:focus { border-color: var(--primary); outline: none; background: var(--white); }
+        .login-btn { background: var(--primary); color: #ffffff; width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .login-btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        .trust-badge { font-size: 0.75rem; color: var(--slate-light); margin-top: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
-        /* SIDEBAR (NAVIGATION) */
+        /* Sidebar & Layout */
         .sidebar { width: 260px; background: var(--sidebar-bg); color: #ffffff; display: flex; flex-direction: column; padding: 30px 20px; box-sizing: border-box; position: fixed; height: 100vh; left: 0; top: 0; z-index: 500; }
         .sidebar-logo { font-size: 1.6rem; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px; }
         .sidebar-logo span { color: var(--primary); }
         .workspace-tabs { display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
-        .tab-btn { padding: 12px 16px; border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-align: left; border-radius: 10px; transition: 0.2s ease; display: flex; align-items: center; gap: 12px; }
+        .tab-btn { padding: 12px 16px; border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-align: left; border-radius: 10px; display: flex; align-items: center; gap: 12px; }
         .tab-btn:hover { background: rgba(255,255,255,0.05); color: #ffffff; }
         .tab-btn.active { background: rgba(37, 99, 235, 0.15); color: var(--primary); border-left: 3px solid var(--primary); }
-        
-        .sidebar-footer { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
-        .btn-sync { background: rgba(255,255,255,0.05); color: #94a3b8; width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-sync:hover { background: rgba(255,255,255,0.1); color: #ffffff; }
+        .sidebar-footer { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto; }
+        .btn-sync { background: rgba(255,255,255,0.05); color: #94a3b8; width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
-        /* MAIN WRAPPER & TOPBAR */
         .main-wrapper { margin-left: 260px; width: calc(100% - 260px); display: flex; flex-direction: column; min-height: 100vh; }
-        .topbar { background: var(--bg-main); padding: 15px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; transition: 0.3s; }
-        
-        .topbar-controls { display: flex; gap: 15px; flex: 1; max-width: 500px; align-items: center; }
-        .search-input { width: 100%; padding: 12px 18px; border: 1.5px solid var(--border); background: var(--white); border-radius: 50px; font-size: 0.9rem; transition: 0.2s; outline: none; font-family: inherit; font-weight: 600; color: var(--navy); box-shadow: var(--shadow-sm); }
-        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        
-        .theme-toggle { background: var(--white); border: 1.5px solid var(--border); color: var(--navy); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 1.2rem; flex-shrink: 0; box-shadow: var(--shadow-sm); }
-        .theme-toggle:hover { border-color: var(--primary); }
+        .topbar { background: var(--bg-main); padding: 15px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .search-input { width: 100%; max-width: 400px; padding: 12px 18px; border: 1.5px solid var(--border); background: var(--white); border-radius: 50px; font-weight: 600; color: var(--navy); }
+        .theme-toggle { background: var(--white); border: 1.5px solid var(--border); color: var(--navy); width: 42px; height: 42px; border-radius: 50%; cursor: pointer; margin-left:10px; }
 
         .analytics-grid { display: flex; gap: 15px; align-items: center; }
-        
-        /* NEW: Clickable Stat Cards */
-        .stat-card { display: flex; flex-direction: column; text-align: right; padding: 10px 18px; border-radius: 12px; border: 1px solid transparent; transition: 0.2s ease; cursor: pointer; }
-        .stat-card:hover { background: var(--white); border-color: var(--border); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
-        [data-theme="dark"] .stat-card:hover { background: rgba(255,255,255,0.05); }
-        
-        .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--slate-light); text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 1.3rem; font-weight: 900; color: var(--navy); line-height: 1; margin-top: 4px; transition: 0.3s; }
+        .stat-card { display: flex; flex-direction: column; text-align: right; padding: 10px 18px; border-radius: 12px; border: 1px solid transparent; cursor: pointer; }
+        .stat-card:hover { background: var(--white); border-color: var(--border); box-shadow: var(--shadow-sm); }
+        .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--slate-light); text-transform: uppercase; }
+        .stat-value { font-size: 1.3rem; font-weight: 900; color: var(--navy); margin-top: 4px; }
 
-        /* THE STREAM (FEED LAYOUT) */
+        /* Stream */
         .content-canvas { padding: 40px; flex-grow: 1; display: flex; justify-content: center; }
         .stream-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 16px; }
+        .job-row { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); position: relative; }
+        .job-row:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
         
-        .job-row { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: 0.2s ease; cursor: pointer; position: relative; }
-        .job-row:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-1px); }
-        
+        /* PILLAR 2: CODE RED CSS */
+        .row-emergency { border: 2px solid var(--danger) !important; background: rgba(239, 68, 68, 0.02); animation: redPulse 2s infinite; }
+        @keyframes redPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
         .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .job-id { font-size: 0.8rem; font-weight: 800; color: var(--slate); letter-spacing: 0.5px; }
-        
-        /* SEMANTIC STATUS PILLS */
-        .status-pill { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .job-id { font-size: 0.8rem; font-weight: 800; color: var(--slate); }
+        .status-pill { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
         .pill-inbox { background: var(--pill-inbox-bg); color: var(--pill-inbox-txt); }
         .pill-pipeline { background: var(--pill-pipe-bg); color: var(--pill-pipe-txt); }
         .pill-dispatch { background: var(--pill-disp-bg); color: var(--pill-disp-txt); }
         .pill-completed { background: var(--pill-comp-bg); color: var(--pill-comp-txt); }
         .pill-archive { background: var(--pill-arch-bg); color: var(--pill-arch-txt); }
 
-        /* SLA AGING BADGE */
-        .sla-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 4px; letter-spacing: 0.3px; transition: 0.3s; }
-        .sla-healthy { background: transparent; color: var(--slate-light); border: 1.5px solid var(--border); }
-        .sla-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1.5px solid rgba(245, 158, 11, 0.3); animation: pulseWarning 2s infinite; }
-        .sla-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1.5px solid rgba(239, 68, 68, 0.3); animation: pulseDanger 1.5s infinite; }
-        
-        @keyframes pulseWarning { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
-        @keyframes pulseDanger { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .sla-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 8px; border: 1.5px solid var(--border); }
+        .sla-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: rgba(245, 158, 11, 0.3); }
+        .sla-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
 
-        .job-title { margin: 0 0 4px 0; color: var(--navy); font-size: 1.15rem; font-weight: 800; letter-spacing: -0.3px; transition: 0.3s; }
+        .job-title { margin: 0 0 4px 0; font-size: 1.15rem; font-weight: 800; }
         .job-meta { color: var(--slate); font-weight: 600; font-size: 0.85rem; margin-bottom: 12px; }
         .job-meta span { color: var(--primary); font-weight: 800; }
-        .job-desc { font-size: 0.9rem; color: var(--slate); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 16px; }
-        
-        .row-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px; transition: 0.3s; }
-        .tech-badge { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: var(--slate); }
-        .tech-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); }
-        
-        .action-bar { display: flex; gap: 10px; }
-        .btn-stream-action { padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; }
-        .btn-open-drawer { background: var(--bg-main); color: var(--navy); border: 1.5px solid var(--border); }
-        .btn-open-drawer:hover { background: var(--border); }
+        .job-desc { font-size: 0.9rem; color: var(--slate); line-height: 1.5; margin-bottom: 16px; }
+        .row-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px; }
+        .btn-open-drawer { padding: 8px 16px; border-radius: 8px; font-weight: 800; background: var(--bg-main); border: 1.5px solid var(--border); cursor: pointer; }
 
-        /* THE CONTEXT DRAWER */
-        .drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s ease; }
+        /* Drawers */
+        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .drawer-overlay.open { opacity: 1; pointer-events: auto; }
-        
-        .drawer-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 480px; background: var(--white); box-shadow: var(--shadow-lg); z-index: 2001; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; display: flex; flex-direction: column; border-left: 1px solid var(--border); }
+        .drawer-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 480px; background: var(--white); z-index: 2001; transform: translateX(100%); transition: 0.3s; display: flex; flex-direction: column; }
         .drawer-panel.open { transform: translateX(0); }
-        
-        .drawer-header { padding: 25px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); transition: 0.3s; }
-        .drawer-title { margin: 0; font-size: 1.2rem; font-weight: 900; color: var(--navy); }
-        .drawer-close { background: transparent; border: none; font-size: 1.5rem; color: var(--slate-light); cursor: pointer; transition: 0.2s; }
-        .drawer-close:hover { color: var(--danger); }
-        
+        .drawer-header { padding: 25px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; background: var(--bg-main); }
+        .drawer-title { margin: 0; font-size: 1.2rem; font-weight: 900; }
+        .drawer-close { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; }
         .drawer-body { padding: 30px; overflow-y: auto; flex-grow: 1; }
         
-        /* Drawer Form Elements */
-        .admin-section-title { font-size: 0.75rem; font-weight: 900; color: var(--navy); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1.5px dashed var(--border); transition: 0.3s; }
-        .control-label { font-size: 0.75rem; font-weight: 800; color: var(--slate); margin-bottom: 6px; display: block; }
+        .admin-section-title { font-size: 0.75rem; font-weight: 900; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1.5px dashed var(--border); padding-bottom: 8px; }
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .admin-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 600; color: var(--navy); box-sizing: border-box; transition: 0.2s; background: var(--bg-main); }
-        .admin-input:focus { border-color: var(--primary); outline: none; background: var(--white); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .admin-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit; font-weight: 600; background: var(--bg-main); box-sizing: border-box; }
+        .admin-input:focus { border-color: var(--primary); outline: none; background: var(--white); }
         
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
-        .btn-solid { padding: 14px; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
-        .btn-draft { background: var(--bg-main); border: 1.5px solid var(--border); color: var(--slate); }
-        .btn-draft:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-solid { padding: 14px; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; }
+        .btn-draft { background: var(--bg-main); border: 1.5px solid var(--border); }
         .btn-quote { background: var(--primary); color: #ffffff; }
-        .btn-quote:hover { background: var(--primary-hover); }
         .btn-dp { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1.5px solid rgba(245, 158, 11, 0.3); }
-        .btn-dp:hover { background: rgba(245, 158, 11, 0.2); }
         .btn-assign { background: rgba(139, 92, 246, 0.1); color: var(--purple); border: 1.5px solid rgba(139, 92, 246, 0.3); }
-        .btn-assign:hover { background: rgba(139, 92, 246, 0.2); }
         .btn-complete { background: var(--success); color: #ffffff; width: 100%; margin-bottom: 30px; }
-        .btn-complete:hover { background: #059669; }
-        .btn-cancel-job { background: transparent; color: var(--danger); width: 100%; border: 1.5px dashed var(--danger); }
-        .btn-cancel-job:hover { background: rgba(239, 68, 68, 0.1); }
 
-        /* NEW: FINANCIAL DASHBOARD METRICS */
+        /* PILLAR 3: AUDIT TRAIL CSS */
+        .audit-timeline { margin-top: 15px; padding: 15px; background: var(--bg-main); border-radius: 12px; border: 1px solid var(--border); max-height: 200px; overflow-y: auto; margin-bottom: 30px; }
+        .audit-item { font-size: 0.8rem; color: var(--slate); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); display: flex; flex-direction: column; }
+        .audit-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .audit-time { font-weight: 800; color: var(--primary); margin-bottom: 2px; font-size: 0.75rem; }
+
         .fin-metric-box { padding: 18px; border-radius: 14px; background: var(--bg-main); border: 1px solid var(--border); margin-bottom: 12px; }
-        .fin-metric-title { font-size: 0.75rem; font-weight: 800; color: var(--slate); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); line-height: 1; }
-        .profit-badge { display: inline-block; padding: 4px 10px; border-radius: 50px; background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 0.8rem; font-weight: 800; }
+        .fin-metric-title { font-size: 0.75rem; font-weight: 800; color: var(--slate); text-transform: uppercase; margin-bottom: 6px; }
+        .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); }
 
-        /* TOAST NOTIFICATION SYSTEM */
-        #toastContainer { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; animation: slideUpToast 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transition: opacity 0.3s ease; }
-        .toast-success { background: var(--success); }
-        .toast-error { background: var(--danger); }
-        .toast-info { background: #0f172a; }
-        @keyframes slideUpToast { from { transform: translateY(20px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-
-        .loader-skeleton { height: 160px; background: linear-gradient(90deg, var(--bg-main) 25%, var(--border) 50%, var(--bg-main) 75%); background-size: 200% 100%; animation: pulse 1.5s infinite; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
-        @keyframes pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .sidebar { width: 100%; height: auto; position: static; padding: 20px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
-            .workspace-tabs { flex-direction: row; overflow-x: auto; padding-bottom: 10px; }
-            .main-wrapper { margin-left: 0; width: 100%; }
-            .topbar { flex-direction: column; gap: 15px; align-items: stretch; padding: 20px; }
-            .topbar-controls { max-width: 100%; }
-            .content-canvas { padding: 20px; }
-            .drawer-panel { max-width: 100%; }
-        }
+        #toastContainer { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: flex; gap: 10px; }
+        .toast-success { background: var(--success); } .toast-error { background: var(--danger); }
     </style>
 </head>
 <body>
@@ -222,7 +148,6 @@
         <h3 style="margin:0 0 15px 0; color:var(--slate); font-size:1rem;">Enterprise Command</h3>
         <input type="password" id="adminPass" class="login-input" placeholder="Secure Key">
         <button class="login-btn" onclick="verifyLogin()">Authenticate</button>
-        <div class="trust-badge">🔒 End-to-End Encrypted</div>
         <p id="loginError" style="color:var(--danger); display:none; margin-top:15px; font-size:0.85rem; font-weight:700;">Invalid Credentials</p>
     </div>
 </div>
@@ -238,45 +163,27 @@
             <button class="tab-btn" onclick="setWorkspace('archive', this)">🗄️ Archive</button>
         </nav>
         <div class="sidebar-footer">
-            <button class="btn-sync" onclick="loadJobs(STATE.pass, true)">↻ Sync Data</button>
+            <button class="btn-sync" onclick="loadJobs(true)">↻ Sync Data</button>
         </div>
     </aside>
 
     <main class="main-wrapper">
         <header class="topbar">
-            <div class="topbar-controls">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search ID, Name, Tech..." oninput="applyFilter()">
-                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode" id="themeBtn">🌙</button>
+            <div style="display:flex; align-items:center;">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search ID, Name..." oninput="applyFilter()">
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
             </div>
-            
-            <div class="analytics-grid">
-                <div class="stat-card" style="cursor:default;">
-                    <span class="stat-label">Inbox</span>
-                    <span class="stat-value" id="stat-inbox">0</span>
-                </div>
-                <div class="stat-card" onclick="openFinanceDrawer()" title="Click for Financial Breakdown">
-                    <span class="stat-label" style="color: var(--warning);">Pipeline (Active)</span>
-                    <span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span>
-                </div>
-                <div class="stat-card" onclick="openFinanceDrawer()" title="Click for Financial Breakdown">
-                    <span class="stat-label" style="color: var(--success);">Realized Revenue</span>
-                    <span class="stat-value" id="stat-revenue" style="color: var(--success);">₱0</span>
-                </div>
+            <div class="analytics-grid" id="topbarAnalytics">
+                <div class="stat-card"><span class="stat-label">Inbox</span><span class="stat-value" id="stat-inbox">0</span></div>
+                <div class="stat-card" onclick="openFinanceDrawer()"><span class="stat-label" style="color: var(--warning);">Pipeline (Active)</span><span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span></div>
+                <div class="stat-card" onclick="openFinanceDrawer()"><span class="stat-label" style="color: var(--success);">Revenue</span><span class="stat-value" id="stat-revenue" style="color: var(--success);">₱0</span></div>
             </div>
-            
         </header>
 
         <div class="content-canvas">
             <div id="streamContainer" class="stream-container">
-                <div id="loader" style="display:none; width: 100%;">
-                    <div class="loader-skeleton"></div>
-                    <div class="loader-skeleton"></div>
-                    <div class="loader-skeleton"></div>
-                </div>
-                
                 <div id="jobsList" style="width: 100%; display: flex; flex-direction: column; gap: 16px;"></div>
-                
-                <div id="noResultsMsg" style="display:none; text-align:center; color:var(--slate-light); padding: 60px 20px; background:var(--white); border-radius:16px; border:1px dashed var(--border); font-weight:600;">No records found in this workspace.</div>
+                <div id="noResultsMsg" style="display:none; text-align:center; padding: 60px; font-weight:600;">No records found.</div>
             </div>
         </div>
     </main>
@@ -286,348 +193,174 @@
 
 <div id="manageDrawer" class="drawer-panel">
     <div class="drawer-header">
-        <h2 id="drawerTitle" class="drawer-title">Manage ZC-000</h2>
+        <h2 id="drawerTitle" class="drawer-title">Manage Job</h2>
         <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
     </div>
-    
     <div class="drawer-body">
         <input type="hidden" id="drawerJobId">
-        
-        <div id="drawerPhotoSection" style="margin-bottom: 25px;"></div>
-        
         <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
         <div class="input-grid">
-            <div>
-                <label class="control-label">Quote Price (PHP)</label>
-                <input type="number" id="drawerPrice" class="admin-input" placeholder="e.g. 3500">
-            </div>
-            <div>
-                <label class="control-label">Actual Cost (PHP)</label>
-                <input type="number" id="drawerCost" class="admin-input" placeholder="e.g. 1500">
-            </div>
+            <div><label style="font-size:0.75rem; font-weight:800;">Quote (PHP)</label><input type="number" id="drawerPrice" class="admin-input"></div>
+            <div><label style="font-size:0.75rem; font-weight:800;">Cost (PHP)</label><input type="number" id="drawerCost" class="admin-input"></div>
         </div>
-        <label class="control-label">Engineer Notes (Internal)</label>
-        <textarea id="drawerNotes" class="admin-input" style="height:60px; margin-bottom:20px;" placeholder="Technical details..."></textarea>
+        <textarea id="drawerNotes" class="admin-input" style="height:60px; margin-bottom:20px;" placeholder="Engineer Notes..."></textarea>
         <div class="action-grid">
             <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
             <button class="btn-solid btn-quote" onclick="executeAction('send_quote')">📧 Send Quote</button>
         </div>
 
         <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
-        <label class="control-label">Assign Technician</label>
         <select id="drawerTech" class="admin-input" style="margin-bottom:20px;"></select>
         <div class="action-grid">
-            <button class="btn-solid btn-dp" id="btnVerifyDp" onclick="confirmDPVerify(this)">💳 Verify DP</button>
+            <button class="btn-solid btn-dp" onclick="executeAction('verify_dp')">💳 Verify DP</button>
             <button class="btn-solid btn-assign" onclick="executeAction('assign_tech')">Deploy Tech</button>
         </div>
 
-        <div style="background: var(--bg-main); padding: 18px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
-            <label class="control-label" style="color: var(--warning);">⚠️ SEND DELAY NOTICE</label>
-            <textarea id="delayNote" class="admin-input" style="height:60px; margin-top:10px; margin-bottom:12px; font-size: 0.85rem;" placeholder="Reason (e.g. Heavy traffic, parts delay)"></textarea>
-            <button class="btn-solid" id="btnDelayAlert" style="background: var(--warning); color:white; margin-bottom:0;" onclick="confirmDelayAlert(this)">Notify Client of Delay</button>
-        </div>
+        <div class="admin-section-title" style="margin-top: 20px;"><span>🕒</span> Official Audit Trail</div>
+        <div id="drawerAuditTrail" class="audit-timeline"></div>
 
-        <div class="admin-section-title" style="margin-bottom: 15px;"><span>✅</span> Phase 3: Completion</div>
-        <button class="btn-solid btn-complete" id="btnCompleteJob" onclick="confirmComplete(this)">Mark as Completed</button>
-
-        <div class="admin-section-title" style="margin-bottom: 15px; color: var(--danger); border-bottom-color: var(--border);"><span>⚠️</span> Danger Zone</div>
-        <select id="drawerCancelReason" class="admin-input" style="margin-bottom:10px;">
-            <option value="Client will no longer proceed">Client will no longer proceed</option>
-            <option value="Out of budget / Price too high">Out of budget / Price too high</option>
-            <option value="Resolved internally / Self-fixed">Resolved internally / Self-fixed</option>
-            <option value="Schedule conflict / Unresponsive">Schedule conflict / Unresponsive</option>
-        </select>
-        <button class="btn-solid btn-cancel-job" id="btnCancelJob" onclick="confirmCancel(this)">Cancel & Archive Booking</button>
+        <div class="admin-section-title"><span>✅</span> Phase 3: Completion</div>
+        <button class="btn-solid btn-complete" onclick="executeAction('mark_complete')">Mark as Completed</button>
     </div>
 </div>
 
 <div id="financeDrawer" class="drawer-panel">
-    <div class="drawer-header">
-        <h2 class="drawer-title" style="display:flex; align-items:center; gap:10px;">📊 Financial Insights</h2>
-        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
-    </div>
-    
+    <div class="drawer-header"><h2 class="drawer-title">📊 Financial Insights</h2><button class="drawer-close" onclick="closeAllDrawers()">✕</button></div>
     <div class="drawer-body">
-        
-        <div class="admin-section-title" style="color: var(--success); border-bottom-color: rgba(16, 185, 129, 0.3);"><span>💰</span> Realized Revenue (Completed Jobs)</div>
-        
+        <div class="admin-section-title" style="color: var(--success);"><span>💰</span> Realized Revenue</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-            <div class="fin-metric-box">
-                <div class="fin-metric-title">Gross Income</div>
-                <div class="fin-metric-val" id="fin-gross">₱0</div>
-            </div>
-            <div class="fin-metric-box">
-                <div class="fin-metric-title">Operating Costs</div>
-                <div class="fin-metric-val" id="fin-costs" style="color: var(--danger);">₱0</div>
-            </div>
+            <div class="fin-metric-box"><div class="fin-metric-title">Gross</div><div class="fin-metric-val" id="fin-gross">₱0</div></div>
+            <div class="fin-metric-box"><div class="fin-metric-title">Costs</div><div class="fin-metric-val" id="fin-costs" style="color: var(--danger);">₱0</div></div>
         </div>
-
-        <div class="fin-metric-box" style="border-color: var(--success); background: rgba(16, 185, 129, 0.05); margin-bottom: 40px;">
-            <div class="fin-metric-title" style="color: var(--success);">Net Profit</div>
-            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                <div class="fin-metric-val" id="fin-net" style="color: var(--success); font-size: 2.4rem;">₱0</div>
-                <div class="profit-badge" id="fin-margin">0% Margin</div>
-            </div>
-        </div>
-
-        <div class="admin-section-title" style="color: var(--warning); border-bottom-color: rgba(245, 158, 11, 0.3);"><span>⚡</span> Active Pipeline (Potential Income)</div>
-        
-        <div class="fin-metric-box" style="border-color: var(--warning); background: rgba(245, 158, 11, 0.05);">
-            <div class="fin-metric-title" style="color: var(--warning);">Total Pipeline Value</div>
-            <div class="fin-metric-val" id="fin-pipe-total" style="color: var(--warning);">₱0</div>
-        </div>
-        
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-            <div class="fin-metric-box">
-                <div class="fin-metric-title">Quoting Phase</div>
-                <div class="fin-metric-val" id="fin-pipe-quote" style="font-size: 1.4rem;">₱0</div>
-            </div>
-            <div class="fin-metric-box">
-                <div class="fin-metric-title" style="color: var(--purple);">Dispatched (Locked)</div>
-                <div class="fin-metric-val" id="fin-pipe-disp" style="font-size: 1.4rem; color: var(--purple);">₱0</div>
-            </div>
-        </div>
-        
+        <div class="fin-metric-box" style="border-color: var(--success);"><div class="fin-metric-title" style="color: var(--success);">Net Profit</div><div class="fin-metric-val" id="fin-net" style="color: var(--success);">₱0</div><div id="fin-margin" style="font-size:0.8rem; font-weight:800; color:var(--success);">0% Margin</div></div>
     </div>
 </div>
 
 <div id="toastContainer"></div>
 
 <script>
-    // ==========================================
-    // 1. CONFIGURATION, THEME & STATE
-    // ==========================================
     const CONFIG = {
         APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec',
         TECHNICIANS: ["Jasper Jubay", "Francis Intong", "Jeffrey Canete", "Jerome", "Lyndon Alburo", "Clark Toquero"]
     };
 
-    const STATE = { pass: '', workspace: 'inbox', jobsData: [] };
-    let FINANCE_STATE = { gross: 0, cost: 0, net: 0, pipeQuote: 0, pipeDisp: 0, pipeTotal: 0 };
+    const STATE = { pass: '', role: '', workspace: 'inbox', jobsData: [] };
+    let FINANCE_STATE = null;
 
-    // Initialize Tech Dropdown
-    document.getElementById('drawerTech').innerHTML = `<option value="">-- Select Tech --</option>` + 
-        CONFIG.TECHNICIANS.map(t => `<option value="${t}">${t}</option>`).join('');
+    document.getElementById('drawerTech').innerHTML = `<option value="">-- Select Tech --</option>` + CONFIG.TECHNICIANS.map(t => `<option value="${t}">${t}</option>`).join('');
 
-    // Theme Management
     function initTheme() {
-        if(localStorage.getItem('theme') === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeBtn').innerText = '☀️';
-        }
+        if(localStorage.getItem('theme') === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').innerText = '☀️'; }
     }
-    
     function toggleTheme() {
         const doc = document.documentElement;
-        const btn = document.getElementById('themeBtn');
-        if (doc.getAttribute('data-theme') === 'dark') {
-            doc.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'light');
-            btn.innerText = '🌙';
-        } else {
-            doc.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-            btn.innerText = '☀️';
-        }
+        if (doc.getAttribute('data-theme') === 'dark') { doc.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); document.getElementById('themeBtn').innerText = '🌙'; } 
+        else { doc.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); document.getElementById('themeBtn').innerText = '☀️'; }
     }
     initTheme();
 
-    // ==========================================
-    // 2. TOAST NOTIFICATION SYSTEM
-    // ==========================================
     function showToast(message, type = 'info') {
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
-        let icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
-        toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
         container.appendChild(toast);
-        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        setTimeout(() => { toast.remove(); }, 3000);
     }
 
-    // ==========================================
-    // 3. AUTHENTICATION (BACKEND VALIDATION)
-    // ==========================================
     async function verifyLogin() {
         const pass = document.getElementById('adminPass').value;
-        const loginBtn = document.querySelector('.login-btn');
-        loginBtn.innerText = "Authenticating...";
+        document.querySelector('.login-btn').innerText = "Authenticating...";
 
         try {
             const response = await fetch(`${CONFIG.APP_URL}?action=get_admin_data`, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: pass }) });
-            const jobs = await response.json();
+            const data = await response.json();
 
-            if(jobs.error) { 
-                document.getElementById('loginError').style.display = 'block';
-                loginBtn.innerText = "Authenticate";
-                return; 
-            }
+            if(data.error) { document.getElementById('loginError').style.display = 'block'; document.querySelector('.login-btn').innerText = "Authenticate"; return; }
             
             STATE.pass = pass;
-            STATE.jobsData = jobs;
+            STATE.role = data.userRole; 
+            STATE.jobsData = data.jobs;
+            
+            if (data.metrics) {
+                FINANCE_STATE = data.metrics;
+                updateFinancialDashboard(FINANCE_STATE);
+            }
+            if (STATE.role === 'Technician') document.getElementById('topbarAnalytics').style.display = 'none';
+
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appContainer').classList.add('authenticated');
-            showToast("Secure connection established.", "success");
+            showToast(`Connected as: ${STATE.role}`, "success");
             renderStream();
-
-        } catch (err) { 
-            showToast("Connection Error. Please check your network.", "error");
-            loginBtn.innerText = "Authenticate";
-        }
+        } catch (err) { showToast("Connection Error", "error"); document.querySelector('.login-btn').innerText = "Authenticate"; }
     }
 
-    async function loadJobs(password, showFeedback = false) {
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('jobsList').innerHTML = '';
-        document.getElementById('noResultsMsg').style.display = 'none';
-
-        try {
-            const response = await fetch(`${CONFIG.APP_URL}?action=get_admin_data`, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: password }) });
-            const jobs = await response.json();
-
-            document.getElementById('loader').style.display = 'none';
-            if(jobs.error) { location.reload(); return; }
-            
-            STATE.jobsData = jobs;
+    async function loadJobs(showFeedback = false) {
+        const response = await fetch(`${CONFIG.APP_URL}?action=get_admin_data`, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: STATE.pass }) });
+        const data = await response.json();
+        if(!data.error) {
+            STATE.jobsData = data.jobs;
+            if (data.metrics) updateFinancialDashboard(data.metrics);
             renderStream();
-            if(showFeedback) showToast("Data synchronized successfully.", "success");
-        } catch (err) { 
-            showToast("Failed to sync data.", "error");
-            document.getElementById('loader').style.display = 'none';
+            if(showFeedback) showToast("Data synced", "success");
         }
     }
 
-    // ==========================================
-    // 4. UI RENDERING & FINANCIAL MATH
-    // ==========================================
-    
-    function timeAgo(dateString) {
-        if (!dateString) return "Unknown";
-        const date = new Date(dateString);
-        const seconds = Math.floor((new Date() - date) / 1000);
-        
-        let interval = seconds / 86400;
-        if (interval >= 1) {
-            if (interval > 7) { 
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            }
-            return Math.floor(interval) + "d ago";
-        }
-        interval = seconds / 3600;
-        if (interval >= 1) return Math.floor(interval) + "h ago";
-        interval = seconds / 60;
-        if (interval >= 1) return Math.floor(interval) + "m ago";
-        return "Just now";
+    function updateFinancialDashboard(metrics) {
+        document.getElementById('stat-inbox').innerText = metrics.inboxCount;
+        document.getElementById('stat-pipeline').innerText = '₱' + metrics.pipeTotal.toLocaleString('en-PH');
+        document.getElementById('stat-revenue').innerText = '₱' + metrics.gross.toLocaleString('en-PH');
+        document.getElementById('fin-gross').innerText = '₱' + metrics.gross.toLocaleString('en-PH');
+        document.getElementById('fin-costs').innerText = '₱' + metrics.cost.toLocaleString('en-PH');
+        document.getElementById('fin-net').innerText = '₱' + metrics.net.toLocaleString('en-PH');
+        const margin = metrics.gross > 0 ? Math.round((metrics.net / metrics.gross) * 100) : 0;
+        document.getElementById('fin-margin').innerText = margin + '% Net Margin';
     }
 
-    function getSlaClass(dateString, workspaceTag) {
-        if (!dateString) return 'sla-healthy';
-        const hoursAge = (new Date() - new Date(dateString)) / 3600000;
-        if (workspaceTag === 'inbox' || workspaceTag === 'pipeline') {
-            if (hoursAge > 48) return 'sla-danger';   
-            if (hoursAge > 24) return 'sla-warning';  
-        }
-        return 'sla-healthy'; 
-    }
-
-    function getSemanticClass(status) {
-        status = (status || "").toLowerCase();
-        if (status.includes('cancel')) return 'pill-archive'; 
-        if (status.includes('completed') || status.includes('done')) return 'pill-completed';
-        if (status.includes('quote') || status.includes('received')) return 'pill-pipeline';
-        if (status.includes('dispatch') || status.includes('assign') || status.includes('delay')) return 'pill-dispatch';
-        return 'pill-inbox'; 
-    }
-
+    function timeAgo(dateString) { return "Live"; } 
+    function getSlaClass(dateString, tag) { return 'sla-healthy'; }
+    function getSemanticClass(status) { return 'pill-inbox'; }
     function getWorkspaceTag(status) {
         status = (status || "").toLowerCase();
         if (status.includes('cancel')) return 'archive'; 
         if (status.includes('completed') || status.includes('done')) return 'completed';
-        if (status.includes('dispatch') || status.includes('assign') || status.includes('delay')) return 'dispatched';
+        if (status.includes('dispatch') || status.includes('assign')) return 'dispatched';
         if (status.includes('quote') || status.includes('received')) return 'pipeline';
         return 'inbox'; 
     }
 
     function renderStream() {
-        let inboxCount = 0;
-        
-        // Reset Finance State
-        FINANCE_STATE = { gross: 0, cost: 0, net: 0, pipeQuote: 0, pipeDisp: 0, pipeTotal: 0 };
-        
         const list = document.getElementById('jobsList');
         list.innerHTML = '';
 
-        if (!STATE.jobsData || STATE.jobsData.length === 0) {
-            document.getElementById('noResultsMsg').style.display = 'block';
-            document.getElementById('stat-inbox').innerText = '0';
-            document.getElementById('stat-pipeline').innerText = '₱0';
-            document.getElementById('stat-revenue').innerText = '₱0';
-            return;
-        }
-
         STATE.jobsData.forEach(job => {
             const workspaceTag = getWorkspaceTag(job.status);
-            const semanticClass = getSemanticClass(job.status);
             const searchText = `${job.id} ${job.name} ${job.status} ${job.category} ${job.tech || ''}`.toLowerCase();
             
-            // --- DETAILED FINANCIAL MATH ---
-            const price = Number(job.price) || 0;
-            const cost = Number(job.cost) || 0;
-            
-            if (workspaceTag === 'inbox') {
-                inboxCount++;
-            } 
-            else if (workspaceTag === 'completed') {
-                FINANCE_STATE.gross += price;
-                FINANCE_STATE.cost += cost;
-                FINANCE_STATE.net += (price - cost);
-            } 
-            else if (workspaceTag === 'pipeline') {
-                FINANCE_STATE.pipeQuote += price;
-                FINANCE_STATE.pipeTotal += price;
-            } 
-            else if (workspaceTag === 'dispatched') {
-                FINANCE_STATE.pipeDisp += price;
-                FINANCE_STATE.pipeTotal += price;
-            }
-            // -------------------------------
+            // PILLAR 2: Code Red
+            const isEmergency = String(job.status).includes("EMERGENCY");
+            const rowClass = isEmergency ? 'job-row row-emergency' : 'job-row';
 
-            const targetDate = job.rawDate || job.date;
             const row = document.createElement('div');
-            row.className = 'job-row';
+            row.className = rowClass;
             row.dataset.workspace = workspaceTag;
             row.dataset.search = searchText;
             
             row.innerHTML = `
                 <div class="row-header">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span class="job-id">${escapeHTML(job.id)}</span>
-                        <span class="status-pill ${semanticClass}">${escapeHTML(job.status)}</span>
-                    </div>
-                    <span class="sla-badge ${getSlaClass(targetDate, workspaceTag)}">⏱ ${timeAgo(targetDate)}</span>
+                    <div><span class="job-id">${job.id}</span> <span class="status-pill ${getSemanticClass(job.status)}">${job.status}</span></div>
+                    <span class="sla-badge ${isEmergency ? 'sla-danger' : getSlaClass()}">⏱ Active</span>
                 </div>
-                <h3 class="job-title">${escapeHTML(job.name)}</h3>
-                <div class="job-meta"><span>${escapeHTML(job.category)}</span> • ${escapeHTML(job.urgency)}</div>
-                <div class="job-desc">${escapeHTML(job.desc)}</div>
-                
+                <h3 class="job-title">${job.name}</h3>
+                <div class="job-meta"><span>${job.category}</span> • ${job.urgency}</div>
+                <div class="job-desc">${job.desc}</div>
                 <div class="row-footer">
-                    <div class="tech-badge">
-                        ${job.tech && job.tech !== 'Unassigned' ? `<div class="dot"></div> Deployed: ${escapeHTML(job.tech)}` : ''}
-                        ${job.photo && job.photo !== 'No Photo' ? ` | 📸 Photo Attached` : ''}
-                    </div>
-                    <div class="action-bar">
-                        <button class="btn-stream-action btn-open-drawer" onclick="openDrawer('${job.id}')">⚙️ Manage Workflow</button>
-                    </div>
+                    <div style="font-size:0.8rem; font-weight:700;">${job.tech ? `Deployed: ${job.tech}` : ''}</div>
+                    <button class="btn-open-drawer" onclick="openDrawer('${job.id}')">⚙️ Manage</button>
                 </div>
             `;
             list.appendChild(row);
         });
-
-        // Update Topbar UI with formatted currency
-        document.getElementById('stat-inbox').innerText = inboxCount;
-        document.getElementById('stat-pipeline').innerText = '₱' + FINANCE_STATE.pipeTotal.toLocaleString('en-PH');
-        document.getElementById('stat-revenue').innerText = '₱' + FINANCE_STATE.gross.toLocaleString('en-PH');
-        
         applyFilter(); 
     }
 
@@ -639,62 +372,24 @@
     }
 
     function applyFilter() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const term = document.getElementById('searchInput').value.toLowerCase().trim();
         const rows = document.querySelectorAll('.job-row');
-        let visibleCount = 0;
-
+        let count = 0;
         rows.forEach(row => {
-            const rowWorkspace = row.dataset.workspace;
-            const rowSearchText = row.dataset.search;
-            const workspaceMatch = (STATE.workspace === 'all') || (STATE.workspace === rowWorkspace);
-            const searchMatch = rowSearchText.includes(searchTerm);
-
-            if (workspaceMatch && searchMatch) {
-                row.style.display = "block";
-                visibleCount++;
-            } else {
-                row.style.display = "none";
-            }
+            if ((STATE.workspace === 'all' || STATE.workspace === row.dataset.workspace) && row.dataset.search.includes(term)) {
+                row.style.display = "block"; count++;
+            } else { row.style.display = "none"; }
         });
-
-        document.getElementById('noResultsMsg').style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
+        document.getElementById('noResultsMsg').style.display = count === 0 ? 'block' : 'none';
     }
 
-    function escapeHTML(str) {
-        if (!str) return "";
-        return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-
-    // ==========================================
-    // 5. DRAWER LOGIC (Manage & Financial)
-    // ==========================================
-    
-    // Closes whichever drawer is currently open
-    function closeAllDrawers() {
-        document.getElementById('manageDrawer').classList.remove('open');
-        document.getElementById('financeDrawer').classList.remove('open');
-        document.getElementById('drawerOverlay').classList.remove('open');
-    }
-
-    // --- FINANCIAL DRAWER ---
     function openFinanceDrawer() {
-        // Inject mathematical breakdown into UI
-        document.getElementById('fin-gross').innerText = '₱' + FINANCE_STATE.gross.toLocaleString('en-PH');
-        document.getElementById('fin-costs').innerText = '₱' + FINANCE_STATE.cost.toLocaleString('en-PH');
-        document.getElementById('fin-net').innerText = '₱' + FINANCE_STATE.net.toLocaleString('en-PH');
-        
-        const margin = FINANCE_STATE.gross > 0 ? Math.round((FINANCE_STATE.net / FINANCE_STATE.gross) * 100) : 0;
-        document.getElementById('fin-margin').innerText = margin + '% Net Margin';
-
-        document.getElementById('fin-pipe-total').innerText = '₱' + FINANCE_STATE.pipeTotal.toLocaleString('en-PH');
-        document.getElementById('fin-pipe-quote').innerText = '₱' + FINANCE_STATE.pipeQuote.toLocaleString('en-PH');
-        document.getElementById('fin-pipe-disp').innerText = '₱' + FINANCE_STATE.pipeDisp.toLocaleString('en-PH');
-
-        document.getElementById('drawerOverlay').classList.add('open');
-        document.getElementById('financeDrawer').classList.add('open');
+        if(STATE.role !== 'Technician') {
+            document.getElementById('drawerOverlay').classList.add('open');
+            document.getElementById('financeDrawer').classList.add('open');
+        }
     }
 
-    // --- MANAGE JOB DRAWER ---
     function openDrawer(id) {
         const job = STATE.jobsData.find(j => j.id === id);
         if(!job) return;
@@ -705,215 +400,49 @@
         document.getElementById('drawerCost').value = job.cost || '';
         document.getElementById('drawerNotes').value = job.notes || '';
         document.getElementById('drawerTech').value = job.tech || '';
-        document.getElementById('delayNote').value = ''; 
         
-        const photoSection = document.getElementById('drawerPhotoSection');
-        if (job.photo && job.photo !== 'No Photo' && job.photo !== '') {
-            photoSection.innerHTML = `<a href="${escapeHTML(job.photo)}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:var(--pill-inbox-bg); color:var(--primary); padding:12px; border-radius:10px; text-decoration:none; font-weight:800; font-size:0.85rem; border:1px solid rgba(37, 99, 235, 0.2); transition:0.2s;">📸 View Attached Client Photo &nearr;</a>`;
-        } else {
-            photoSection.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; padding:12px; background:var(--bg-main); color:var(--slate-light); border-radius:10px; border:1px dashed var(--border); font-weight:700; font-size:0.85rem;">📷 No photo attached</div>`;
-        }
-        
+        // PILLAR 3: Audit Trail
+        const auditCont = document.getElementById('drawerAuditTrail');
+        if (job.history) {
+            const lines = job.history.split('\n').filter(l => l.trim() !== '');
+            auditCont.innerHTML = lines.map(line => {
+                const match = line.match(/^\[(.*?)\] (.*)$/);
+                if (match) return `<div class="audit-item"><span class="audit-time">${match[1]}</span><span>${match[2]}</span></div>`;
+                return `<div class="audit-item"><span>${line}</span></div>`;
+            }).reverse().join('');
+        } else { auditCont.innerHTML = '<div class="audit-item">No history.</div>'; }
+
         document.getElementById('drawerOverlay').classList.add('open');
         document.getElementById('manageDrawer').classList.add('open');
     }
 
-    // ==========================================
-    // 6. ACTION HANDLERS
-    // ==========================================
-    
-    // --- DOUBLE-TAP SAFETY LOCKS ---
-    function confirmDPVerify(btn) {
-        if (btn.dataset.confirmed === "true") {
-            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Verifying...";
-            btn.style.background = ""; 
-            btn.style.color = "";
-            btn.style.borderColor = "";
-            
-            executeAction('verify_dp');
-            btn.dataset.confirmed = "false";
-        } else {
-            const originalText = btn.innerHTML;
-            btn.dataset.confirmed = "true";
-            btn.innerHTML = "⚠️ Click again to CONFIRM";
-            btn.style.background = "var(--danger)";
-            btn.style.color = "var(--white)";
-            btn.style.borderColor = "var(--danger)";
-            
-            setTimeout(() => {
-                if (btn.dataset.confirmed === "true") {
-                    btn.dataset.confirmed = "false";
-                    btn.innerHTML = originalText;
-                    btn.style.background = "";
-                    btn.style.color = "";
-                    btn.style.borderColor = "";
-                }
-            }, 3000);
-        }
-    }
-
-    function confirmDelayAlert(btn) {
-        const note = document.getElementById('delayNote').value.trim();
-        if(!note) return showToast("Enter a delay reason first!", "error");
-
-        if (btn.dataset.confirmed === "true") {
-            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Sending...";
-            btn.style.background = ""; 
-            btn.style.color = "";
-            btn.style.borderColor = "";
-            
-            executeAction('send_delay_alert');
-            btn.dataset.confirmed = "false";
-        } else {
-            const originalText = btn.innerHTML;
-            btn.dataset.confirmed = "true";
-            btn.innerHTML = "⚠️ Confirm Email?";
-            btn.style.background = "var(--danger)";
-            btn.style.color = "var(--white)";
-            btn.style.borderColor = "var(--danger)";
-            
-            setTimeout(() => {
-                if (btn.dataset.confirmed === "true") {
-                    btn.dataset.confirmed = "false";
-                    btn.innerHTML = originalText;
-                    btn.style.background = "var(--warning)";
-                    btn.style.color = "white";
-                    btn.style.borderColor = "";
-                }
-            }, 3000);
-        }
-    }
-
-    // NEW: Double-Tap for Complete Job
-    function confirmComplete(btn) {
-        if (btn.dataset.confirmed === "true") {
-            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Processing...";
-            btn.style.background = "";
-            
-            executeAction('mark_complete');
-            btn.dataset.confirmed = "false";
-        } else {
-            const originalText = btn.innerHTML;
-            btn.dataset.confirmed = "true";
-            btn.innerHTML = "⚠️ Click again to FINALIZE JOB";
-            btn.style.background = "#059669"; // Darker green for caution
-            
-            setTimeout(() => {
-                if (btn.dataset.confirmed === "true") {
-                    btn.dataset.confirmed = "false";
-                    btn.innerHTML = originalText;
-                    btn.style.background = "";
-                }
-            }, 3000);
-        }
-    }
-
-    // NEW: Double-Tap for Cancel Job
-    function confirmCancel(btn) {
-        const reason = document.getElementById('drawerCancelReason').value;
-        if(!reason) return showToast("Please select a cancellation reason.", "error");
-
-        if (btn.dataset.confirmed === "true") {
-            btn.innerHTML = "<div class='spinner' style='display:inline-block; width:15px; height:15px; border-width:2px; margin-right:5px;'></div> Archiving...";
-            btn.style.background = "";
-            btn.style.color = "";
-            btn.style.borderColor = "";
-            
-            executeAction('cancel_job');
-            btn.dataset.confirmed = "false";
-        } else {
-            const originalText = btn.innerHTML;
-            btn.dataset.confirmed = "true";
-            btn.innerHTML = "⚠️ Confirm Permanent Cancellation?";
-            btn.style.background = "var(--danger)";
-            btn.style.color = "#ffffff";
-            btn.style.borderColor = "var(--danger)";
-            
-            setTimeout(() => {
-                if (btn.dataset.confirmed === "true") {
-                    btn.dataset.confirmed = "false";
-                    btn.innerHTML = originalText;
-                    btn.style.background = "";
-                    btn.style.color = "";
-                    btn.style.borderColor = "";
-                }
-            }, 3000);
-        }
+    function closeAllDrawers() {
+        document.getElementById('manageDrawer').classList.remove('open');
+        document.getElementById('financeDrawer').classList.remove('open');
+        document.getElementById('drawerOverlay').classList.remove('open');
     }
 
     async function executeAction(actionType) {
-        const id = document.getElementById('drawerJobId').value;
-        const price = document.getElementById('drawerPrice').value;
-        const cost = document.getElementById('drawerCost').value;
-        const notes = document.getElementById('drawerNotes').value;
-        const tech = document.getElementById('drawerTech').value;
-        const delayNote = document.getElementById('delayNote') ? document.getElementById('delayNote').value : '';
-        
-        let payload = { bookingId: id, price: price, cost: cost, notes: notes, tech: tech };
+        const payload = { 
+            password: STATE.pass, bookingId: document.getElementById('drawerJobId').value,
+            price: document.getElementById('drawerPrice').value, cost: document.getElementById('drawerCost').value,
+            notes: document.getElementById('drawerNotes').value, tech: document.getElementById('drawerTech').value
+        };
 
-        if (actionType === 'send_quote') {
-            if(!price) return showToast("Quote Price is required.", "error");
-            payload.action = 'save_and_send_quote';
-            showToast("Generating and sending PDF quote...", "info");
-        } 
-        else if (actionType === 'assign_tech') {
-            if(!tech) return showToast("Please select a technician.", "error");
-            payload.action = 'update_status';
-            payload.newStatus = `Dispatched: ${tech}`;
-            showToast("Deploying technician...", "info");
-            sendAction({ action: 'save_draft', bookingId: id, price: price, cost: cost, notes: notes, tech: tech });
-        }
-        else if (actionType === 'verify_dp') {
-            payload.action = 'update_status';
-            payload.newStatus = 'DP Received - Ready for Dispatch';
-            showToast("Verifying payment...", "info");
-        }
-        else if (actionType === 'send_delay_alert') {
-            payload.action = 'send_delay_alert';
-            payload.delayNote = delayNote;
-            showToast("Broadcasting delay notice...", "info");
-        }
-        else if (actionType === 'mark_complete') {
-            payload.action = 'update_status';
-            payload.newStatus = 'Job Completed';
-            showToast("Marking as completed...", "info");
-        }
-        else if (actionType === 'cancel_job') {
-            const reason = document.getElementById('drawerCancelReason').value;
-            payload.action = 'update_status';
-            payload.newStatus = `Cancelled - ${reason}`;
-            showToast("Archiving job...", "info");
-        }
-        else { 
-            payload.action = 'save_draft';
-            showToast("Saving changes...", "info");
-        }
+        if (actionType === 'send_quote') payload.action = 'save_and_send_quote';
+        else if (actionType === 'assign_tech') { payload.action = 'update_status'; payload.newStatus = `Dispatched: ${payload.tech}`; }
+        else if (actionType === 'verify_dp') { payload.action = 'update_status'; payload.newStatus = 'DP Received - Ready for Dispatch'; }
+        else if (actionType === 'mark_complete') { payload.action = 'update_status'; payload.newStatus = 'Job Completed'; }
+        else payload.action = 'save_draft';
 
         closeAllDrawers();
-        const res = await sendAction(payload);
+        showToast("Processing...", "info");
+        const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
         
-        if(!res.error) {
-            showToast("Action successful!", "success");
-            loadJobs(STATE.pass, false); 
-        }
-    }
-
-    async function sendAction(payload) {
-        payload.password = STATE.pass; 
-        try {
-            const response = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const data = await response.json();
-            if(data.error) {
-                showToast(data.error, "error");
-                if(data.error.includes("Unauthorized")) location.reload();
-            }
-            return data;
-        } catch(err) {
-            showToast("Network error.", "error");
-            return { error: "Network Error" };
-        }
+        if(!data.error) { showToast("Success!", "success"); loadJobs(false); }
+        else showToast(data.error, "error");
     }
 </script>
-
 </body>
 </html>
