@@ -122,10 +122,8 @@
     <div class="login-box">
         <div class="login-logo">Z<span>connects</span></div>
         <h3 style="margin:0 0 15px 0; color:var(--slate); font-size:1rem;">Command Center</h3>
-        
-        <input type="text" id="adminUser" class="admin-input" placeholder="Username" style="margin-bottom:10px;">
-        <input type="password" id="adminPass" class="admin-input" placeholder="Secure Key" style="margin-bottom:20px;">
-        
+        <input type="text" id="adminUser" class="admin-input" placeholder="Username" style="margin-bottom:10px;" onkeypress="handleEnter(event)">
+        <input type="password" id="adminPass" class="admin-input" placeholder="Secure Key" style="margin-bottom:20px;" onkeypress="handleEnter(event)">
         <button class="btn-solid btn-primary" onclick="verifyLogin()" id="btnLogin">Authenticate</button>
     </div>
 </div>
@@ -134,8 +132,7 @@
     <aside class="sidebar">
         <div class="sidebar-logo">Z<span>connects</span></div>
         <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:20px; padding-left:10px; text-transform:uppercase; font-weight:800;" id="userRoleLabel">Role</div>
-        <nav class="workspace-tabs" id="navTabs">
-            </nav>
+        <nav class="workspace-tabs" id="navTabs"></nav>
         <div class="sidebar-footer">
             <button class="btn-solid btn-draft" style="background:rgba(255,255,255,0.05); border:none; color:#94a3b8;" onclick="loadJobs(true)">↻ Sync Data</button>
         </div>
@@ -189,10 +186,11 @@
 <div id="toastContainer"></div>
 
 <script>
-    // 🛑 REPLACE THIS URL WITH YOUR NEW DEPLOYMENT URL
+    // 🛑 ENSURE YOUR DEPLOYMENT URL IS CORRECT HERE
     const CONFIG = { APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec' };
     
-    const STATE = { pass: '', role: '', techName: '', workspace: 'all', jobsData: [] };
+    // FIX 1: Added username to global STATE
+    const STATE = { username: '', pass: '', role: '', techName: '', workspace: 'all', jobsData: [] };
     let pendingAction = null;
 
     function showToast(msg, type = 'info') {
@@ -202,28 +200,26 @@
         c.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
 
-async function verifyLogin() {
-        const user = document.getElementById('adminUser').value; // Get Username
-        STATE.pass = document.getElementById('adminPass').value; // Get Password
-        
-        if (!user || !STATE.pass) return showToast("Enter Username and Password", "error");
+    // FIX 3: Event listener for Enter Key
+    function handleEnter(e) {
+        if (e.key === 'Enter') {
+            verifyLogin();
+        }
+    }
 
+    async function verifyLogin() {
+        STATE.username = document.getElementById('adminUser').value; // Store username globally
+        STATE.pass = document.getElementById('adminPass').value;
         const btn = document.getElementById('btnLogin'); 
+        
+        if (!STATE.username || !STATE.pass) return showToast("Enter Username and Password", "error");
         btn.innerText = "Authenticating...";
 
         try {
-            // Send both username and password to your Apps Script
-            const res = await fetch(CONFIG.APP_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'get_admin_data', username: user, password: STATE.pass }) 
-            });
+            const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', username: STATE.username, password: STATE.pass }) });
             const data = await res.json();
 
-            if(data.error) { 
-                showToast("Invalid Credentials", "error"); 
-                btn.innerText = "Authenticate"; 
-                return; 
-            }
+            if(data.error) { showToast("Invalid Credentials", "error"); btn.innerText = "Authenticate"; return; }
             
             STATE.role = data.userRole; 
             STATE.techName = data.techName || '';
@@ -246,14 +242,12 @@ async function verifyLogin() {
             document.getElementById('appContainer').classList.add('authenticated');
             showToast(`Connected: ${STATE.role}`, "success");
             renderStream();
-        } catch (err) { 
-            showToast("Network Error", "error"); 
-            btn.innerText = "Authenticate"; 
-        }
+        } catch (err) { showToast("Network Error", "error"); btn.innerText = "Authenticate"; }
     }
 
+    // FIX 1.1: Ensure Sync button sends username too
     async function loadJobs(feedback = false) {
-        const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: STATE.pass }) });
+        const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', username: STATE.username, password: STATE.pass }) });
         const data = await res.json();
         if(!data.error) { STATE.jobsData = data.jobs; renderStream(); if(feedback) showToast("Synced", "success"); }
     }
@@ -343,12 +337,11 @@ async function verifyLogin() {
 
         document.getElementById('drawerTitle').innerText = `Panel: ${job.id}`;
         document.getElementById('drawerJobId').value = job.id;
-        document.getElementById('drawerJobTech').value = job.tech; // Current tech
+        document.getElementById('drawerJobTech').value = job.tech;
 
         const content = document.getElementById('drawerDynamicContent');
-        content.innerHTML = ''; // Clear
+        content.innerHTML = '';
 
-        // --- ROLE BASED UI RENDERING ---
         if (STATE.role === 'Technician') {
             if (job.tech === "") {
                 content.innerHTML = `
@@ -364,13 +357,14 @@ async function verifyLogin() {
                 `;
             }
         } else {
-            // ADMIN / DISPATCHER VIEW
+            // FIX 2: Restored Engineering Notes Textarea
             let adminUI = `
                 <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <input type="number" id="drawerPrice" class="admin-input" placeholder="Quote (PHP)" value="${job.price}">
-                    <input type="number" id="drawerCost" class="admin-input" placeholder="Cost (PHP)" value="${job.cost}">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <input type="number" id="drawerPrice" class="admin-input" placeholder="Quote (PHP)" value="${job.price || ''}">
+                    <input type="number" id="drawerCost" class="admin-input" placeholder="Cost (PHP)" value="${job.cost || ''}">
                 </div>
+                <textarea id="drawerNotes" class="admin-input" style="height:60px; margin-bottom:20px; width:100%;" placeholder="Engineer Notes...">${job.notes || ''}</textarea>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
                     <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
                     <button class="btn-solid btn-primary" onclick="executeAction('save_and_send_quote')">📧 Send Quote</button>
@@ -378,7 +372,6 @@ async function verifyLogin() {
             `;
 
             if (job.status.includes('Claim Pending')) {
-                // Someone claimed it. Admin must approve.
                 const claimer = job.status.split(':')[1].trim();
                 adminUI += `
                     <div class="admin-section-title" style="color:var(--purple); border-bottom-color:var(--purple);"><span>🛡️</span> Tech Claim Approval</div>
@@ -388,7 +381,6 @@ async function verifyLogin() {
                     </div>
                 `;
             } else {
-                // Standard Dispatch Tools
                 adminUI += `
                     <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
@@ -400,7 +392,6 @@ async function verifyLogin() {
             content.innerHTML = adminUI;
         }
 
-        // Render History
         const auditCont = document.getElementById('drawerAuditTrail');
         if (job.history) {
             auditCont.innerHTML = job.history.split('\n').filter(l => l.trim() !== '').map(line => {
@@ -417,7 +408,6 @@ async function verifyLogin() {
     function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('financeDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
     function openFinanceDrawer() { if(STATE.role !== 'Technician') { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('financeDrawer').classList.add('open'); } }
 
-    // --- Hard-Stop Gateway ---
     function openProofGateway(action) {
         pendingAction = action;
         document.getElementById('proofTitle').innerText = action === 'verify_dp' ? "DP Verification" : "Final Completion";
@@ -444,18 +434,20 @@ async function verifyLogin() {
         btn.innerText = "Upload & Confirm"; btn.disabled = false;
     }
 
-    // --- Action Execution ---
     async function executeAction(action, targetTech = null) {
         const p = { action: action, bookingId: document.getElementById('drawerJobId').value };
         if (STATE.role !== 'Technician') {
             p.price = document.getElementById('drawerPrice') ? document.getElementById('drawerPrice').value : '';
             p.cost = document.getElementById('drawerCost') ? document.getElementById('drawerCost').value : '';
+            p.notes = document.getElementById('drawerNotes') ? document.getElementById('drawerNotes').value : '';
         }
         if (action === 'approve_claim') p.tech = targetTech;
         await sendPayload(p);
     }
 
+    // FIX 1.2: Ensure actions send username too
     async function sendPayload(payload) {
+        payload.username = STATE.username; 
         payload.password = STATE.pass;
         closeAllDrawers(); showToast("Processing...", "info");
         const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify(payload) });
