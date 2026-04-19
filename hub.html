@@ -202,15 +202,28 @@
         c.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
 
-    async function verifyLogin() {
-        STATE.pass = document.getElementById('adminPass').value;
-        const btn = document.getElementById('btnLogin'); btn.innerText = "Authenticating...";
+async function verifyLogin() {
+        const user = document.getElementById('adminUser').value; // Get Username
+        STATE.pass = document.getElementById('adminPass').value; // Get Password
+        
+        if (!user || !STATE.pass) return showToast("Enter Username and Password", "error");
+
+        const btn = document.getElementById('btnLogin'); 
+        btn.innerText = "Authenticating...";
 
         try {
-            const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', password: STATE.pass }) });
+            // Send both username and password to your Apps Script
+            const res = await fetch(CONFIG.APP_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'get_admin_data', username: user, password: STATE.pass }) 
+            });
             const data = await res.json();
 
-            if(data.error) { showToast("Invalid Key", "error"); btn.innerText = "Authenticate"; return; }
+            if(data.error) { 
+                showToast("Invalid Credentials", "error"); 
+                btn.innerText = "Authenticate"; 
+                return; 
+            }
             
             STATE.role = data.userRole; 
             STATE.techName = data.techName || '';
@@ -233,7 +246,10 @@
             document.getElementById('appContainer').classList.add('authenticated');
             showToast(`Connected: ${STATE.role}`, "success");
             renderStream();
-        } catch (err) { showToast("Network Error", "error"); btn.innerText = "Authenticate"; }
+        } catch (err) { 
+            showToast("Network Error", "error"); 
+            btn.innerText = "Authenticate"; 
+        }
     }
 
     async function loadJobs(feedback = false) {
