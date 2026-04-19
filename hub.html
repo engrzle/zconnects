@@ -12,119 +12,85 @@
             --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --purple: #8b5cf6;
             --bg-main: #f8fafc; --white: #ffffff; --navy: #0f172a; --slate: #64748b; 
             --slate-light: #94a3b8; --border: #e2e8f0; --sidebar-bg: #020617;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1); --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --pill-inbox-bg: #eff6ff; --pill-inbox-txt: #1e3a8a;
             --pill-pipe-bg: #fffbeb; --pill-pipe-txt: #92400e;
             --pill-disp-bg: #f3e8ff; --pill-disp-txt: #581c87;
-            --pill-comp-bg: #ecfdf5; --pill-comp-txt: #065f46;
         }
 
-        [data-theme="dark"] {
-            --bg-main: #0f172a; --white: #1e293b; --navy: #f8fafc; --slate: #cbd5e1; --slate-light: #64748b; --border: #334155; --sidebar-bg: #020617;
-            --pill-inbox-bg: rgba(37, 99, 235, 0.2); --pill-inbox-txt: #60a5fa;
-            --pill-pipe-bg: rgba(245, 158, 11, 0.2); --pill-pipe-txt: #fbbf24;
-            --pill-disp-bg: rgba(139, 92, 246, 0.2); --pill-disp-txt: #c084fc;
-            --pill-comp-bg: rgba(16, 185, 129, 0.2); --pill-comp-txt: #34d399;
-        }
-
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-main); margin: 0; color: var(--navy); display: flex; min-height: 100vh; overflow-x: hidden; transition: 0.3s; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-main); margin: 0; color: var(--navy); display: flex; min-height: 100vh; overflow-x: hidden; }
         #appContainer { display: none; width: 100%; flex-direction: row; }
         #appContainer.authenticated { display: flex; }
 
-        #loginOverlay { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .login-box { background: var(--white); padding: 50px 40px; border-radius: 20px; text-align: center; width: 100%; max-width: 340px; box-shadow: var(--shadow-lg); }
+        /* Login & Modals */
+        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+        .gateway-box, .login-box { background: var(--white); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; box-shadow: var(--shadow-md); }
         .login-logo { font-size: 2.2rem; font-weight: 900; color: var(--navy); margin: 0 0 20px 0; letter-spacing: -1px; }
         .login-logo span { color: var(--primary); }
+        
         .admin-input { width: 100%; padding: 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit; font-weight: 600; margin-bottom: 15px; box-sizing: border-box; background: var(--bg-main); color: var(--navy); outline:none; transition:0.2s;}
         .admin-input:focus { border-color: var(--primary); background: var(--white); }
-        .btn-solid { padding: 14px; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn-solid { padding: 14px; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; width: 100%; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
         .btn-draft { background: var(--bg-main); border: 1.5px solid var(--border); color: var(--slate); }
 
+        /* Sidebar */
         .sidebar { width: 260px; background: var(--sidebar-bg); color: #ffffff; display: flex; flex-direction: column; padding: 30px 20px; box-sizing: border-box; position: fixed; height: 100vh; left: 0; top: 0; }
-        .sidebar-logo { font-size: 1.6rem; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px; }
+        .sidebar-logo { font-size: 1.6rem; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin-bottom: 30px; padding-left: 10px; }
         .sidebar-logo span { color: var(--primary); }
         .workspace-tabs { display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
-        .tab-btn { padding: 12px 16px; border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-align: left; border-radius: 10px; }
+        .tab-btn { padding: 12px 16px; border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-align: left; border-radius: 10px; transition: 0.2s;}
+        .tab-btn:hover { background: rgba(255,255,255,0.05); color: white; }
         .tab-btn.active { background: rgba(37, 99, 235, 0.15); color: var(--primary); border-left: 3px solid var(--primary); }
-        .sidebar-footer { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto; }
 
+        /* Main Layout */
         .main-wrapper { margin-left: 260px; width: calc(100% - 260px); display: flex; flex-direction: column; min-height: 100vh; }
         .topbar { background: var(--bg-main); padding: 15px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .analytics-grid { display: flex; gap: 15px; align-items: center; }
-        .stat-card { display: flex; flex-direction: column; text-align: right; padding: 10px 18px; border-radius: 12px; border: 1px solid transparent; cursor: pointer; }
-        .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--slate-light); text-transform: uppercase; }
-        .stat-value { font-size: 1.3rem; font-weight: 900; color: var(--navy); margin-top: 4px; }
-
-        .content-canvas { padding: 40px; flex-grow: 1; display: flex; justify-content: center; }
-        .stream-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 16px; }
+        .content-canvas { padding: 40px; flex-grow: 1; display: flex; justify-content: center; align-items: flex-start;}
+        
+        /* Stream */
+        .stream-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 16px; }
         .job-row { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-        .row-emergency { border: 2px solid var(--danger) !important; background: rgba(239, 68, 68, 0.02); animation: redPulse 2s infinite; }
-        @keyframes redPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
+        .row-emergency { border: 2px solid var(--danger) !important; background: rgba(239, 68, 68, 0.02); }
         .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .job-id { font-size: 0.8rem; font-weight: 800; color: var(--slate); }
         .status-pill { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
         .pill-inbox { background: var(--pill-inbox-bg); color: var(--pill-inbox-txt); }
         .pill-pipeline { background: var(--pill-pipe-bg); color: var(--pill-pipe-txt); }
         .pill-disp { background: var(--pill-disp-bg); color: var(--pill-disp-txt); }
-        .sla-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 8px; border: 1.5px solid var(--border); }
-        .sla-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
-
         .job-title { margin: 0 0 4px 0; font-size: 1.15rem; font-weight: 800; }
-        .job-desc { font-size: 0.9rem; color: var(--slate); line-height: 1.5; margin-bottom: 16px; margin-top: 10px; }
-        .row-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px; }
-        .btn-action { padding: 8px 16px; border-radius: 8px; font-weight: 800; background: var(--bg-main); border: 1.5px solid var(--border); cursor: pointer; color:var(--navy); }
-
-        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
-        .drawer-overlay.open { opacity: 1; pointer-events: auto; }
-        .drawer-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 480px; background: var(--white); z-index: 2001; transform: translateX(100%); transition: 0.3s; display: flex; flex-direction: column; }
+        .row-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 15px;}
+        
+        /* Drawers */
+        .drawer-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 480px; background: var(--white); z-index: 2001; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; box-shadow: -5px 0 25px rgba(0,0,0,0.1);}
         .drawer-panel.open { transform: translateX(0); }
         .drawer-header { padding: 25px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; background: var(--bg-main); }
         .drawer-body { padding: 30px; overflow-y: auto; flex-grow: 1; }
-        
-        .gateway-box { background: var(--white); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-
         .admin-section-title { font-size: 0.75rem; font-weight: 900; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1.5px dashed var(--border); padding-bottom: 8px; }
-        .audit-timeline { margin-top: 15px; padding: 15px; background: var(--bg-main); border-radius: 12px; border: 1px solid var(--border); max-height: 200px; overflow-y: auto; margin-bottom: 30px; }
-        .audit-item { font-size: 0.8rem; color: var(--slate); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); display: flex; flex-direction: column; }
-        .audit-time { font-weight: 800; color: var(--primary); margin-bottom: 2px; font-size: 0.75rem; }
 
-        .fin-metric-box { padding: 18px; border-radius: 14px; background: var(--bg-main); border: 1px solid var(--border); margin-bottom: 12px; }
-        .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); margin-top:6px; }
+        /* CFO Dashboard (Enterprise Upgrades) */
+        #financeContainer { display: none; width: 100%; max-width: 1100px; flex-direction: column; gap: 20px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .cfo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .fin-metric-box { padding: 20px; border-radius: 16px; background: var(--white); border: 1px solid var(--border); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: center;}
+        .fin-metric-title { font-size: 0.75rem; font-weight: 800; color: var(--slate); text-transform: uppercase; margin-bottom: 8px; }
+        .fin-metric-val { font-size: 2rem; font-weight: 900; color: var(--navy); line-height: 1; }
+        
+        /* THE BLINK FIX: Fixed height wrappers for Chart.js */
+        .fin-chart-wrapper { position: relative; height: 300px; width: 100%; }
+        .chart-card { background: var(--white); padding: 25px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
 
+        /* Toasts */
         #toastContainer { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
         .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; display: flex; gap: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); animation: slideIn 0.3s forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-<div id="proofModal" class="drawer-overlay">
-    <div class="gateway-box">
-        <h3 id="proofTitle" style="color:var(--navy); margin-top:0;">Verification Required</h3>
-        <p id="proofDesc" style="color:var(--slate); font-size:0.85rem; margin-bottom:20px;">Upload proof to proceed.</p>
-        <input type="number" id="proofAmount" class="admin-input" placeholder="Amount Received (PHP)" required>
-        <input type="file" id="proofFile" accept="image/*" class="admin-input" style="padding:10px;" required>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-solid btn-draft" onclick="closeProofGateway()">Cancel</button>
-            <button class="btn-solid btn-primary" id="btnSubmitProof" onclick="submitProof()">Upload & Confirm</button>
-        </div>
-    </div>
-</div>
-
-<div id="quoteConfirmModal" class="drawer-overlay">
-    <div class="gateway-box">
-        <h3 style="color:var(--navy); margin-top:0;">Confirm Official Quotation</h3>
-        <p style="color:var(--slate); font-size:0.85rem; margin-bottom:20px;">Please ensure pricing, costs, and the scope of work are accurate before transmitting this to the client.</p>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-solid btn-draft" onclick="document.getElementById('quoteConfirmModal').classList.remove('open')">Review Again</button>
-            <button class="btn-solid btn-primary" onclick="confirmSendQuote()">Send Official Quote</button>
-        </div>
-    </div>
-</div>
 
 <div id="loginOverlay">
     <div class="login-box">
@@ -133,6 +99,52 @@
         <input type="text" id="adminUser" class="admin-input" placeholder="Username" style="margin-bottom:10px;" onkeypress="handleEnter(event)">
         <input type="password" id="adminPass" class="admin-input" placeholder="Secure Key" style="margin-bottom:20px;" onkeypress="handleEnter(event)">
         <button class="btn-solid btn-primary" onclick="verifyLogin()" id="btnLogin">Authenticate</button>
+    </div>
+</div>
+
+<div id="proofModal" class="drawer-overlay">
+    <div class="gateway-box">
+        <h3 id="proofTitle" style="color:var(--navy); margin-top:0;">Verification Required</h3>
+        <p id="proofDesc" style="color:var(--slate); font-size:0.85rem; margin-bottom:20px;">Upload proof to proceed.</p>
+        <input type="number" id="proofAmount" class="admin-input" placeholder="Amount Received (PHP)" required>
+        <input type="file" id="proofFile" accept="image/*" class="admin-input" style="padding:10px;" required>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-solid btn-draft" onclick="closeModals()">Cancel</button>
+            <button class="btn-solid btn-primary" id="btnSubmitProof" onclick="submitProof()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<div id="quoteConfirmModal" class="drawer-overlay">
+    <div class="gateway-box">
+        <h3 style="color:var(--navy); margin-top:0;">Confirm Official Quotation</h3>
+        <p style="color:var(--slate); font-size:0.85rem; margin-bottom:20px;">Ensure pricing and scope of work are accurate before transmitting to the client.</p>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-solid btn-draft" onclick="closeModals()">Review Again</button>
+            <button class="btn-solid btn-primary" onclick="executeAction('save_and_send_quote')">Send Quote</button>
+        </div>
+    </div>
+</div>
+
+<div id="expenseModal" class="drawer-overlay">
+    <div class="gateway-box">
+        <h3 style="color:var(--navy); margin-top:0;">Log Operational Expense</h3>
+        <p style="color:var(--slate); font-size:0.85rem; margin-bottom:20px;">Record overhead costs to update the Net Profit ledger.</p>
+        
+        <select id="expCategory" class="admin-input">
+            <option value="Software/IT">Software & IT</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Transportation">Transportation & Fuel</option>
+            <option value="Tools/Equipment">Tools & Equipment</option>
+            <option value="Miscellaneous">Miscellaneous</option>
+        </select>
+        <input type="number" id="expAmount" class="admin-input" placeholder="Amount (PHP)" required>
+        <input type="text" id="expDesc" class="admin-input" placeholder="Brief Description (e.g. FB Ads)" required>
+        
+        <div style="display:flex; gap:10px;">
+            <button class="btn-solid btn-draft" onclick="closeModals()">Cancel</button>
+            <button class="btn-solid btn-primary" id="btnSubmitExpense" onclick="submitExpense()">Log Expense</button>
+        </div>
     </div>
 </div>
 
@@ -149,78 +161,61 @@
     <main class="main-wrapper">
         <header class="topbar">
             <input type="text" id="searchInput" class="admin-input" style="max-width:400px; margin:0; border-radius:50px;" placeholder="Search ID, Name..." oninput="applyFilter()">
-            <div class="analytics-grid" id="topbarAnalytics">
-                <div class="stat-card"><span class="stat-label">Inbox</span><span class="stat-value" id="stat-inbox">0</span></div>
-                <div class="stat-card" onclick="openFinanceDrawer()"><span class="stat-label" style="color: var(--warning);">Pipeline</span><span class="stat-value" id="stat-pipeline" style="color: var(--warning);">₱0</span></div>
-            </div>
+            <div style="display:flex; gap:15px; font-size:0.85rem; font-weight:700; color:var(--slate);" id="topbarKPIs">
+                </div>
         </header>
 
         <div class="content-canvas">
+            
             <div id="streamContainer" class="stream-container">
                 <div id="jobsList" style="width: 100%; display: flex; flex-direction: column; gap: 16px;"></div>
-                <div id="noResultsMsg" style="display:none; text-align:center; padding: 60px; font-weight:600;">No records found.</div>
+                <div id="noResultsMsg" style="display:none; text-align:center; padding: 60px; font-weight:600; color:var(--slate);">No records found.</div>
             </div>
             
-            <div id="financeContainer" style="display:none; width: 100%; max-width: 1000px; flex-direction: column; gap: 20px;">
-                <div class="admin-section-title" style="font-size: 1.2rem;"><span>📈</span> Executive Financial Overview</div>
+            <div id="financeContainer">
+                <div class="cfo-header">
+                    <h2 style="margin:0; color:var(--navy);">Executive Financial Overview</h2>
+                    <button class="btn-solid btn-primary" style="width:auto; padding:10px 20px;" onclick="document.getElementById('expenseModal').classList.add('open')">+ Log Expense</button>
+                </div>
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-                    <div class="fin-metric-box">
-                        <div class="fin-metric-title">Gross Revenue</div>
-                        <div class="fin-metric-val" id="cfo-rev">₱0</div>
-                    </div>
-                    <div class="fin-metric-box">
-                        <div class="fin-metric-title">COGS (Job Costs)</div>
-                        <div class="fin-metric-val" id="cfo-cogs" style="color:var(--warning);">₱0</div>
-                    </div>
-                    <div class="fin-metric-box">
-                        <div class="fin-metric-title">OpEx (Overhead)</div>
-                        <div class="fin-metric-val" id="cfo-opex" style="color:var(--danger);">₱0</div>
-                    </div>
-                    <div class="fin-metric-box" style="background:var(--navy);">
-                        <div class="fin-metric-title" style="color:var(--slate-light);">Net Profit</div>
-                        <div class="fin-metric-val" id="cfo-net" style="color:var(--success);">₱0</div>
-                        <div id="cfo-margin" style="font-size:0.85rem; font-weight:800; color:var(--success); margin-top:5px;">0% Margin</div>
-                    </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="fin-metric-box"><div class="fin-metric-title">Gross Revenue</div><div class="fin-metric-val" id="cfo-rev">₱0</div></div>
+                    <div class="fin-metric-box"><div class="fin-metric-title">COGS (Job Costs)</div><div class="fin-metric-val" id="cfo-cogs" style="color:var(--warning);">₱0</div></div>
+                    <div class="fin-metric-box"><div class="fin-metric-title">OpEx (Overhead)</div><div class="fin-metric-val" id="cfo-opex" style="color:var(--danger);">₱0</div></div>
+                    <div class="fin-metric-box" style="background:var(--navy);"><div class="fin-metric-title" style="color:var(--slate-light);">Net Profit</div><div class="fin-metric-val" id="cfo-net" style="color:var(--success);">₱0</div><div id="cfo-margin" style="font-size:0.85rem; font-weight:800; color:var(--success); margin-top:5px;">0% Margin</div></div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 10px;">
-                    <div style="background: var(--white); padding: 25px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-                        <h4 style="margin:0 0 15px 0; color:var(--navy);">Cash Flow (Revenue vs Expenses)</h4>
-                        <canvas id="cashFlowChart" height="250"></canvas>
+                    <div class="chart-card">
+                        <h4 style="margin:0 0 15px 0; color:var(--navy);">Cash Flow Trend</h4>
+                        <div class="fin-chart-wrapper"><canvas id="cashFlowChart"></canvas></div>
                     </div>
-                    <div style="background: var(--white); padding: 25px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-                        <h4 style="margin:0 0 15px 0; color:var(--navy);">Cost Breakdown</h4>
-                        <canvas id="costDoughnutChart" height="250"></canvas>
+                    <div class="chart-card">
+                        <h4 style="margin:0 0 15px 0; color:var(--navy);">Expense Breakdown</h4>
+                        <div class="fin-chart-wrapper"><canvas id="costDoughnutChart"></canvas></div>
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
 </div>
 
 <div id="drawerOverlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
-
 <div id="manageDrawer" class="drawer-panel">
-    <div class="drawer-header"><h2 id="drawerTitle" class="drawer-title">Manage Job</h2><button class="drawer-close" onclick="closeAllDrawers()">✕</button></div>
+    <div class="drawer-header"><h2 id="drawerTitle" style="margin:0; font-weight:900;">Manage Job</h2><button class="btn-solid btn-draft" style="width:auto; padding:5px 10px;" onclick="closeAllDrawers()">✕</button></div>
     <div class="drawer-body">
-        <input type="hidden" id="drawerJobId">
-        <input type="hidden" id="drawerJobTech">
-        <input type="hidden" id="drawerJobDesc">
-        <input type="hidden" id="drawerJobCategory">
-        
+        <input type="hidden" id="drawerJobId"><input type="hidden" id="drawerJobTech"><input type="hidden" id="drawerJobDesc"><input type="hidden" id="drawerJobCategory">
         <div id="drawerDynamicContent"></div>
-
-        <div class="admin-section-title" style="margin-top: 20px;"><span>🕒</span> Official Audit Trail</div>
-        <div id="drawerAuditTrail" class="audit-timeline"></div>
     </div>
 </div>
 
 <div id="toastContainer"></div>
 
 <script>
+    // 🛑 REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT URL:
     const CONFIG = { 
-        APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec',
+        APP_URL: 'YOUR_WEB_APP_URL_HERE',
         TECHNICIANS: ["Jasper Jubay", "Francis Intong", "Jeffrey Canete", "Jerome", "Lyndon Alburo", "Clark Toquero"]
     };
     
@@ -240,7 +235,7 @@
     function handleEnter(e) { if (e.key === 'Enter') verifyLogin(); }
 
     async function verifyLogin() {
-        STATE.username = document.getElementById('adminUser').value;
+        STATE.username = document.getElementById('adminUser').value.trim();
         STATE.pass = document.getElementById('adminPass').value;
         const btn = document.getElementById('btnLogin'); 
         
@@ -261,10 +256,7 @@
             buildNavMenu();
 
             if (STATE.role !== 'Technician' && data.metrics) {
-                document.getElementById('stat-inbox').innerText = data.metrics.inboxCount;
-                document.getElementById('stat-pipeline').innerText = '₱' + data.metrics.pipeTotal.toLocaleString('en-PH');
-            } else {
-                document.getElementById('topbarAnalytics').style.display = 'none';
+                document.getElementById('topbarKPIs').innerHTML = `Inbox: <span style="color:var(--primary);">${data.metrics.inboxCount}</span> | Pipeline: <span style="color:var(--warning);">₱${data.metrics.pipeTotal.toLocaleString('en-PH')}</span>`;
             }
 
             document.getElementById('loginOverlay').style.display = 'none';
@@ -318,7 +310,7 @@
     }
 
     async function loadFinancials() {
-        showToast("Generating Financial Models...", "info");
+        showToast("Crunching numbers...", "info");
         try {
             const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_financials', username: STATE.username, password: STATE.pass }) });
             const data = await res.json();
@@ -334,8 +326,8 @@
             if (cashFlowChartInstance) cashFlowChartInstance.destroy();
             cashFlowChartInstance = new Chart(ctxBar, {
                 type: 'bar',
-                data: { labels: data.monthly.labels, datasets: [{ label: 'Revenue', data: data.monthly.revenue, backgroundColor: '#2563eb', borderRadius: 4 }, { label: 'Total Expenses', data: data.monthly.expenses, backgroundColor: '#ef4444', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                data: { labels: data.monthly.labels, datasets: [{ label: 'Revenue', data: data.monthly.revenue, backgroundColor: '#2563eb', borderRadius: 4 }, { label: 'Expenses (COGS + OpEx)', data: data.monthly.expenses, backgroundColor: '#ef4444', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false }
             });
 
             const ctxPie = document.getElementById('costDoughnutChart').getContext('2d');
@@ -343,10 +335,10 @@
             costChartInstance = new Chart(ctxPie, {
                 type: 'doughnut',
                 data: { labels: data.categoryBreakdown.labels, datasets: [{ data: data.categoryBreakdown.values, backgroundColor: ['#f59e0b', '#8b5cf6', '#10b981', '#64748b', '#ec4899'], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
             });
 
-            showToast("Financials Updated", "success");
+            showToast("Ledger Updated", "success");
         } catch (err) { showToast("Failed to load financials", "error"); }
     }
 
@@ -390,14 +382,14 @@
             row.innerHTML = `
                 <div class="row-header">
                     <div><span class="job-id">${job.id}</span> <span class="status-pill ${pillClass}">${job.status}</span></div>
-                    ${isEmergency ? '<span class="sla-badge sla-danger">URGENT</span>' : ''}
+                    ${isEmergency ? '<span class="sla-badge sla-danger" style="color:var(--danger);">URGENT</span>' : ''}
                 </div>
                 <h3 class="job-title">${job.name}</h3>
                 <div style="font-size:0.85rem; color:var(--slate); margin-bottom:10px;"><b>Loc:</b> ${job.location} • <b>Cat:</b> ${job.category}</div>
                 <div class="job-desc">${job.desc}</div>
                 <div class="row-footer">
                     <div style="font-size:0.8rem; font-weight:700; color:var(--purple);">${job.tech ? `Assigned: ${job.tech}` : ''}</div>
-                    <button class="btn-action" onclick="openDrawer('${job.id}')">⚙️ Open Action Panel</button>
+                    <button class="btn-action" onclick="openDrawer('${job.id}')">⚙️ Manage</button>
                 </div>
             `;
             list.appendChild(row);
@@ -409,13 +401,11 @@
         const job = STATE.jobsData.find(j => j.id === id);
         if(!job) return;
 
-        document.getElementById('drawerTitle').innerText = `Panel: ${job.id}`;
+        document.getElementById('drawerTitle').innerText = `Ref: ${job.id}`;
         document.getElementById('drawerJobId').value = job.id;
         document.getElementById('drawerJobTech').value = job.tech;
-        
         document.getElementById('drawerJobDesc').value = job.desc;
         document.getElementById('drawerJobCategory').value = job.category;
-        
         originalNotesCache = job.notes || ''; 
 
         const content = document.getElementById('drawerDynamicContent');
@@ -425,13 +415,11 @@
             if (job.tech === "") {
                 content.innerHTML = `
                     <div class="admin-section-title"><span>✋</span> Job Board Action</div>
-                    <p style="font-size:0.9rem; color:var(--slate); margin-bottom:20px;">Review the location and issue. If you have the tools, claim this job to request dispatch.</p>
-                    <button class="btn-solid" style="background:var(--purple); color:white;" onclick="executeAction('claim_job')">Claim Job & Request Dispatch</button>
+                    <button class="btn-solid" style="background:var(--purple); color:white;" onclick="executeAction('claim_job')">Claim Job</button>
                 `;
             } else {
                 content.innerHTML = `
-                    <div class="admin-section-title"><span>✅</span> Active Job Execution</div>
-                    <p style="font-size:0.9rem; color:var(--slate); margin-bottom:20px;">Once repairs are complete, upload the after-photo and collect payment.</p>
+                    <div class="admin-section-title"><span>✅</span> Active Execution</div>
                     <button class="btn-solid btn-primary" style="background:var(--success);" onclick="openProofGateway('mark_complete')">Complete Job & Upload Proof</button>
                 `;
             }
@@ -439,23 +427,23 @@
             const techOptions = `<option value="">-- Select Tech --</option>` + CONFIG.TECHNICIANS.map(t => `<option value="${t}" ${job.tech === t ? 'selected' : ''}>${t}</option>`).join('');
 
             let adminUI = `
-                <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
+                <div class="admin-section-title"><span>📝</span> Quoting</div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                     <input type="number" id="drawerPrice" class="admin-input" placeholder="Quote (PHP)" value="${job.price || ''}">
                     <input type="number" id="drawerCost" class="admin-input" placeholder="Cost (PHP)" value="${job.cost || ''}">
                 </div>
                 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <label style="font-size:0.75rem; font-weight:800; color:var(--slate);">Engineer Notes (Scope of Work)</label>
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--slate);">Scope of Work</label>
                     <div style="display:flex; gap:8px;">
-                        <button class="btn-solid" id="btnRevertNotes" style="display:none; padding:6px 12px; font-size:0.75rem; background:var(--border); color:var(--slate); width:auto;" onclick="revertNotes()">↺ Revert</button>
-                        <button class="btn-solid" id="btnEnhanceNotes" style="padding:6px 12px; font-size:0.75rem; background:linear-gradient(135deg, #8b5cf6, #3b82f6); color:white; width:auto; display:flex; align-items:center; gap:5px;" onclick="enhanceNotes()"><span id="aiIcon">✨</span> AI Enhance</button>
+                        <button class="btn-solid" id="btnRevertNotes" style="display:none; padding:6px; font-size:0.7rem; background:var(--border); color:var(--slate); width:auto;" onclick="revertNotes()">↺ Revert</button>
+                        <button class="btn-solid" id="btnEnhanceNotes" style="padding:6px; font-size:0.7rem; background:var(--purple); color:white; width:auto;" onclick="enhanceNotes()">✨ AI Enhance</button>
                     </div>
                 </div>
-                <textarea id="drawerNotes" class="admin-input" style="height:120px; margin-bottom:20px; width:100%; font-size:0.85rem;" placeholder="Type raw technical details here...">${originalNotesCache}</textarea>
+                <textarea id="drawerNotes" class="admin-input" style="height:120px; margin-bottom:20px; font-size:0.85rem;" placeholder="Raw details...">${originalNotesCache}</textarea>
                 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
-                    <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
+                    <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save</button>
                     <button class="btn-solid btn-primary" onclick="initiateSendQuote()">📧 Send Quote</button>
                 </div>
             `;
@@ -464,19 +452,16 @@
                 const claimer = job.status.split(':')[1].trim();
                 adminUI += `
                     <div class="admin-section-title" style="color:var(--purple); border-bottom-color:var(--purple);"><span>🛡️</span> Tech Claim Approval</div>
-                    <div style="background:rgba(139, 92, 246, 0.1); padding:15px; border-radius:10px; margin-bottom:20px; text-align:center;">
-                        <p style="margin:0 0 15px 0; font-weight:700; color:var(--navy);">Tech <b>${claimer}</b> wants to take this job.</p>
-                        <button class="btn-solid" style="background:var(--purple); color:white;" onclick="executeAction('approve_claim', '${claimer}')">Approve Dispatch & Notify Client</button>
-                    </div>
+                    <button class="btn-solid" style="background:var(--purple); color:white;" onclick="executeAction('approve_claim', '${claimer}')">Approve <b>${claimer}</b></button>
                 `;
             } else {
                 adminUI += `
-                    <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch & Execution</div>
+                    <div class="admin-section-title"><span>🚀</span> Dispatch & Execution</div>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <select id="drawerTechSelect" class="admin-input" style="margin-bottom:0; padding:12px;">${techOptions}</select>
-                        <button class="btn-solid" style="background:var(--purple); color:white; width:auto; white-space:nowrap; padding:12px 20px;" onclick="executeAction('assign_tech', document.getElementById('drawerTechSelect').value)">Assign Tech</button>
+                        <button class="btn-solid" style="background:var(--purple); color:white; width:auto; padding:12px 20px;" onclick="executeAction('assign_tech', document.getElementById('drawerTechSelect').value)">Assign</button>
                     </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <button class="btn-solid" style="background:rgba(245, 158, 11, 0.1); color:var(--warning); border:1.5px solid rgba(245, 158, 11, 0.3);" onclick="openProofGateway('verify_dp')">💳 Verify DP</button>
                         <button class="btn-solid btn-primary" style="background:var(--success);" onclick="openProofGateway('mark_complete')">Mark Complete</button>
                     </div>
@@ -484,15 +469,6 @@
             }
             content.innerHTML = adminUI;
         }
-
-        const auditCont = document.getElementById('drawerAuditTrail');
-        if (job.history) {
-            auditCont.innerHTML = job.history.split('\n').filter(l => l.trim() !== '').map(line => {
-                const match = line.match(/^\[(.*?)\] (.*)$/);
-                if (match) return `<div class="audit-item"><span class="audit-time">${match[1]}</span><span>${match[2]}</span></div>`;
-                return `<div class="audit-item"><span>${line}</span></div>`;
-            }).reverse().join('');
-        } else { auditCont.innerHTML = '<div class="audit-item">No history.</div>'; }
 
         document.getElementById('drawerOverlay').classList.add('open');
         document.getElementById('manageDrawer').classList.add('open');
@@ -502,72 +478,45 @@
         const price = document.getElementById('drawerPrice').value;
         const cost = document.getElementById('drawerCost').value;
         const notes = document.getElementById('drawerNotes').value;
-        
-        if (!price || !cost || !notes.trim()) {
-            return showToast("Quote, Cost, and Engineering Notes MUST be filled.", "error");
-        }
+        if (!price || !cost || !notes.trim()) return showToast("Quote, Cost, and Scope MUST be filled.", "error");
         document.getElementById('quoteConfirmModal').classList.add('open');
-    }
-
-    function confirmSendQuote() {
-        document.getElementById('quoteConfirmModal').classList.remove('open');
-        executeAction('save_and_send_quote');
     }
 
     async function enhanceNotes() {
         const rawNotes = document.getElementById('drawerNotes').value;
-        const clientDesc = document.getElementById('drawerJobDesc').value;
-        const clientCat = document.getElementById('drawerJobCategory').value;
-
         const btn = document.getElementById('btnEnhanceNotes');
         const originalText = btn.innerHTML;
-        
-        btn.innerHTML = `<div style="display:inline-block; width:12px; height:12px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-right:5px;"></div> Thinking...`;
-        btn.disabled = true;
+        btn.innerHTML = "Thinking..."; btn.disabled = true;
 
         try {
             const res = await fetch(CONFIG.APP_URL, { 
                 method: 'POST', 
-                body: JSON.stringify({ 
-                    action: 'enhance_notes', 
-                    notes: rawNotes, 
-                    clientDesc: clientDesc, 
-                    clientCategory: clientCat,
-                    username: STATE.username, 
-                    password: STATE.pass 
-                }) 
+                body: JSON.stringify({ action: 'enhance_notes', notes: rawNotes, clientDesc: document.getElementById('drawerJobDesc').value, clientCategory: document.getElementById('drawerJobCategory').value, username: STATE.username, password: STATE.pass }) 
             });
             const data = await res.json();
-
             if (!data.error && data.result) {
                 document.getElementById('drawerNotes').value = data.result;
                 document.getElementById('btnRevertNotes').style.display = 'block';
-                showToast("Scope of Work Auto-Generated", "success");
-            } else {
-                showToast(data.error || "AI Enhancement Failed", "error");
-            }
-        } catch (err) { showToast("Network Error calling AI", "error"); }
-        
+                showToast("Scope Auto-Generated", "success");
+            } else showToast(data.error || "AI Failed", "error");
+        } catch (err) { showToast("Network Error", "error"); }
         btn.innerHTML = originalText; btn.disabled = false;
     }
 
     function revertNotes() {
         document.getElementById('drawerNotes').value = originalNotesCache;
         document.getElementById('btnRevertNotes').style.display = 'none';
-        showToast("Reverted to original notes.", "info");
     }
 
-    function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('quoteConfirmModal').classList.remove('open'); document.getElementById('proofModal').classList.remove('open'); }
-    function openFinanceDrawer() { if(STATE.role !== 'Technician') { document.getElementById('drawerOverlay').classList.remove('open'); setWorkspace('finance', document.querySelector('.tab-btn:last-child')); } }
-
+    function closeModals() { document.querySelectorAll('.drawer-overlay').forEach(el => el.classList.remove('open')); }
+    function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); closeModals(); }
+    
     function openProofGateway(action) {
         pendingAction = action;
         document.getElementById('proofTitle').innerText = action === 'verify_dp' ? "DP Verification" : "Final Completion";
-        document.getElementById('proofDesc').innerText = action === 'verify_dp' ? "Attach DP receipt." : "Attach final payment receipt/photo.";
         document.getElementById('proofAmount').value = ''; document.getElementById('proofFile').value = '';
         document.getElementById('proofModal').classList.add('open');
     }
-    function closeProofGateway() { document.getElementById('proofModal').classList.remove('open'); }
 
     const toBase64 = file => new Promise((res, rej) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = () => res(r.result); r.onerror = e => rej(e); });
 
@@ -577,33 +526,42 @@
         if (!amt || !file) return alert("Amount and File are mandatory.");
         
         const btn = document.getElementById('btnSubmitProof'); btn.innerText = "Uploading..."; btn.disabled = true;
-
         try {
             const b64 = await toBase64(file);
             await sendPayload({ action: pendingAction, bookingId: document.getElementById('drawerJobId').value, amount: amt, base64Image: b64 });
-            closeProofGateway();
+            closeModals();
         } catch(err) { alert("Upload Failed."); }
-        btn.innerText = "Upload & Confirm"; btn.disabled = false;
+        btn.innerText = "Confirm"; btn.disabled = false;
+    }
+
+    async function submitExpense() {
+        const cat = document.getElementById('expCategory').value;
+        const amt = document.getElementById('expAmount').value;
+        const desc = document.getElementById('expDesc').value;
+        if (!amt || !desc) return alert("Amount and Description are required.");
+        
+        const btn = document.getElementById('btnSubmitExpense'); btn.innerText = "Logging..."; btn.disabled = true;
+        await sendPayload({ action: 'log_expense', expCategory: cat, expAmount: amt, expDesc: desc });
+        closeModals(); document.getElementById('expAmount').value = ''; document.getElementById('expDesc').value = '';
+        btn.innerText = "Log Expense"; btn.disabled = false;
+        loadFinancials(); // Refresh the CFO dashboard
     }
 
     async function executeAction(action, targetTech = null) {
         const p = { action: action, bookingId: document.getElementById('drawerJobId').value };
+        if (action === 'save_and_send_quote') closeModals();
         if (STATE.role !== 'Technician') {
             p.price = document.getElementById('drawerPrice') ? document.getElementById('drawerPrice').value : '';
             p.cost = document.getElementById('drawerCost') ? document.getElementById('drawerCost').value : '';
             p.notes = document.getElementById('drawerNotes') ? document.getElementById('drawerNotes').value : '';
         }
-        if (action === 'approve_claim' || action === 'assign_tech') {
-            if (!targetTech) return showToast("Please select a technician.", "error");
-            p.tech = targetTech;
-        }
+        if (action === 'approve_claim' || action === 'assign_tech') p.tech = targetTech;
         await sendPayload(p);
     }
 
     async function sendPayload(payload) {
-        payload.username = STATE.username; 
-        payload.password = STATE.pass;
-        closeAllDrawers(); showToast("Processing request...", "info");
+        payload.username = STATE.username; payload.password = STATE.pass;
+        closeAllDrawers(); showToast("Processing...", "info");
         const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify(payload) });
         const data = await res.json();
         if(!data.error) { showToast("Action successful!", "success"); loadJobs(); } else showToast(data.error, "error");
