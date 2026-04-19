@@ -63,7 +63,9 @@
         .stream-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 16px; }
         .job-row { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .row-emergency { border: 2px solid var(--danger) !important; background: rgba(239, 68, 68, 0.02); animation: redPulse 2s infinite; }
+        
         @keyframes redPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        @keyframes spin { to { transform: rotate(360deg); } } /* Added for AI button */
 
         .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .job-id { font-size: 0.8rem; font-weight: 800; color: var(--slate); }
@@ -97,7 +99,6 @@
         .fin-metric-box { padding: 18px; border-radius: 14px; background: var(--bg-main); border: 1px solid var(--border); margin-bottom: 12px; }
         .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); margin-top:6px; }
 
-        /* FIX 3: Moved Toast to Bottom Right so it isn't distracting */
         #toastContainer { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
         .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; display: flex; gap: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); animation: slideIn 0.3s forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -117,6 +118,7 @@
         </div>
     </div>
 </div>
+
 <div id="quoteConfirmModal" class="drawer-overlay">
     <div class="gateway-box">
         <h3 style="color:var(--navy); margin-top:0;">Confirm Official Quotation</h3>
@@ -127,6 +129,7 @@
         </div>
     </div>
 </div>
+
 <div id="loginOverlay">
     <div class="login-box">
         <div class="login-logo">Z<span>connects</span></div>
@@ -172,7 +175,8 @@
     <div class="drawer-body">
         <input type="hidden" id="drawerJobId">
         <input type="hidden" id="drawerJobTech">
-        <input type="hidden" id="drawerJobDesc"> <input type="hidden" id="drawerJobCategory"> ```
+        <input type="hidden" id="drawerJobDesc">
+        <input type="hidden" id="drawerJobCategory">
         
         <div id="drawerDynamicContent"></div>
 
@@ -196,14 +200,15 @@
 <div id="toastContainer"></div>
 
 <script>
-    // 🛑 ENSURE YOUR DEPLOYMENT URL IS CORRECT HERE
+    // 🛑 PASTE YOUR GOOGLE APPS SCRIPT URL HERE:
     const CONFIG = { 
-        APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec',
+        APP_URL: 'YOUR_WEB_APP_URL_HERE',
         TECHNICIANS: ["Jasper Jubay", "Francis Intong", "Jeffrey Canete", "Jerome", "Lyndon Alburo", "Clark Toquero"]
     };
     
     const STATE = { username: '', pass: '', role: '', techName: '', workspace: 'all', jobsData: [] };
     let pendingAction = null;
+    let originalNotesCache = ""; 
 
     function showToast(msg, type = 'info') {
         const c = document.getElementById('toastContainer');
@@ -338,13 +343,6 @@
         applyFilter();
     }
 
-let originalNotesCache = ""; // Global variable to store raw notes
-
-**3. Update the JavaScript Logic:**
-Update these three functions in your `<script>` section at the bottom of `hub.html`:
-
-```javascript
-    // 1. Update openDrawer to store the client's problem
     function openDrawer(id) {
         const job = STATE.jobsData.find(j => j.id === id);
         if(!job) return;
@@ -353,72 +351,10 @@ Update these three functions in your `<script>` section at the bottom of `hub.ht
         document.getElementById('drawerJobId').value = job.id;
         document.getElementById('drawerJobTech').value = job.tech;
         
-        // NEW: Store description and category for the AI
         document.getElementById('drawerJobDesc').value = job.desc;
         document.getElementById('drawerJobCategory').value = job.category;
         
         originalNotesCache = job.notes || ''; 
-        // ... (Keep the rest of your openDrawer function identical)
-        // CRITICAL: Change your Send Quote button HTML inside openDrawer to this:
-        // <button class="btn-solid btn-primary" onclick="initiateSendQuote()">📧 Send Quote</button>
-    }
-
-    // 2. Add the Hard-Stop Validation Logic
-    function initiateSendQuote() {
-        const price = document.getElementById('drawerPrice').value;
-        const cost = document.getElementById('drawerCost').value;
-        const notes = document.getElementById('drawerNotes').value;
-        
-        if (!price || !cost || !notes.trim()) {
-            return showToast("Quote, Cost, and Engineering Notes MUST be filled.", "error");
-        }
-        // If everything is filled, open the confirmation gateway
-        document.getElementById('quoteConfirmModal').classList.add('open');
-    }
-
-    function confirmSendQuote() {
-        document.getElementById('quoteConfirmModal').classList.remove('open');
-        executeAction('save_and_send_quote');
-    }
-
-    // 3. Update AI function to send the context
-    async function enhanceNotes() {
-        const rawNotes = document.getElementById('drawerNotes').value;
-        const clientDesc = document.getElementById('drawerJobDesc').value;
-        const clientCat = document.getElementById('drawerJobCategory').value;
-
-        const btn = document.getElementById('btnEnhanceNotes');
-        const icon = document.getElementById('aiIcon');
-        const originalText = btn.innerHTML;
-        
-        btn.innerHTML = `<div style="display:inline-block; width:12px; height:12px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-right:5px;"></div> Thinking...`;
-        btn.disabled = true;
-
-        try {
-            const res = await fetch(CONFIG.APP_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ 
-                    action: 'enhance_notes', 
-                    notes: rawNotes, 
-                    clientDesc: clientDesc, 
-                    clientCategory: clientCat,
-                    username: STATE.username, 
-                    password: STATE.pass 
-                }) 
-            });
-            const data = await res.json();
-
-            if (!data.error && data.result) {
-                document.getElementById('drawerNotes').value = data.result;
-                document.getElementById('btnRevertNotes').style.display = 'block';
-                showToast("Scope of Work Auto-Generated", "success");
-            } else {
-                showToast(data.error || "AI Enhancement Failed", "error");
-            }
-        } catch (err) { showToast("Network Error calling AI", "error"); }
-        
-        btn.innerHTML = originalText; btn.disabled = false;
-    }
 
         const content = document.getElementById('drawerDynamicContent');
         content.innerHTML = '';
@@ -440,7 +376,6 @@ Update these three functions in your `<script>` section at the bottom of `hub.ht
         } else {
             const techOptions = `<option value="">-- Select Tech --</option>` + CONFIG.TECHNICIANS.map(t => `<option value="${t}" ${job.tech === t ? 'selected' : ''}>${t}</option>`).join('');
 
-            // ADDED: AI Button and Revert Button to the Quoting UI
             let adminUI = `
                 <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
@@ -459,7 +394,7 @@ Update these three functions in your `<script>` section at the bottom of `hub.ht
                 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
                     <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
-                    <button class="btn-solid btn-primary" onclick="executeAction('save_and_send_quote')">📧 Send Quote</button>
+                    <button class="btn-solid btn-primary" onclick="initiateSendQuote()">📧 Send Quote</button>
                 </div>
             `;
 
@@ -501,38 +436,57 @@ Update these three functions in your `<script>` section at the bottom of `hub.ht
         document.getElementById('manageDrawer').classList.add('open');
     }
 
-    // --- AI NOTE ENHANCER LOGIC ---
+    function initiateSendQuote() {
+        const price = document.getElementById('drawerPrice').value;
+        const cost = document.getElementById('drawerCost').value;
+        const notes = document.getElementById('drawerNotes').value;
+        
+        if (!price || !cost || !notes.trim()) {
+            return showToast("Quote, Cost, and Engineering Notes MUST be filled.", "error");
+        }
+        document.getElementById('quoteConfirmModal').classList.add('open');
+    }
+
+    function confirmSendQuote() {
+        document.getElementById('quoteConfirmModal').classList.remove('open');
+        executeAction('save_and_send_quote');
+    }
+
     async function enhanceNotes() {
         const rawNotes = document.getElementById('drawerNotes').value;
-        if (!rawNotes) return showToast("Please write some rough notes first.", "warning");
+        const clientDesc = document.getElementById('drawerJobDesc').value;
+        const clientCat = document.getElementById('drawerJobCategory').value;
 
         const btn = document.getElementById('btnEnhanceNotes');
-        const icon = document.getElementById('aiIcon');
         const originalText = btn.innerHTML;
         
-        btn.innerHTML = `<div style="display:inline-block; width:12px; height:12px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-right:5px;"></div> Enhancing...`;
+        btn.innerHTML = `<div style="display:inline-block; width:12px; height:12px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-right:5px;"></div> Thinking...`;
         btn.disabled = true;
 
         try {
             const res = await fetch(CONFIG.APP_URL, { 
                 method: 'POST', 
-                body: JSON.stringify({ action: 'enhance_notes', notes: rawNotes, username: STATE.username, password: STATE.pass }) 
+                body: JSON.stringify({ 
+                    action: 'enhance_notes', 
+                    notes: rawNotes, 
+                    clientDesc: clientDesc, 
+                    clientCategory: clientCat,
+                    username: STATE.username, 
+                    password: STATE.pass 
+                }) 
             });
             const data = await res.json();
 
             if (!data.error && data.result) {
                 document.getElementById('drawerNotes').value = data.result;
                 document.getElementById('btnRevertNotes').style.display = 'block';
-                showToast("Engineering Scope Enhanced", "success");
+                showToast("Scope of Work Auto-Generated", "success");
             } else {
                 showToast(data.error || "AI Enhancement Failed", "error");
             }
-        } catch (err) {
-            showToast("Network Error calling AI", "error");
-        }
+        } catch (err) { showToast("Network Error calling AI", "error"); }
         
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+        btn.innerHTML = originalText; btn.disabled = false;
     }
 
     function revertNotes() {
@@ -541,7 +495,7 @@ Update these three functions in your `<script>` section at the bottom of `hub.ht
         showToast("Reverted to original notes.", "info");
     }
 
-    function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('financeDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
+    function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('financeDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('quoteConfirmModal').classList.remove('open'); }
     function openFinanceDrawer() { if(STATE.role !== 'Technician') { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('financeDrawer').classList.add('open'); } }
 
     function openProofGateway(action) {
