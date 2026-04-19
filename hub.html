@@ -16,7 +16,6 @@
             --pill-pipe-bg: #fffbeb; --pill-pipe-txt: #92400e;
             --pill-disp-bg: #f3e8ff; --pill-disp-txt: #581c87;
             --pill-comp-bg: #ecfdf5; --pill-comp-txt: #065f46;
-            --pill-arch-bg: #f1f5f9; --pill-arch-txt: #475569;
         }
 
         [data-theme="dark"] {
@@ -95,12 +94,13 @@
         .audit-item { font-size: 0.8rem; color: var(--slate); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); display: flex; flex-direction: column; }
         .audit-time { font-weight: 800; color: var(--primary); margin-bottom: 2px; font-size: 0.75rem; }
 
-        /* Financials */
         .fin-metric-box { padding: 18px; border-radius: 14px; background: var(--bg-main); border: 1px solid var(--border); margin-bottom: 12px; }
         .fin-metric-val { font-size: 1.8rem; font-weight: 900; color: var(--navy); margin-top:6px; }
 
-        #toastContainer { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: flex; gap: 10px; }
+        /* FIX 3: Moved Toast to Bottom Right so it isn't distracting */
+        #toastContainer { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+        .toast { background: #0f172a; color: #ffffff; padding: 14px 24px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; display: flex; gap: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); animation: slideIn 0.3s forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -187,28 +187,25 @@
 
 <script>
     // 🛑 ENSURE YOUR DEPLOYMENT URL IS CORRECT HERE
-    const CONFIG = { APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec' };
+    const CONFIG = { 
+        APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec',
+        TECHNICIANS: ["Jasper Jubay", "Francis Intong", "Jeffrey Canete", "Jerome", "Lyndon Alburo", "Clark Toquero"]
+    };
     
-    // FIX 1: Added username to global STATE
     const STATE = { username: '', pass: '', role: '', techName: '', workspace: 'all', jobsData: [] };
     let pendingAction = null;
 
     function showToast(msg, type = 'info') {
         const c = document.getElementById('toastContainer');
         const t = document.createElement('div'); t.className = `toast toast-${type}`;
-        t.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${msg}</span>`;
+        t.innerHTML = `<span>${type === 'success' ? '✅' : 'ℹ️'}</span> <span>${msg}</span>`;
         c.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
 
-    // FIX 3: Event listener for Enter Key
-    function handleEnter(e) {
-        if (e.key === 'Enter') {
-            verifyLogin();
-        }
-    }
+    function handleEnter(e) { if (e.key === 'Enter') verifyLogin(); }
 
     async function verifyLogin() {
-        STATE.username = document.getElementById('adminUser').value; // Store username globally
+        STATE.username = document.getElementById('adminUser').value;
         STATE.pass = document.getElementById('adminPass').value;
         const btn = document.getElementById('btnLogin'); 
         
@@ -245,11 +242,11 @@
         } catch (err) { showToast("Network Error", "error"); btn.innerText = "Authenticate"; }
     }
 
-    // FIX 1.1: Ensure Sync button sends username too
     async function loadJobs(feedback = false) {
+        if (feedback) showToast("Syncing data...", "info");
         const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_admin_data', username: STATE.username, password: STATE.pass }) });
         const data = await res.json();
-        if(!data.error) { STATE.jobsData = data.jobs; renderStream(); if(feedback) showToast("Synced", "success"); }
+        if(!data.error) { STATE.jobsData = data.jobs; renderStream(); if(feedback) showToast("System Synced", "success"); }
     }
 
     function buildNavMenu() {
@@ -286,7 +283,7 @@
             const tech = r.dataset.tech;
 
             if (STATE.role === 'Technician') {
-                if (STATE.workspace === 'all' && tech === '') show = true; // Job Board
+                if (STATE.workspace === 'all' && tech === '') show = true; 
                 if (STATE.workspace === 'my_jobs' && (tech === STATE.techName || status.includes(STATE.techName.toLowerCase()))) show = true;
             } else {
                 if (STATE.workspace === 'all') show = true;
@@ -357,7 +354,10 @@
                 `;
             }
         } else {
-            // FIX 2: Restored Engineering Notes Textarea
+            
+            // FIX 2: Admin Manual Dispatch Dropdown Restored
+            const techOptions = `<option value="">-- Select Tech --</option>` + CONFIG.TECHNICIANS.map(t => `<option value="${t}" ${job.tech === t ? 'selected' : ''}>${t}</option>`).join('');
+
             let adminUI = `
                 <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
@@ -382,10 +382,14 @@
                 `;
             } else {
                 adminUI += `
-                    <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch</div>
+                    <div class="admin-section-title"><span>🚀</span> Phase 2: Dispatch & Execution</div>
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <select id="drawerTechSelect" class="admin-input" style="margin-bottom:0; padding:12px;">${techOptions}</select>
+                        <button class="btn-solid" style="background:var(--purple); color:white; width:auto; white-space:nowrap; padding:12px 20px;" onclick="executeAction('assign_tech', document.getElementById('drawerTechSelect').value)">Assign Tech</button>
+                    </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
                         <button class="btn-solid" style="background:rgba(245, 158, 11, 0.1); color:var(--warning); border:1.5px solid rgba(245, 158, 11, 0.3);" onclick="openProofGateway('verify_dp')">💳 Verify DP</button>
-                        <button class="btn-solid btn-primary" style="background:var(--success);" onclick="openProofGateway('mark_complete')">Mark Complete (Ledger)</button>
+                        <button class="btn-solid btn-primary" style="background:var(--success);" onclick="openProofGateway('mark_complete')">Mark Complete</button>
                     </div>
                 `;
             }
@@ -441,18 +445,20 @@
             p.cost = document.getElementById('drawerCost') ? document.getElementById('drawerCost').value : '';
             p.notes = document.getElementById('drawerNotes') ? document.getElementById('drawerNotes').value : '';
         }
-        if (action === 'approve_claim') p.tech = targetTech;
+        if (action === 'approve_claim' || action === 'assign_tech') {
+            if (!targetTech) return showToast("Please select a technician.", "error");
+            p.tech = targetTech;
+        }
         await sendPayload(p);
     }
 
-    // FIX 1.2: Ensure actions send username too
     async function sendPayload(payload) {
         payload.username = STATE.username; 
         payload.password = STATE.pass;
-        closeAllDrawers(); showToast("Processing...", "info");
+        closeAllDrawers(); showToast("Processing request...", "info");
         const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify(payload) });
         const data = await res.json();
-        if(!data.error) { showToast("Success!", "success"); loadJobs(); } else showToast(data.error, "error");
+        if(!data.error) { showToast("Action successful!", "success"); loadJobs(); } else showToast(data.error, "error");
     }
 </script>
 </body>
