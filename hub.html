@@ -117,7 +117,16 @@
         </div>
     </div>
 </div>
-
+<div id="quoteConfirmModal" class="drawer-overlay">
+    <div class="gateway-box">
+        <h3 style="color:var(--navy); margin-top:0;">Confirm Official Quotation</h3>
+        <p style="color:var(--slate); font-size:0.85rem; margin-bottom:20px;">Please ensure pricing, costs, and the scope of work are accurate before transmitting this to the client.</p>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-solid btn-draft" onclick="document.getElementById('quoteConfirmModal').classList.remove('open')">Review Again</button>
+            <button class="btn-solid btn-primary" onclick="confirmSendQuote()">Send Official Quote</button>
+        </div>
+    </div>
+</div>
 <div id="loginOverlay">
     <div class="login-box">
         <div class="login-logo">Z<span>connects</span></div>
