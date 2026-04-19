@@ -215,19 +215,6 @@
     </div>
 </div>
 
-<div id="financeDrawer" class="drawer-panel">
-    <div class="drawer-header"><h2 class="drawer-title">📊 Financial Insights</h2><button class="drawer-close" onclick="closeAllDrawers()">✕</button></div>
-    <div class="drawer-body">
-        <div class="admin-section-title" style="color: var(--success);"><span>💰</span> Realized Revenue</div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-            <div class="fin-metric-box"><div style="font-size:0.75rem; font-weight:800; color:var(--slate);">Gross</div><div class="fin-metric-val" id="fin-gross">₱0</div></div>
-            <div class="fin-metric-box"><div style="font-size:0.75rem; font-weight:800; color:var(--slate);">Costs</div><div class="fin-metric-val" id="fin-costs" style="color: var(--danger);">₱0</div></div>
-        </div>
-        <div class="fin-metric-box" style="border-color: var(--success);"><div style="font-size:0.75rem; font-weight:800; color:var(--success);">Net Profit</div><div class="fin-metric-val" id="fin-net" style="color: var(--success);">₱0</div></div>
-    </div>
-</div>
-
-<div id="toastContainer"></div>
 
 <script>
     let cashFlowChartInstance = null;
