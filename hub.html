@@ -61,7 +61,6 @@
         .stream-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 16px; }
         .job-row { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .row-emergency { border: 2px solid var(--danger) !important; background: rgba(239, 68, 68, 0.02); animation: redPulse 2s infinite; }
-        
         @keyframes redPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -161,10 +160,8 @@
                 <div id="jobsList" style="width: 100%; display: flex; flex-direction: column; gap: 16px;"></div>
                 <div id="noResultsMsg" style="display:none; text-align:center; padding: 60px; font-weight:600;">No records found.</div>
             </div>
-        </div>
-    </main>
-</div>
-<div id="financeContainer" style="display:none; width: 100%; max-width: 1000px; flex-direction: column; gap: 20px;">
+            
+            <div id="financeContainer" style="display:none; width: 100%; max-width: 1000px; flex-direction: column; gap: 20px;">
                 <div class="admin-section-title" style="font-size: 1.2rem;"><span>📈</span> Executive Financial Overview</div>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
@@ -198,6 +195,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </main>
+</div>
+
 <div id="drawerOverlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
 
 <div id="manageDrawer" class="drawer-panel">
@@ -215,70 +216,19 @@
     </div>
 </div>
 
+<div id="toastContainer"></div>
 
 <script>
-    let cashFlowChartInstance = null;
-    let costChartInstance = null;
-
-    async function loadFinancials() {
-        showToast("Generating Financial Models...", "info");
-        try {
-            const res = await fetch(CONFIG.APP_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'get_financials', username: STATE.username, password: STATE.pass }) 
-            });
-            const data = await res.json();
-            if (data.error) return showToast(data.error, "error");
-
-            // Populate KPIs
-            document.getElementById('cfo-rev').innerText = '₱' + data.kpis.revenue.toLocaleString('en-PH');
-            document.getElementById('cfo-cogs').innerText = '₱' + data.kpis.cogs.toLocaleString('en-PH');
-            document.getElementById('cfo-opex').innerText = '₱' + data.kpis.opex.toLocaleString('en-PH');
-            document.getElementById('cfo-net').innerText = '₱' + data.kpis.netProfit.toLocaleString('en-PH');
-            document.getElementById('cfo-margin').innerText = data.kpis.margin + '% Net Margin';
-
-            // Render Cash Flow Bar Chart
-            const ctxBar = document.getElementById('cashFlowChart').getContext('2d');
-            if (cashFlowChartInstance) cashFlowChartInstance.destroy();
-            cashFlowChartInstance = new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: data.monthly.labels,
-                    datasets: [
-                        { label: 'Revenue', data: data.monthly.revenue, backgroundColor: '#2563eb', borderRadius: 4 },
-                        { label: 'Total Expenses', data: data.monthly.expenses, backgroundColor: '#ef4444', borderRadius: 4 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-            });
-
-            // Render Cost Breakdown Doughnut Chart
-            const ctxPie = document.getElementById('costDoughnutChart').getContext('2d');
-            if (costChartInstance) costChartInstance.destroy();
-            costChartInstance = new Chart(ctxPie, {
-                type: 'doughnut',
-                data: {
-                    labels: data.categoryBreakdown.labels,
-                    datasets: [{
-                        data: data.categoryBreakdown.values,
-                        backgroundColor: ['#f59e0b', '#8b5cf6', '#10b981', '#64748b', '#ec4899'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
-            });
-
-            showToast("Financials Updated", "success");
-        } catch (err) { showToast("Failed to load financials", "error"); }
-    }
     const CONFIG = { 
-        APP_URL: 'https://script.google.com/macros/s/AKfycbw3c915eKVYlXdYhva6ZtlNDXOahN7nXWrht_PPQKYfHf6Su_jgmTOSs4dlqeEZbxvsxA/exec',
+        APP_URL: 'YOUR_WEB_APP_URL_HERE',
         TECHNICIANS: ["Jasper Jubay", "Francis Intong", "Jeffrey Canete", "Jerome", "Lyndon Alburo", "Clark Toquero"]
     };
     
     const STATE = { username: '', pass: '', role: '', techName: '', workspace: 'all', jobsData: [] };
     let pendingAction = null;
     let originalNotesCache = ""; 
+    let cashFlowChartInstance = null;
+    let costChartInstance = null;
 
     function showToast(msg, type = 'info') {
         const c = document.getElementById('toastContainer');
@@ -313,9 +263,6 @@
             if (STATE.role !== 'Technician' && data.metrics) {
                 document.getElementById('stat-inbox').innerText = data.metrics.inboxCount;
                 document.getElementById('stat-pipeline').innerText = '₱' + data.metrics.pipeTotal.toLocaleString('en-PH');
-                document.getElementById('fin-gross').innerText = '₱' + data.metrics.gross.toLocaleString('en-PH');
-                document.getElementById('fin-costs').innerText = '₱' + data.metrics.cost.toLocaleString('en-PH');
-                document.getElementById('fin-net').innerText = '₱' + data.metrics.net.toLocaleString('en-PH');
             } else {
                 document.getElementById('topbarAnalytics').style.display = 'none';
             }
@@ -334,7 +281,7 @@
         if(!data.error) { STATE.jobsData = data.jobs; renderStream(); if(feedback) showToast("System Synced", "success"); }
     }
 
-function buildNavMenu() {
+    function buildNavMenu() {
         const nav = document.getElementById('navTabs');
         if (STATE.role === 'Technician') {
             nav.innerHTML = `
@@ -362,13 +309,45 @@ function buildNavMenu() {
         if (ws === 'finance') {
             document.getElementById('streamContainer').style.display = 'none';
             document.getElementById('financeContainer').style.display = 'flex';
-            loadFinancials(); // Fetch the heavy data
+            loadFinancials();
         } else {
             document.getElementById('streamContainer').style.display = 'flex';
             document.getElementById('financeContainer').style.display = 'none';
             applyFilter();
         }
     }
+
+    async function loadFinancials() {
+        showToast("Generating Financial Models...", "info");
+        try {
+            const res = await fetch(CONFIG.APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_financials', username: STATE.username, password: STATE.pass }) });
+            const data = await res.json();
+            if (data.error) return showToast(data.error, "error");
+
+            document.getElementById('cfo-rev').innerText = '₱' + data.kpis.revenue.toLocaleString('en-PH');
+            document.getElementById('cfo-cogs').innerText = '₱' + data.kpis.cogs.toLocaleString('en-PH');
+            document.getElementById('cfo-opex').innerText = '₱' + data.kpis.opex.toLocaleString('en-PH');
+            document.getElementById('cfo-net').innerText = '₱' + data.kpis.netProfit.toLocaleString('en-PH');
+            document.getElementById('cfo-margin').innerText = data.kpis.margin + '% Net Margin';
+
+            const ctxBar = document.getElementById('cashFlowChart').getContext('2d');
+            if (cashFlowChartInstance) cashFlowChartInstance.destroy();
+            cashFlowChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: { labels: data.monthly.labels, datasets: [{ label: 'Revenue', data: data.monthly.revenue, backgroundColor: '#2563eb', borderRadius: 4 }, { label: 'Total Expenses', data: data.monthly.expenses, backgroundColor: '#ef4444', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            const ctxPie = document.getElementById('costDoughnutChart').getContext('2d');
+            if (costChartInstance) costChartInstance.destroy();
+            costChartInstance = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: { labels: data.categoryBreakdown.labels, datasets: [{ data: data.categoryBreakdown.values, backgroundColor: ['#f59e0b', '#8b5cf6', '#10b981', '#64748b', '#ec4899'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+            });
+
+            showToast("Financials Updated", "success");
+        } catch (err) { showToast("Failed to load financials", "error"); }
     }
 
     function applyFilter() {
@@ -578,8 +557,8 @@ function buildNavMenu() {
         showToast("Reverted to original notes.", "info");
     }
 
-    function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('financeDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('quoteConfirmModal').classList.remove('open'); }
-    function openFinanceDrawer() { if(STATE.role !== 'Technician') { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('financeDrawer').classList.add('open'); } }
+    function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('quoteConfirmModal').classList.remove('open'); document.getElementById('proofModal').classList.remove('open'); }
+    function openFinanceDrawer() { if(STATE.role !== 'Technician') { document.getElementById('drawerOverlay').classList.remove('open'); setWorkspace('finance', document.querySelector('.tab-btn:last-child')); } }
 
     function openProofGateway(action) {
         pendingAction = action;
