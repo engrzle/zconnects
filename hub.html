@@ -122,7 +122,10 @@
     <div class="login-box">
         <div class="login-logo">Z<span>connects</span></div>
         <h3 style="margin:0 0 15px 0; color:var(--slate); font-size:1rem;">Command Center</h3>
-        <input type="password" id="adminPass" class="admin-input" placeholder="Secure Key">
+        
+        <input type="text" id="adminUser" class="admin-input" placeholder="Username" style="margin-bottom:10px;">
+        <input type="password" id="adminPass" class="admin-input" placeholder="Secure Key" style="margin-bottom:20px;">
+        
         <button class="btn-solid btn-primary" onclick="verifyLogin()" id="btnLogin">Authenticate</button>
     </div>
 </div>
