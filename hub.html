@@ -172,6 +172,7 @@
     <div class="drawer-body">
         <input type="hidden" id="drawerJobId">
         <input type="hidden" id="drawerJobTech">
+        <input type="hidden" id="drawerJobDesc"> <input type="hidden" id="drawerJobCategory"> ```
         
         <div id="drawerDynamicContent"></div>
 
@@ -339,6 +340,11 @@
 
 let originalNotesCache = ""; // Global variable to store raw notes
 
+**3. Update the JavaScript Logic:**
+Update these three functions in your `<script>` section at the bottom of `hub.html`:
+
+```javascript
+    // 1. Update openDrawer to store the client's problem
     function openDrawer(id) {
         const job = STATE.jobsData.find(j => j.id === id);
         if(!job) return;
@@ -347,7 +353,72 @@ let originalNotesCache = ""; // Global variable to store raw notes
         document.getElementById('drawerJobId').value = job.id;
         document.getElementById('drawerJobTech').value = job.tech;
         
-        originalNotesCache = job.notes || ''; // Store the raw notes
+        // NEW: Store description and category for the AI
+        document.getElementById('drawerJobDesc').value = job.desc;
+        document.getElementById('drawerJobCategory').value = job.category;
+        
+        originalNotesCache = job.notes || ''; 
+        // ... (Keep the rest of your openDrawer function identical)
+        // CRITICAL: Change your Send Quote button HTML inside openDrawer to this:
+        // <button class="btn-solid btn-primary" onclick="initiateSendQuote()">📧 Send Quote</button>
+    }
+
+    // 2. Add the Hard-Stop Validation Logic
+    function initiateSendQuote() {
+        const price = document.getElementById('drawerPrice').value;
+        const cost = document.getElementById('drawerCost').value;
+        const notes = document.getElementById('drawerNotes').value;
+        
+        if (!price || !cost || !notes.trim()) {
+            return showToast("Quote, Cost, and Engineering Notes MUST be filled.", "error");
+        }
+        // If everything is filled, open the confirmation gateway
+        document.getElementById('quoteConfirmModal').classList.add('open');
+    }
+
+    function confirmSendQuote() {
+        document.getElementById('quoteConfirmModal').classList.remove('open');
+        executeAction('save_and_send_quote');
+    }
+
+    // 3. Update AI function to send the context
+    async function enhanceNotes() {
+        const rawNotes = document.getElementById('drawerNotes').value;
+        const clientDesc = document.getElementById('drawerJobDesc').value;
+        const clientCat = document.getElementById('drawerJobCategory').value;
+
+        const btn = document.getElementById('btnEnhanceNotes');
+        const icon = document.getElementById('aiIcon');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = `<div style="display:inline-block; width:12px; height:12px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-right:5px;"></div> Thinking...`;
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(CONFIG.APP_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: 'enhance_notes', 
+                    notes: rawNotes, 
+                    clientDesc: clientDesc, 
+                    clientCategory: clientCat,
+                    username: STATE.username, 
+                    password: STATE.pass 
+                }) 
+            });
+            const data = await res.json();
+
+            if (!data.error && data.result) {
+                document.getElementById('drawerNotes').value = data.result;
+                document.getElementById('btnRevertNotes').style.display = 'block';
+                showToast("Scope of Work Auto-Generated", "success");
+            } else {
+                showToast(data.error || "AI Enhancement Failed", "error");
+            }
+        } catch (err) { showToast("Network Error calling AI", "error"); }
+        
+        btn.innerHTML = originalText; btn.disabled = false;
+    }
 
         const content = document.getElementById('drawerDynamicContent');
         content.innerHTML = '';
