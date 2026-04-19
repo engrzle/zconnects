@@ -328,6 +328,8 @@
         applyFilter();
     }
 
+let originalNotesCache = ""; // Global variable to store raw notes
+
     function openDrawer(id) {
         const job = STATE.jobsData.find(j => j.id === id);
         if(!job) return;
@@ -335,6 +337,8 @@
         document.getElementById('drawerTitle').innerText = `Panel: ${job.id}`;
         document.getElementById('drawerJobId').value = job.id;
         document.getElementById('drawerJobTech').value = job.tech;
+        
+        originalNotesCache = job.notes || ''; // Store the raw notes
 
         const content = document.getElementById('drawerDynamicContent');
         content.innerHTML = '';
@@ -354,17 +358,25 @@
                 `;
             }
         } else {
-            
-            // FIX 2: Admin Manual Dispatch Dropdown Restored
             const techOptions = `<option value="">-- Select Tech --</option>` + CONFIG.TECHNICIANS.map(t => `<option value="${t}" ${job.tech === t ? 'selected' : ''}>${t}</option>`).join('');
 
+            // ADDED: AI Button and Revert Button to the Quoting UI
             let adminUI = `
                 <div class="admin-section-title"><span>📝</span> Phase 1: Quoting</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                     <input type="number" id="drawerPrice" class="admin-input" placeholder="Quote (PHP)" value="${job.price || ''}">
                     <input type="number" id="drawerCost" class="admin-input" placeholder="Cost (PHP)" value="${job.cost || ''}">
                 </div>
-                <textarea id="drawerNotes" class="admin-input" style="height:60px; margin-bottom:20px; width:100%;" placeholder="Engineer Notes...">${job.notes || ''}</textarea>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--slate);">Engineer Notes (Scope of Work)</label>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-solid" id="btnRevertNotes" style="display:none; padding:6px 12px; font-size:0.75rem; background:var(--border); color:var(--slate); width:auto;" onclick="revertNotes()">↺ Revert</button>
+                        <button class="btn-solid" id="btnEnhanceNotes" style="padding:6px 12px; font-size:0.75rem; background:linear-gradient(135deg, #8b5cf6, #3b82f6); color:white; width:auto; display:flex; align-items:center; gap:5px;" onclick="enhanceNotes()"><span id="aiIcon">✨</span> AI Enhance</button>
+                    </div>
+                </div>
+                <textarea id="drawerNotes" class="admin-input" style="height:120px; margin-bottom:20px; width:100%; font-size:0.85rem;" placeholder="Type raw technical details here...">${originalNotesCache}</textarea>
+                
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
                     <button class="btn-solid btn-draft" onclick="executeAction('save_draft')">💾 Save Draft</button>
                     <button class="btn-solid btn-primary" onclick="executeAction('save_and_send_quote')">📧 Send Quote</button>
@@ -407,6 +419,46 @@
 
         document.getElementById('drawerOverlay').classList.add('open');
         document.getElementById('manageDrawer').classList.add('open');
+    }
+
+    // --- AI NOTE ENHANCER LOGIC ---
+    async function enhanceNotes() {
+        const rawNotes = document.getElementById('drawerNotes').value;
+        if (!rawNotes) return showToast("Please write some rough notes first.", "warning");
+
+        const btn = document.getElementById('btnEnhanceNotes');
+        const icon = document.getElementById('aiIcon');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = `<div style="display:inline-block; width:12px; height:12px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-right:5px;"></div> Enhancing...`;
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(CONFIG.APP_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'enhance_notes', notes: rawNotes, username: STATE.username, password: STATE.pass }) 
+            });
+            const data = await res.json();
+
+            if (!data.error && data.result) {
+                document.getElementById('drawerNotes').value = data.result;
+                document.getElementById('btnRevertNotes').style.display = 'block';
+                showToast("Engineering Scope Enhanced", "success");
+            } else {
+                showToast(data.error || "AI Enhancement Failed", "error");
+            }
+        } catch (err) {
+            showToast("Network Error calling AI", "error");
+        }
+        
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+
+    function revertNotes() {
+        document.getElementById('drawerNotes').value = originalNotesCache;
+        document.getElementById('btnRevertNotes').style.display = 'none';
+        showToast("Reverted to original notes.", "info");
     }
 
     function closeAllDrawers() { document.getElementById('manageDrawer').classList.remove('open'); document.getElementById('financeDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
